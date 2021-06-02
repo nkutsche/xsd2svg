@@ -751,6 +751,6 @@
 
 
 
-    <xsl:include href="svg-paths.xsl"/>
+    <xsl:include href="functions.xsl"/>
 
 </xsl:stylesheet>

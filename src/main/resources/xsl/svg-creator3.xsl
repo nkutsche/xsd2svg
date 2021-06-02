@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:svg="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/2000/svg" xmlns:sqf="http://www.schematron-quickfix.com/validator/process" xmlns:saxon="http://saxon.sf.net/" exclude-result-prefixes="xs sqf" xpath-default-namespace="http://www.w3.org/2000/svg" version="2.0">
 
     <xsl:output saxon:next-in-chain="svg-creator4.xsl"/>
-    <xsl:include href="svg-paths.xsl"/>
+    <xsl:include href="functions.xsl"/>
 
     <!-- 
         copies all nodes:

@@ -3,7 +3,7 @@
 
     <xsl:output saxon:next-in-chain="svg-creator3.xsl"/>
 
-    <xsl:include href="svg-paths.xsl"/>
+    <xsl:include href="functions.xsl"/>
 
     <!-- 
         copies all nodes:
