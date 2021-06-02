@@ -4,6 +4,11 @@
     <xsl:output saxon:next-in-chain="svg-creator2.xsl"/>
 
     <xsl:key name="elementByQName" match="xs:*[@name]" use="sqf:getName(.)"/>
+    
+    
+    <xsl:variable name="allSchema" select="sqf:getReferencedSchemas(/, ())"/>
+    <xsl:variable name="dokuSchema" select="$allSchema"/>
+    <xsl:variable name="refSchema" select="$allSchema"/>
 
 
     <xsl:template match="xs:schema/xs:element[@name]" mode="svg">
@@ -203,7 +208,7 @@
         <xsl:variable name="ns" select=" if (@namespace) then (@namespace) else ('##any')"/>
         <xsl:call-template name="elementRef">
             <xsl:with-param name="elementName" select="$ns"/>
-            <xsl:with-param name="model-id" select="$model-id"/>
+            <xsl:with-param name="model-id" select="$model-id" tunnel="yes"/>
         </xsl:call-template>
     </xsl:template>
 

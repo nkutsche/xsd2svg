@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sqf="http://www.schematron-quickfix.com/validator/process" xmlns:java="java:java.lang.Math" exclude-result-prefixes="xs" version="2.0">
+    
+    
+    <xsl:function name="sqf:getName">
+        <xsl:param name="node" as="node()"/>
+        <xsl:variable name="nameRef" select="$node/@ref | $node/@name"/>
+        <xsl:variable name="namespace" select="root($node)/xs:schema/@targetNamespace"/>
+        <xsl:variable name="prefix" select="'TODO'"/>
+        <xsl:variable name="qname" select=" if (matches($nameRef,':')) 
+            then ($nameRef) 
+            else (concat($prefix, ':', $nameRef))"/>
+        <!--        <xsl:variable name="localName" select="replace($nameRef,'^sqf:|^sch:','')"/>-->
+        <xsl:value-of select="$qname"/>
+    </xsl:function>
+    <xsl:function name="sqf:getName">
+        <xsl:param name="node" as="node()"/>
+        <xsl:param name="attrName"/>
+        <xsl:variable name="nameRef" select="$node/@*[name()=$attrName]"/>
+        <xsl:variable name="localName" select="replace($nameRef,'^sqf:|^sch:','')"/>
+        <xsl:value-of select="$localName"/>
+    </xsl:function>
+    
+    <xsl:function name="sqf:convertId" as="xs:string">
+        <xsl:param name="id" as="xs:string"/>
+        <xsl:value-of select="replace($id,':', '_')"/>
+    </xsl:function>
+    
     <xsl:function name="sqf:createRoundBox">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
@@ -602,6 +628,39 @@
         <xsl:variable name="jfont" select="font:new($font, 0, xs:integer($font-size))"/>
         <xsl:variable name="r2d" select="font:getStringBounds($jfont, $text, $frc)"/>
         <xsl:sequence select="r2d:getWidth($r2d)"/>
+    </xsl:function>
+    
+    <xsl:function name="sqf:getReferencedSchemas" as="document-node()*">
+        <xsl:param name="schema" as="document-node()"/>
+        <xsl:sequence select="sqf:getReferencedSchemas($schema, ())"/>
+    </xsl:function>
+    
+    <xsl:function name="sqf:getReferencedSchemas" as="document-node()*">
+        <xsl:param name="schema" as="document-node()"/>
+        <xsl:param name="knownURIs" as="xs:anyURI*"/>
+        
+        <xsl:variable name="imports" select="$schema/xs:schema/xs:import"/>
+        <xsl:variable name="includes" select="$schema/xs:schema/xs:include"/>
+        
+        <xsl:variable name="schemaUri" select="base-uri($schema)"/>
+        
+        <!--<xsl:variable name="importURIs" select="for $imp 
+            in $imports/@schemaLocation 
+            return resolve-uri($imp, $schemaUri)"/>-->
+        <xsl:variable name="importURIs" select="$imports/resolve-uri(@schemaLocation, $schemaUri)"/>
+        <xsl:variable name="includeURIs" select="$includes/resolve-uri(@schemaLocation, $schemaUri)"/>
+        
+        <xsl:variable name="importSchemas" select="for $iu 
+            in ($importURIs, $includeURIs)[not(. = $knownURIs)] 
+            return sqf:getReferencedSchemas(doc($iu), 
+            ($knownURIs, $schemaUri, $importURIs, $includeURIs))" as="document-node()*"/>
+        
+        <xsl:variable name="includeSchemas" select="for $iu 
+            in ($includeURIs)[not(. = $knownURIs)] 
+            return sqf:getReferencedSchemas(doc($iu), 
+            ($knownURIs, $schemaUri, $importURIs, $includeURIs))" as="document-node()*"/>
+        
+        <xsl:sequence select="$schema | $importSchemas[not(. = $schema)] | $includeSchemas[not(. = $schema)]"/>
     </xsl:function>
 
 </xsl:stylesheet>
