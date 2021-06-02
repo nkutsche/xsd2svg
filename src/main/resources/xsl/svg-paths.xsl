@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sqf="http://www.schematron-quickfix.com/validator/process" xmlns:java="java:java.lang.Math" exclude-result-prefixes="xs" version="2.0">
+    <xsl:import href="../../functions.xsl"/>
+    <xsl:function name="sqf:createRoundBox">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:value-of select="sqf:createRoundBox($width, $height, 0.25)"/>
+    </xsl:function>
+    <xsl:function name="sqf:createRoundBox">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:param name="edgesRel" as="xs:double"/>
+        <xsl:value-of select="sqf:createRoundBox($width, $height, $edgesRel, false())"/>
+    </xsl:function>
+    <xsl:function name="sqf:createRoundBox">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:param name="edgesRel" as="xs:double"/>
+        <xsl:param name="edgesAbs" as="xs:boolean"/>
+        <xsl:variable name="edgesHeight" select="(if (not($edgesAbs)) then (min(($height, $width)) * $edgesRel) else ($edgesRel))"/>
+        <xsl:variable name="edgesWidth" select="(if (not($edgesAbs)) then (min(($height, $width)) * $edgesRel) else ($edgesRel))"/>
+        <xsl:variable name="point1" select="$edgesWidth, 0"/>
+        <xsl:variable name="qPoint12" select="0, 0"/>
+        <xsl:variable name="point2" select="0, $edgesHeight"/>
+        <xsl:variable name="point3" select="0, $height - $edgesHeight"/>
+        <xsl:variable name="qPoint34" select="0, $height"/>
+        <xsl:variable name="point4" select="$edgesWidth, $height"/>
+        <xsl:variable name="point5" select="$width - $edgesWidth, $height"/>
+        <xsl:variable name="qPoint56" select="$width, $height"/>
+        <xsl:variable name="point6" select="$width, $height - $edgesHeight"/>
+        <xsl:variable name="point7" select="$width, $edgesHeight"/>
+        <xsl:variable name="qPoint78" select="$width, 0"/>
+        <xsl:variable name="point8" select="$width - $edgesWidth, 0"/>
+        <xsl:variable name="seq" select="('M', $point1, 
+                                          'Q', $qPoint12, $point2, 
+                                          'L', $point3, 
+                                          'Q', $qPoint34, $point4, 
+                                          'L', $point5, 
+                                          'Q', $qPoint56, $point6, 
+                                          'L', $point7, 
+                                          'Q', $qPoint78, $point8, 
+                                          'Z')"/>
+        <xsl:value-of select="$seq" separator=" "/>
+    </xsl:function>
+
+
+
+    <xsl:function name="sqf:createBalloon" as="xs:string">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:param name="rx" as="xs:double"/>
+        <xsl:param name="ry" as="xs:double"/>
+        <xsl:param name="cy" as="xs:double"/>
+        <xsl:sequence select="sqf:createBalloon($width, $height, $rx, $ry, $cy, 5.0)"/>
+    </xsl:function>
+    <xsl:function name="sqf:createBalloon" as="xs:string">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:param name="rx" as="xs:double"/>
+        <xsl:param name="ry" as="xs:double"/>
+        <xsl:param name="cy" as="xs:double"/>
+        <!--    Size of the speaking arrow    -->
+        <xsl:param name="sps" as="xs:double"/>
+
+
+        <xsl:variable name="point1" select="$rx + $sps, 0"/>
+        <xsl:variable name="qPoint12" select="$sps, 0"/>
+        <xsl:variable name="point2" select="$sps, $ry"/>
+        <xsl:variable name="pointS1" select="$sps, $cy - ($sps div 2)"/>
+        <xsl:variable name="pointS2" select="0, $cy"/>
+        <xsl:variable name="pointS3" select="$sps, $cy + ($sps div 2)"/>
+        <xsl:variable name="point3" select="$sps, $height - $ry"/>
+        <xsl:variable name="qPoint34" select="$sps, $height"/>
+        <xsl:variable name="point4" select="$rx + $sps, $height"/>
+        <xsl:variable name="point5" select="$width - $rx + $sps, $height"/>
+        <xsl:variable name="qPoint56" select="$width + $sps, $height"/>
+        <xsl:variable name="point6" select="$width + $sps, $height - $ry"/>
+        <xsl:variable name="point7" select="$width + $sps, $ry"/>
+        <xsl:variable name="qPoint78" select="$width + $sps, 0"/>
+        <xsl:variable name="point8" select="$width - $rx + $sps, 0"/>
+        <xsl:variable name="seq" select="('M', $point1, 
+                                          'Q', $qPoint12, $point2, 
+                                          'L', $pointS1,
+                                          'L', $pointS2,
+                                          'L', $pointS3,
+                                          'L', $point3, 
+                                          'Q', $qPoint34, $point4, 
+                                          'L', $point5, 
+                                          'Q', $qPoint56, $point6, 
+                                          'L', $point7, 
+                                          'Q', $qPoint78, $point8, 'Z')"/>
+        <xsl:value-of select="$seq" separator=" "/>
+    </xsl:function>
+
+    <xsl:function name="sqf:multiValuesMerge" as="xs:string">
+        <xsl:param name="funcMultiValues" as="element(svg:svg)*"/>
+
+        <xsl:variable name="oneOrMores" select="$funcMultiValues[@sqf:multiValue = $MultiValues[4]]"/>
+        <xsl:variable name="zeroOrMores" select="$funcMultiValues[@sqf:multiValue = $MultiValues[3]]"/>
+        <xsl:variable name="ones" select="$funcMultiValues[@sqf:multiValue = $MultiValues[2]] | $funcMultiValues[not(@sqf:multiValue)]"/>
+        <xsl:variable name="zeroOrOnes" select="$funcMultiValues[@sqf:multiValue = $MultiValues[1]]"/>
+        <xsl:choose>
+            <xsl:when test="$ones or ($oneOrMores and $zeroOrOnes)">
+                <xsl:sequence select="$MultiValues[2]"/>
+            </xsl:when>
+            <xsl:when test="$oneOrMores">
+                <xsl:sequence select="$MultiValues[4]"/>
+            </xsl:when>
+            <xsl:when test="$zeroOrOnes">
+                <xsl:sequence select="$MultiValues[1]"/>
+            </xsl:when>
+            <xsl:when test="$zeroOrMores">
+                <xsl:sequence select="$MultiValues[3]"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$MultiValues[2]"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
+    <xsl:template name="sequenceSymbol">
+        <xsl:param name="colorStroke" select="'#007'"/>
+        <xsl:param name="colorFill" select="'#88f'"/>
+        <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
+        <svg width="20" height="20" sqf:cY="10">
+            <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                <!--                <xsl:attribute name="width" select="23.5"/>-->
+                <xsl:attribute name="height" select="23.5"/>
+            </xsl:if>
+            <g>
+                <xsl:variable name="circle">
+                    <circle r="9.5" stroke="{$colorStroke}" stroke-width="1" cx="10" cy="10" fill="white">
+                        <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
+                            <xsl:attribute name="stroke-dashoffset" select="2"/>
+                            <xsl:attribute name="stroke-dasharray" select="2"/>
+                        </xsl:if>
+                    </circle>
+                </xsl:variable>
+                <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                    <circle>
+                        <xsl:copy-of select="$circle/svg:circle/@*"/>
+                        <xsl:attribute name="cy" select="13.5"/>
+                        <xsl:attribute name="stroke-width" select="0.33"/>
+                    </circle>
+                    <circle>
+                        <xsl:copy-of select="$circle/svg:circle/@*"/>
+                        <xsl:attribute name="cy" select="12"/>
+                        <xsl:attribute name="stroke-width" select="0.66"/>
+                    </circle>
+                </xsl:if>
+                <xsl:copy-of select="$circle"/>
+                <g>
+                    <path d="M 0 10 
+                        L 3 10
+                        M 8.5 10
+                        L 11.5 10
+                        M 17 10
+                        L 20 10" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                    <g transform="translate(3, 8)">
+                        <rect width="5.5" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                    </g>
+                    <g transform="translate(11.5, 8)">
+                        <rect width="5.5" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                    </g>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
+    <xsl:template name="choiceSymbol">
+        <xsl:param name="colorStroke" select="'#007'"/>
+        <xsl:param name="colorFill" select="'#88f'"/>
+        <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
+        <xsl:param name="connectCount" select="3"/>
+        <svg width="20" height="20" sqf:cYTop="0" sqf:cXTop="10" sqf:cYRight="10" sqf:cXRight="20" sqf:cYBottom="20" sqf:cXBottom="10">
+            <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                <xsl:attribute name="sqf:cY" select="10"/>
+                <!--                <xsl:attribute name="width" select="22.5"/>-->
+                <xsl:attribute name="height" select="23.5"/>
+            </xsl:if>
+            <g>
+                <xsl:variable name="circle">
+                    <circle r="9.5" stroke="{$colorStroke}" stroke-width="1" cx="10" cy="10" fill="white">
+                        <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
+                            <xsl:attribute name="stroke-dashoffset" select="2"/>
+                            <xsl:attribute name="stroke-dasharray" select="2"/>
+                        </xsl:if>
+                    </circle>
+                </xsl:variable>
+                <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                    <circle>
+                        <xsl:copy-of select="$circle/svg:circle/@*"/>
+                        <xsl:attribute name="cy" select="13.5"/>
+                        <xsl:attribute name="stroke-width" select="0.33"/>
+                    </circle>
+                    <circle>
+                        <xsl:copy-of select="$circle/svg:circle/@*"/>
+                        <xsl:attribute name="cy" select="12"/>
+                        <xsl:attribute name="stroke-width" select="0.66"/>
+                    </circle>
+                </xsl:if>
+                <xsl:copy-of select="$circle"/>
+                <g>
+                    <path d="M 0 10 
+                        L 3 10 
+                        L 3 6 
+                        L 6 6
+                        M 3 10
+                        L 3 14
+                        L 6 14" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                    <g transform="translate(6, 4)">
+                        <rect width="8" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                    </g>
+                    <g transform="translate(6, 12)">
+                        <rect width="8" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                    </g>
+                    <xsl:if test="$connectCount = (1, 3)">
+                        <path d="M 20 10 
+                                L 17 10 
+                                L 17 6 
+                                L 14 6
+                                M 17 10
+                                L 17 14
+                                L 14 14" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                    </xsl:if>
+                    <xsl:if test="$connectCount gt 1">
+                        <path d="M 10 0
+                                 L 10 4" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                        <path d="M 10 16
+                                 L 10 20" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                    </xsl:if>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
+
+    <xsl:template name="groupTitle">
+        <xsl:param name="title"/>
+        <xsl:param name="color" select="'#007'"/>
+        <xsl:param name="font-color" select="'black'"/>
+        <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="width" select="sqf:renderedTextLength($title, 'Arial', 'plain', $fontSize) + 29"/>
+        <svg width="{$width + 6}" height="25">
+            <g transform="translate(3,3)">
+                <rect width="5" height="5" x="6" y="3" fill="{$color}" opacity="0.5"/>
+                <rect width="5" height="5" x="6" y="11" fill="{$color}" opacity="0.5"/>
+                <rect width="5" height="5" x="14" y="11" fill="{$color}" opacity="0.5"/>
+                <rect width="5" height="5" x="6" y="3" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
+                <rect width="5" height="5" x="6" y="11" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
+                <rect width="5" height="5" x="14" y="11" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
+                <text x="26" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                    <xsl:value-of select="$title"/>
+                </text>
+            </g>
+        </svg>
+    </xsl:template>
+
+
+    <xsl:template name="drawObjectPaths">
+        <xsl:param name="content" as="element(svg:svg)*"/>
+        <xsl:param name="strokeColor" as="xs:string" select="'#007'"/>
+        <xsl:param name="x0" select="0"/>
+        <xsl:param name="x1" select="25"/>
+        <xsl:param name="x2" select="50"/>
+        <xsl:param name="minX1" select="15"/>
+        <xsl:param name="curve" select="7"/>
+        <xsl:param name="rightPathPosition" select="false()" as="xs:boolean"/>
+
+        <xsl:variable name="contentHeight" select="sum($content/@height)"/>
+        <xsl:variable name="contentWidth" select=" if ($content/@width[.='']) 
+                                                 then (1000000)
+                                                 else (max($content/@width[.!='']))"/>
+
+        <xsl:variable name="x0" select=" if ($rightPathPosition) then ($contentWidth + $x2 - $x0) else ($x0)"/>
+        <xsl:variable name="x1" select=" if ($rightPathPosition) then ($contentWidth + $x2 - $x1) else ($x1)"/>
+        <xsl:variable name="minX1" select=" if ($rightPathPosition) then ($contentWidth + $x2  - $minX1) else ($minX1)"/>
+        <xsl:variable name="x2" select=" if ($rightPathPosition) then ($contentWidth) else ($x2)"/>
+
+        <xsl:if test="$content">
+            <xsl:variable name="firstContentConnect" select="($content[1]/@sqf:cY, $content[1]/@height div 2)[1]"/>
+            <xsl:variable name="lastContentConnect" select="($content[last()]/@sqf:cY, $content[last()]/@height div 2)[1]"/>
+            <xsl:variable name="lastContentConnect" select="$contentHeight - ($content[last()]/@height - $lastContentConnect)"/>
+
+            <xsl:variable name="moreThenOne" select="count($content) gt 1" as="xs:boolean"/>
+
+            <xsl:variable name="cY" select=" if ($moreThenOne) 
+                                           then (((sqf:number($lastContentConnect) - sqf:number($firstContentConnect)) div 2) + sqf:number($firstContentConnect)) 
+                                           else ($content/@sqf:cY)"/>
+            <xsl:variable name="x1ForOne" select="if ($rightPathPosition and not($moreThenOne)) 
+                                                then ($x2) 
+                                             else if ($moreThenOne) 
+                                                then ($x1) 
+                                                else (max(($x1, $minX1)))"/>
+            <xsl:variable name="x0" select=" if ($rightPathPosition and not($moreThenOne)) 
+                                           then ($x0 - min(($x1, $minX1)) + $x2) 
+                                           else ($x0)"/>
+            <xsl:variable name="svgWidth" select=" if ($rightPathPosition) 
+                                                 then ($x0) 
+                                                 else ($contentWidth + (if ($moreThenOne) then ($x2) else ($x1ForOne)))"/>
+
+            <xsl:variable name="contentMultiValue" select="sqf:multiValuesMerge($content)"/>
+            <svg width="{$svgWidth}" height="{$contentHeight}" sqf:cY="{$cY}" class="objectPaths" sqf:multiValue="{$contentMultiValue}">
+                <xsl:variable name="contentReq" select="not(matches($contentMultiValue, 'zero'))" as="xs:boolean"/>
+                <xsl:variable name="contentMore" select="matches($contentMultiValue, 'More')" as="xs:boolean"/>
+                <!--<xsl:variable name="contentReq" select="exists($content[if (@sqf:multiValue) 
+                                                                      then (not(matches(@sqf:multiValue, 'zero'))) 
+                                                                      else (true())])" as="xs:boolean"/>
+                <xsl:variable name="contentOne" select="exists($content[if (@sqf:multiValue) 
+                                                                      then (not(matches(@sqf:multiValue, 'More'))) 
+                                                                      else (true())])" as="xs:boolean"/>-->
+                <xsl:variable name="gap" select=" if ($contentMore) then (1.5) else (0)" as="xs:double"/>
+                <xsl:variable name="dash" select=" if ($x1ForOne - $x0 gt 20) then (5) else (3)"/>
+                <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                    <xsl:attribute name="d" select="'M', $x0, $cY - $gap, 'L', $x1ForOne, $cY - $gap" separator=" "/>
+                    <xsl:if test="not($contentReq)">
+                        <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                    </xsl:if>
+                </path>
+                <xsl:if test="$contentMore">
+                    <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                        <xsl:attribute name="d" select="'M', $x0, $cY + $gap, 'L', $x1ForOne, $cY + $gap" separator=" "/>
+                        <xsl:if test="not($contentReq)">
+                            <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                        </xsl:if>
+                    </path>
+                </xsl:if>
+                <xsl:variable name="dash" select="5"/>
+                <xsl:for-each select="reverse($content)">
+                    <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height)"/>
+                    <xsl:variable name="thisWidth" select="@width"/>
+                    <xsl:variable name="y" select="$precHeight + @sqf:cY"/>
+                    <xsl:variable name="pos" select="position()"/>
+
+                    <xsl:variable name="followY" select="$precHeight + @height + following-sibling::svg:svg[1]/@sqf:cY"/>
+                    <xsl:variable name="precY" select="$precHeight - preceding-sibling::svg:svg[1]/@height + preceding-sibling::svg:svg[1]/@sqf:cY"/>
+
+                    <xsl:variable name="pathToY" select=" if ($y gt $cY) 
+                                                       then (if ($precY lt $cY) then ($cY) else ($precY)) 
+                                                       else if ($y lt $cY) 
+                                                       then (if ($followY gt $cY) then ($cY) else ($followY)) 
+                                                       else ($y)"/>
+
+                    <xsl:variable name="strokeRespContent" select=" if ($y lt $cY) 
+                                                                  then (preceding-sibling::svg:svg | self::svg:svg) 
+                                                               else if ($y gt $cY) 
+                                                                  then (following-sibling::svg:svg | self::svg:svg) 
+                                                                  else (self::svg:svg)"/>
+                    <xsl:choose>
+                        <xsl:when test="not($pos = (1, last()))">
+                            <xsl:variable name="gap" select=" if (matches(@sqf:multiValue, 'More')) then (1.5) else (0)" as="xs:double"/>
+                            <path stroke="{if (@sqf:stroke) then (@sqf:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                <xsl:attribute name="d" select="'M', $x1, $y - $gap,
+                                                                'L', $x2, $y - $gap" separator=" "/>
+                                <xsl:if test="matches(@sqf:multiValue, 'zero')">
+                                    <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                </xsl:if>
+                            </path>
+                            <xsl:if test="$gap gt 0">
+                                <path stroke="{if (@sqf:stroke) then (@sqf:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                    <xsl:attribute name="d" select="'M', $x1, $y + $gap,
+                                                                    'L', $x2, $y + $gap" separator=" "/>
+                                    <xsl:if test="matches(@sqf:multiValue, 'zero')">
+                                        <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                    </xsl:if>
+                                </path>
+                            </xsl:if>
+                            <xsl:variable name="mergedMultiValue" select="sqf:multiValuesMerge($strokeRespContent)"/>
+                            <xsl:variable name="gap" select=" if (matches($mergedMultiValue, 'More')) then (1.5) else (0)" as="xs:double"/>
+                            <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                                <xsl:attribute name="d" select="'M', $x1 - $gap, $y, 
+                                                                'L', $x1 - $gap, $pathToY"/>
+                                <xsl:if test="matches($mergedMultiValue, 'zero')">
+                                    <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                </xsl:if>
+                            </path>
+                            <xsl:if test="$gap gt 0">
+                                <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                                    <xsl:attribute name="d" select="'M', $x1 + $gap, $y, 
+                                                                    'L', $x1 + $gap, $pathToY"/>
+                                    <xsl:if test="matches($mergedMultiValue, 'zero')">
+                                        <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                    </xsl:if>
+                                </path>
+                            </xsl:if>
+                        </xsl:when>
+                        <xsl:when test="$moreThenOne">
+                            <xsl:variable name="xCurve" select=" if ($rightPathPosition) then ($x1 - $curve) else ($x1 + $curve)"/>
+                            <xsl:variable name="yCurve" select=" if ($pos = 1) then ($y - $curve) else ($y + $curve)"/>
+                            
+                            <xsl:variable name="gap" select=" if (matches(@sqf:multiValue, 'More')) then (1.5) else (0)" as="xs:double"/>
+                            <path stroke="{if (@sqf:stroke) then (@sqf:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                <xsl:attribute name="d" select="'M', $x2, $y - $gap, 
+                                                                'L', $xCurve, $y - $gap,
+                                                                'Q', $x1 + $gap, $y - $gap, $x1 + $gap, $yCurve, 
+                                                                'L', $x1 + $gap, $pathToY"/>
+                                <xsl:if test="matches(@sqf:multiValue, 'zero')">
+                                    <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                </xsl:if>
+                            </path>
+                            <xsl:if test="matches(@sqf:multiValue, 'More')">
+                                <path stroke="{if (@sqf:stroke) then (@sqf:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                    <xsl:attribute name="d" select="'M', $x2, $y + $gap, 
+                                                                    'L', $xCurve, $y + $gap,
+                                                                    'Q', $x1 - $gap, $y + $gap, $x1 - $gap, $yCurve, 
+                                                                    'L', $x1 - $gap, $pathToY"/>
+                                    <xsl:if test="matches(@sqf:multiValue, 'zero')">
+                                        <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                    </xsl:if>
+                                </path>
+                            </xsl:if>
+                            <!--<path stroke="{if (@sqf:stroke) then (@sqf:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                <xsl:attribute name="d" select="'M', $x1, $yCurve, 
+                                                                "/>
+                                <xsl:if test="matches(@sqf:multiValue, 'zero')">
+                                    <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
+                                </xsl:if>
+                            </path>-->
+                        </xsl:when>
+                        <xsl:otherwise/>
+                    </xsl:choose>
+                    <g transform="translate({
+                                        if ($rightPathPosition) 
+                                        then ($contentWidth - $thisWidth) 
+                                        else (if ($moreThenOne) then ($x2) else ($x1ForOne)
+                                        )
+                                        },
+                                        {$precHeight})">
+                        <xsl:copy-of select="."/>
+                    </g>
+                </xsl:for-each>
+            </svg>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:variable name="piHalf" select="java:acos(-1) div 2"/>
+
+
+    <xsl:template name="drawPath">
+        <xsl:param name="from" required="yes" as="xs:double+"/>
+        <xsl:param name="to" required="yes" as="xs:double+"/>
+        <xsl:param name="style" select="'solid'" as="xs:string"/>
+        <xsl:param name="doubleGap" select="3" as="xs:double"/>
+        <xsl:param name="inheritPath" as="element(svg:path)"/>
+
+        <xsl:choose>
+            <xsl:when test="$style = 'double'">
+                <xsl:variable name="xDiv" select="$from[1] - $to[1]"/>
+                <xsl:variable name="yDiv" select="$from[2] - $to[2]"/>
+
+                <xsl:variable name="angle" select=" if ($xDiv != 0) 
+                                                  then ($piHalf - java:atan($yDiv div $xDiv)) 
+                                                  else (0)"/>
+                <xsl:variable name="gabXdiv" select="java:cos($angle) * $doubleGap div 2"/>
+                <xsl:variable name="gabYdiv" select="java:sin($angle) * $doubleGap div 2"/>
+                <xsl:variable name="from1" select="$from[1] - $gabXdiv, $from[2] - $gabYdiv"/>
+                <xsl:variable name="to1" select="$to[1] - $gabXdiv, $to[2] - $gabYdiv"/>
+                <xsl:variable name="from2" select="$from[1] + $gabXdiv, $from[2] + $gabYdiv"/>
+                <xsl:variable name="to2" select="$to[1] + $gabXdiv, $to[2] + $gabYdiv"/>
+                <path class="double">
+                    <xsl:copy-of select="$inheritPath/@*"/>
+                    <xsl:attribute name="d" select="'M', $from1, 'L', $to1"/>
+                </path>
+                <path class="double">
+                    <xsl:copy-of select="$inheritPath/@*"/>
+                    <xsl:attribute name="d" select="'M', $from2, 'L', $to2"/>
+                </path>
+            </xsl:when>
+            <xsl:otherwise>
+                <path>
+                    <xsl:copy-of select="$inheritPath/@*"/>
+                    <xsl:attribute name="d" select="'M', $from, 'L', $to"/>
+                </path>
+            </xsl:otherwise>
+        </xsl:choose>
+
+
+
+    </xsl:template>
+
+    <xsl:function name="sqf:number" as="xs:decimal">
+        <xsl:param name="value"/>
+        <xsl:sequence select="sqf:number($value, 0)"/>
+    </xsl:function>
+    <xsl:function name="sqf:number" as="xs:decimal">
+        <xsl:param name="value"/>
+        <xsl:param name="default" as="xs:decimal"/>
+        <xsl:sequence select=" if ($value castable as xs:decimal) then (xs:decimal($value)) else ($default)"/>
+    </xsl:function>
+
+    <xsl:variable name="MultiValues" select="('zeroOrOne', 'one', 'zeroOrMore', 'oneOrMore')"/>
+    <xsl:function name="sqf:getMultiValue" as="xs:string">
+        <xsl:param name="node" as="element()"/>
+        <xsl:choose>
+            <xsl:when test="$node/self::xs:attribute">
+                <xsl:variable name="use" select=" if ($node/@use) then ($node/@use) else ('optional')"/>
+                <xsl:variable name="uses" select="('optional', 'required')"/>
+                <xsl:value-of select="$MultiValues[index-of($uses, $use)]"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="min" select="sqf:number($node/@minOccurs, 1)"/>
+                <xsl:variable name="min" select=" if ($min = 0) 
+                                                then ('zero') 
+                                                else ('one')"/>
+                <xsl:variable name="max" select=" if ($node/@maxOccurs = 'unbounded') 
+                                                then (-1) 
+                                                else (sqf:number($node/@maxOccurs, 1))"/>
+                <xsl:variable name="max" select=" if ($max = 1) 
+                                                then ('One') 
+                                                else ('More')"/>
+                <xsl:value-of select="replace(concat($min, 'Or', $max), 'oneOrOne', 'one')"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
+    <xsl:template name="wrap">
+        <xsl:param name="text" as="xs:string"/>
+        <xsl:param name="font" select="'Arial'"/>
+        <xsl:param name="fontSize" select="11" as="xs:double"/>
+        <xsl:param name="lineHeight" select="16" as="xs:double"/>
+        <xsl:param name="spaceAfter" select="8" as="xs:double"/>
+        <xsl:param name="style" select="'plain'" as="xs:string"/>
+        <xsl:param name="width"/>
+        <xsl:variable name="subwoerter">
+            <xsl:analyze-string select="$text" regex="[^\s-]+([\s-]+|$)">
+                <xsl:matching-substring>
+                    <tspan>
+                        <xsl:value-of select="."/>
+                    </tspan>
+                </xsl:matching-substring>
+            </xsl:analyze-string>
+        </xsl:variable>
+        <xsl:variable name="tspans">
+            <xsl:for-each select="$subwoerter/svg:tspan">
+                <xsl:variable name="length" select="sqf:renderedTextLength(., 
+                        $font, 
+                        $style, 
+                        $fontSize)"/>
+                <tspan>
+                    <xsl:attribute name="sqf:length" select="$length"/>
+                    <xsl:value-of select="."/>
+                </tspan>
+            </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="lines">
+            <xsl:call-template name="lineWrap">
+                <xsl:with-param name="tspans" select="$tspans/svg:tspan"/>
+                <xsl:with-param name="x" select="0"/>
+                <xsl:with-param name="y" select="0"/>
+                <xsl:with-param name="lineHeight" select="$lineHeight"/>
+                <xsl:with-param name="lineWidth" select="$width"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <svg width="{$width}" height="{(count($lines/sqf:line) * $lineHeight) + $spaceAfter}" class="text_box">
+            <text fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                <xsl:if test="$style = 'bold'">
+                    <xsl:attribute name="font-weight">bold</xsl:attribute>
+                </xsl:if>
+                <xsl:copy-of select="$lines/sqf:line/*"/>
+            </text>
+        </svg>
+    </xsl:template>
+
+    <xsl:template name="lineWrap">
+        <xsl:param name="tspans" as="element(svg:tspan)*"/>
+        <xsl:param name="x" select="0" as="xs:double"/>
+        <xsl:param name="y" select="0" as="xs:double"/>
+        <xsl:param name="lineHeight" select="16" as="xs:double"/>
+        <xsl:param name="lineWidth"/>
+
+        <xsl:variable name="firstLine" select="$tspans[sum(preceding-sibling::*/@sqf:length) + @sqf:length lt $lineWidth]"/>
+        <xsl:variable name="nextLines">
+            <xsl:copy-of select="$tspans except $firstLine"/>
+        </xsl:variable>
+
+        <xsl:if test="$firstLine">
+            <sqf:line>
+                <xsl:for-each select="$firstLine">
+                    <xsl:copy>
+                        <xsl:copy-of select="@*"/>
+                        <xsl:attribute name="y" select="$y + $lineHeight"/>
+                        <xsl:if test="position() = 1">
+                            <xsl:attribute name="x" select="$x"/>
+                        </xsl:if>
+                        <xsl:copy-of select="node()"/>
+                    </xsl:copy>
+                </xsl:for-each>
+            </sqf:line>
+        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="$nextLines and $firstLine">
+                <xsl:call-template name="lineWrap">
+                    <xsl:with-param name="tspans" select="$nextLines/svg:tspan"/>
+                    <xsl:with-param name="x" select="$x"/>
+                    <xsl:with-param name="y" select="$y + $lineHeight"/>
+                    <xsl:with-param name="lineHeight" select="$lineHeight"/>
+                    <xsl:with-param name="lineWidth" select="$lineWidth"/>
+                </xsl:call-template>
+            </xsl:when>
+            <xsl:otherwise/>
+        </xsl:choose>
+
+
+    </xsl:template>
+
+</xsl:stylesheet>

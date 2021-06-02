@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.data2type</groupId>
+    <artifactId>xsd2svg</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    
+    <properties>
+        <saxon.version>10.5</saxon.version>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>de.data2type</groupId>
+            <artifactId>javaextensions.textdimensions.saxon100</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>${saxon.version}</version>
+        </dependency>
+    </dependencies>
+</project>
