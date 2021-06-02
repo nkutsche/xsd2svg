@@ -21,12 +21,6 @@
         <xsl:attribute name="height" select="../@sqf:height"/>
     </xsl:template>
     
-    <!--<xsl:template match="/svg" priority="15">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
-    </xsl:template>-->
 
 
     <xsl:template match="*[namespace-uri()='']/svg" priority="15">

@@ -65,56 +65,5 @@
         </xsl:choose>
     </xsl:function>
 
-    <!--<xsl:template match="svg">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:attribute name="sqf:height" select="@height"/>
-            <xsl:apply-templates select="node()"/>
-        </xsl:copy>
-    </xsl:template>
-    
-    <xsl:template match="svg">
-        <xsl:variable name="content">
-            <xsl:apply-templates select="node()"/>
-        </xsl:variable>
-        <xsl:variable name="nextSvgLevel" select="sqf:getNextLevel($content/*)"/>
-        <xsl:variable name="maxDisplayWidth" select="sqf:number(max(($nextSvgLevel/@sqf:displayW, @sqf:displayW)))"/>
-        <xsl:variable name="maxDisplayHeight" select="sqf:number(max(($nextSvgLevel/@sqf:displayH, @sqf:displayH)))"/>
-        <xsl:copy>
-            <xsl:apply-templates select="@*">
-                <xsl:with-param name="displayWidth" select="$maxDisplayWidth"/>
-                <xsl:with-param name="displayHeight" select="$maxDisplayHeight"/>
-            </xsl:apply-templates>
-            <xsl:copy-of select="$content"/>
-        </xsl:copy>
-    </xsl:template>
-    
-    <xsl:template match="svg/@width[. castable as xs:decimal]">
-        <xsl:param name="displayWidth" as="xs:decimal" select="0"/>
-        <xsl:attribute name="width" select="xs:decimal(.) + $displayWidth"/>
-        <xsl:attribute name="sqf:width" select="."/>
-        <xsl:attribute name="sqf:displayW" select="$displayWidth"/>
-    </xsl:template>
-    
-    <xsl:template match="svg/@height[. castable as xs:decimal]">
-        <xsl:param name="displayHeight" as="xs:decimal" select="0"/>
-        <xsl:attribute name="height" select="xs:decimal(.) + $displayHeight"/>
-        <xsl:attribute name="sqf:height" select="."/>
-        <xsl:attribute name="sqf:displayH" select="$displayHeight"/>
-    </xsl:template>
-    
-    <xsl:function name="sqf:getNextLevel" as="element(svg)*">
-        <xsl:param name="elements" as="element()*"/>
-        <xsl:for-each select="$elements">
-            <xsl:choose>
-                <xsl:when test="self::svg">
-                    <xsl:sequence select="."/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:sequence select="sqf:getNextLevel(./*)"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:for-each>
-    </xsl:function>-->
 
 </xsl:stylesheet>

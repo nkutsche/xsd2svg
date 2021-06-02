@@ -5,16 +5,6 @@
 
     <xsl:key name="elementByQName" match="xs:*[@name]" use="sqf:getName(.)"/>
 
-    <!--    <xsl:include href="../functions.xsl"/>-->
-
-    <!--    <xsl:variable name="allSchema" select="sqf:getReferencedSchemas(/, ())"/>-->
-
-    <!--<xsl:template match="/">
-        <svg width="100%" height="100%">
-            <xsl:apply-templates select="$allSchema/xs:schema" mode="svg"/>
-        </svg>
-    </xsl:template>-->
-
 
     <xsl:template match="xs:schema/xs:element[@name]" mode="svg">
         <xsl:param name="elementName" select="sqf:getName(.)"/>
@@ -63,7 +53,6 @@
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <g>
-                    <!--                    <path d="{sqf:createRoundBox($width, 25, 10, true())}" stroke="#007" stoke-width="1" fill="none"/>-->
                     <rect width="{$width}" height="25" rx="10" ry="10" stroke="#007" stoke-width="1" fill="#88f"/>
                 </g>
                 <text x="{$paddingLR}" y="16" fill="white" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
@@ -138,7 +127,6 @@
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
                 <a xlink:href="#{sqf:convertId($parentName)}" target="_top">
                     <g>
-                        <!--                    <path d="{sqf:createRoundBox($width, 25, 10, true())}" stroke="#007" stoke-width="1" fill="none"/>-->
                         <rect width="{$width}" height="25" rx="10" ry="10" stroke="#007" stoke-width="1" fill="white"/>
                     </g>
                     <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
@@ -213,8 +201,6 @@
     <xsl:template match="xs:any" mode="svg">
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:variable name="ns" select=" if (@namespace) then (@namespace) else ('##any')"/>
-        <!--        <xsl:variable name="prefix" select="name(namespace::*[.=$ns])"/>
-        <xsl:variable name="name" select=" if ($prefix) then (concat($prefix, ':*')) else ('*')"/>-->
         <xsl:call-template name="elementRef">
             <xsl:with-param name="elementName" select="$ns"/>
             <xsl:with-param name="model-id" select="$model-id"/>
@@ -326,7 +312,6 @@
         <xsl:if test="$content">
             <svg width="{$svgWidth}" height="{$contentHeight + 10}" class="attribute_box" sqf:cY="{$content/@sqf:cY + 5}" sqf:multiValue="{sqf:multiValuesMerge($contentSVGs)}" sqf:stroke="#F5844C">
                 <g transform="translate(0, 2.5)">
-                    <!--                    <path d="{sqf:createRoundBox($svgWidth, $contentHeight + 5, 10, true())}" stroke="#F5844C" stroke-width="1" fill="none"/>-->
                     <rect height="{$contentHeight + 5}" width="{$svgWidth}" rx="10" ry="10" stroke="#F5844C" stoke-width="1" fill="white"/>
                     <g transform="translate(0, 2.5)">
                         <xsl:copy-of select="$content"/>
@@ -365,7 +350,6 @@
             <desc/>
             <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})" id="{$hoverId}">
                 <g>
-                    <!--                    <path d="{sqf:createRoundBox($width, $elementHeight, 10, true())}" stroke="#F5844C" stoke-width="1" fill="none"/>-->
                     <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" stroke="#F5844C" stoke-width="1" fill="white">
                         <xsl:if test="$multiValue = $MultiValues[1]">
                             <xsl:attribute name="stroke-dasharray" select="5, 5" separator=","/>
@@ -520,7 +504,6 @@
         <xsl:variable name="elementWidth" select="max($elementSVG/@width)"/>
 
 
-        <!--        <xsl:variable name="posY" select="max((($contentHeight div 2) - ($elementHeight div 2), 0))"/>-->
         <xsl:variable name="posY" select="max(($contentSVGs/@sqf:cY - sqf:number($elementSVG/@sqf:cY, xs:decimal($elementHeight div 2)), 0))"/>
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
         <xsl:variable name="svgWidth" select="(if ($contentSVGs/@width) then (max($contentSVGs/@width)) else (0)) + $elementWidth"/>
@@ -754,33 +737,6 @@
         </xsl:variable>
         <xsl:copy-of select="$wrap"/>
     </xsl:template>
-
-    <!--    <xsl:template match="xs:complexType">
-        <xsl:param name="position" select="(0,0)" tunnel="yes"/>
-        
-    </xsl:template>
-    
-    <xsl:template match="xs:sequence">
-        <xsl:param name="position" select="(0,0)" tunnel="yes"/>
-        <xsl:variable name="width" select="25"/>
-        <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})">
-            <circle r="10" cx="12" cy="12" fill="#ff0000"/>
-        </g>
-        <xsl:apply-templates>
-            <xsl:with-param name="position" select="($position[1] + $width + 50, $position[2])" tunnel="yes"/>
-        </xsl:apply-templates>
-    </xsl:template>
-    
-    <xsl:template match="xs:choice">
-        <xsl:param name="position" select="(0,0)" tunnel="yes"/>
-        <xsl:variable name="width" select="25"/>
-        <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})">
-            <circle r="10" cx="12.5" cy="12.5" fill="#00ff00"/>
-        </g>
-        <xsl:apply-templates>
-            <xsl:with-param name="position" select="($position[1] + $width + 50, $position[2])" tunnel="yes"/>
-        </xsl:apply-templates>
-    </xsl:template>-->
 
     <xsl:template match="node()" priority="-10" mode="#all">
         <xsl:apply-templates mode="#current"/>

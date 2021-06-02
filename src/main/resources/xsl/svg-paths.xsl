@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sqf="http://www.schematron-quickfix.com/validator/process" xmlns:java="java:java.lang.Math" exclude-result-prefixes="xs" version="2.0">
-    <xsl:import href="../../functions.xsl"/>
     <xsl:function name="sqf:createRoundBox">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
@@ -124,7 +123,6 @@
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <svg width="20" height="20" sqf:cY="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
-                <!--                <xsl:attribute name="width" select="23.5"/>-->
                 <xsl:attribute name="height" select="23.5"/>
             </xsl:if>
             <g>
@@ -174,7 +172,6 @@
         <svg width="20" height="20" sqf:cYTop="0" sqf:cXTop="10" sqf:cYRight="10" sqf:cXRight="20" sqf:cYBottom="20" sqf:cXBottom="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="sqf:cY" select="10"/>
-                <!--                <xsl:attribute name="width" select="22.5"/>-->
                 <xsl:attribute name="height" select="23.5"/>
             </xsl:if>
             <g>
@@ -301,12 +298,6 @@
             <svg width="{$svgWidth}" height="{$contentHeight}" sqf:cY="{$cY}" class="objectPaths" sqf:multiValue="{$contentMultiValue}">
                 <xsl:variable name="contentReq" select="not(matches($contentMultiValue, 'zero'))" as="xs:boolean"/>
                 <xsl:variable name="contentMore" select="matches($contentMultiValue, 'More')" as="xs:boolean"/>
-                <!--<xsl:variable name="contentReq" select="exists($content[if (@sqf:multiValue) 
-                                                                      then (not(matches(@sqf:multiValue, 'zero'))) 
-                                                                      else (true())])" as="xs:boolean"/>
-                <xsl:variable name="contentOne" select="exists($content[if (@sqf:multiValue) 
-                                                                      then (not(matches(@sqf:multiValue, 'More'))) 
-                                                                      else (true())])" as="xs:boolean"/>-->
                 <xsl:variable name="gap" select=" if ($contentMore) then (1.5) else (0)" as="xs:double"/>
                 <xsl:variable name="dash" select=" if ($x1ForOne - $x0 gt 20) then (5) else (3)"/>
                 <path stroke="{$strokeColor}" stroke-width="1" fill="none">
@@ -407,13 +398,6 @@
                                     </xsl:if>
                                 </path>
                             </xsl:if>
-                            <!--<path stroke="{if (@sqf:stroke) then (@sqf:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
-                                <xsl:attribute name="d" select="'M', $x1, $yCurve, 
-                                                                "/>
-                                <xsl:if test="matches(@sqf:multiValue, 'zero')">
-                                    <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
-                                </xsl:if>
-                            </path>-->
                         </xsl:when>
                         <xsl:otherwise/>
                     </xsl:choose>
@@ -600,5 +584,24 @@
 
 
     </xsl:template>
+    
+    <xsl:function name="sqf:renderedTextLength" xmlns:font="java:java.awt.Font" xmlns:frc="java:java.awt.font.FontRenderContext" xmlns:at="java:java.awt.geom.AffineTransform" xmlns:r2d="java:java.awt.geom.Rectangle2D">
+        <xsl:param name="text" as="xs:string"/>
+        <xsl:param name="font" as="xs:string"/>
+        <xsl:param name="style" as="xs:string"/>
+        <xsl:param name="font-size" as="xs:double"/>
+        
+        <!--        
+        AffineTransform affinetransform = new AffineTransform();     
+        FontRenderContext frc = new FontRenderContext(affinetransform,true,true);     
+        Font font = new Font("Tahoma", Font.PLAIN, 12);
+        int textwidth = (int)(font.getStringBounds(text, frc).getWidth());
+        -->
+        <xsl:variable name="affinetransform" select="at:new()"/>
+        <xsl:variable name="frc" select="frc:new($affinetransform, true(), true())"/>
+        <xsl:variable name="jfont" select="font:new($font, 0, xs:integer($font-size))"/>
+        <xsl:variable name="r2d" select="font:getStringBounds($jfont, $text, $frc)"/>
+        <xsl:sequence select="r2d:getWidth($r2d)"/>
+    </xsl:function>
 
 </xsl:stylesheet>
