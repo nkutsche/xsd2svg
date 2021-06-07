@@ -5,6 +5,7 @@
 
 
     <xsl:mode name="es:xsd2svg-parent"/>
+    <xsl:mode name="es:xsd2svg-content"/>
 
     <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
@@ -18,7 +19,7 @@
         <xsl:variable name="cY" select="12.5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:* | @type" mode="#current">
+            <xsl:apply-templates select="xs:* | @type" mode="es:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$cY"/>
             </xsl:apply-templates>
@@ -93,7 +94,7 @@
         <xsl:variable name="cY" select="12.5"/>
 
         <xsl:variable name="content">
-            <xsl:next-match/>
+            <xsl:apply-templates select="." mode="es:xsd2svg-content"/>
         </xsl:variable>
 
         <!--<xsl:variable name="content">
@@ -167,7 +168,78 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="es:xsd2svg">
+    <xsl:template match="xs:simpleType[@name]" mode="es:xsd2svg">
+        <xsl:param name="typeName" select="es:getName(.)" as="xs:QName"/>
+        <xsl:param name="model-id" tunnel="yes"/>
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        
+        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
+        <xsl:variable name="cY" select="12.5"/>
+        
+        <xsl:variable name="content">
+            <xsl:apply-templates select="xs:*" mode="es:xsd2svg-content">
+                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
+                <xsl:with-param name="cY" select="$cY"/>
+                <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
+            </xsl:apply-templates>
+        </xsl:variable>
+        <xsl:variable name="parents">
+            <xsl:call-template name="makeParentSVGs"/>
+        </xsl:variable>
+        <xsl:variable name="parents" select="$parents/svg:svg"/>
+        <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
+        
+        <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
+        <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
+        <xsl:variable name="elementHeight" select="30"/>
+        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
+        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
+        
+        <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
+        
+        <xsl:variable name="parentPosY" select="es:number($maxCY - $parents/@es:cY)"/>
+        <xsl:variable name="elementPosY" select="es:number($maxCY - ($elementHeight div 2))"/>
+        <xsl:variable name="contentPosY" select="es:number($maxCY - $contentSVGs/@es:cY)"/>
+        
+        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - ($elementHeight div 2), 0))"/>
+        <xsl:variable name="position" select="(0, $posY)"/>
+        
+        <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - $elementHeight, 0))}">
+            <desc/>
+            <xsl:variable name="fontSize" select="11"/>
+            <xsl:variable name="paddingLR" select="5"/>
+            <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
+            <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
+            <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+            <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
+            
+            <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
+                <g>
+                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="#070" stoke-width="1" fill="#8f8"/>
+                </g>
+                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                    <xsl:value-of select="$label"/>
+                </text>
+            </g>
+            <xsl:for-each select="$contentSVGs">
+                <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height) + $contentPosY"/>
+                <g transform="translate({$width + $parentWidth}, {$precHeight})">
+                    <xsl:copy-of select="."/>
+                </g>
+            </xsl:for-each>
+            <g transform="translate({$width + $parentWidth}, {$elementPosY})">
+                <xsl:copy-of select="$doku"/>
+            </g>
+            
+            <g transform="translate(0,{$parentPosY})">
+                <xsl:copy-of select="$parents"/>
+            </g>
+            
+        </svg>
+    </xsl:template>
+
+    <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="es:xsd2svg-content">
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="multiValue" select="es:getMultiValue(.)" as="xs:string"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
@@ -246,7 +318,7 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:element/@type | xs:attribute/@type" mode="es:xsd2svg">
+    <xsl:template match="xs:element/@type | xs:attribute/@type" mode="es:xsd2svg-content">
         <xsl:param name="elementName" select="es:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
@@ -312,7 +384,7 @@
 
     </xsl:template>
 
-    <xsl:template match="xs:element[@ref]" name="elementRef" mode="es:xsd2svg">
+    <xsl:template match="xs:element[@ref]" name="elementRef" mode="es:xsd2svg-content">
         <xsl:param name="elementName" select="es:getName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
@@ -328,7 +400,7 @@
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="doku">
-            <xsl:apply-templates select="$refElement/xs:annotation" mode="es:xsd2svg">
+            <xsl:apply-templates select="$refElement/xs:annotation" mode="#current">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$cY"/>
             </xsl:apply-templates>
@@ -349,7 +421,7 @@
             </xsl:if>
             <xsl:attribute name="es:minOccurs" select="1"/>
             <xsl:attribute name="es:maxOccurs" select="1"/>
-            <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="es:xsd2svg"/>
+            <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
             <desc/>
             <g alignment-baseline="baseline" class="svg-element-ref" transform="translate(0, 2.5)">
                 <g id="{$hoverId}">
@@ -408,21 +480,21 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:complexType" mode="es:xsd2svg">
+    <xsl:template match="xs:complexType" mode="es:xsd2svg-content">
         <xsl:variable name="content">
             <xsl:call-template name="createAttributeBox"/>
-            <xsl:apply-templates select="xs:* except (xs:attribute | xs:attributeGroup)" mode="es:xsd2svg"/>
+            <xsl:apply-templates select="xs:* except (xs:attribute | xs:attributeGroup)" mode="#current"/>
         </xsl:variable>
         <xsl:call-template name="drawObjectPaths">
             <xsl:with-param name="content" select="$content/svg:svg"/>
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="xs:sequence" mode="es:xsd2svg">
+    <xsl:template match="xs:sequence" mode="es:xsd2svg-content">
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:*" mode="es:xsd2svg"/>
+            <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
         <xsl:variable name="contentNet">
             <xsl:call-template name="drawObjectPaths">
@@ -455,7 +527,7 @@
         <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" es:cY="{max(($contentSVGs/@es:cY, es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2))))}" es:multiValue="{$multiValue}">
             <xsl:attribute name="es:minOccurs" select="1"/>
             <xsl:attribute name="es:maxOccurs" select="1"/>
-            <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="es:xsd2svg"/>
+            <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
 
             <g transform="translate(0,{$posY})">
                 <xsl:copy-of select="$elementSVG"/>
@@ -466,7 +538,7 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:choice" mode="es:xsd2svg" priority="10">
+    <xsl:template match="xs:choice" mode="es:xsd2svg-content" priority="10">
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
@@ -598,86 +670,13 @@
 
     </xsl:template>
 
-    <xsl:template match="xs:element/xs:simpleType" mode="es:xsd2svg">
+    <xsl:template match="xs:element/xs:simpleType" mode="es:xsd2svg-content">
         <xsl:apply-templates select="xs:*" mode="#current">
             <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:template>
 
-    <xsl:template match="xs:simpleType[@name]" mode="es:xsd2svg">
-        <xsl:param name="typeName" select="es:getName(.)" as="xs:QName"/>
-        <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
-
-        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
-        <xsl:variable name="cY" select="12.5"/>
-
-        <xsl:variable name="content">
-            <xsl:apply-templates select="xs:*" mode="#current">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="cY" select="$cY"/>
-                <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="parents">
-            <xsl:call-template name="makeParentSVGs">
-                <xsl:with-param name="this" select="."/>
-            </xsl:call-template>
-        </xsl:variable>
-        <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
-
-        <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
-        <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
-        <xsl:variable name="elementHeight" select="30"/>
-        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
-        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
-
-        <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
-
-        <xsl:variable name="parentPosY" select="es:number($maxCY - $parents/@es:cY)"/>
-        <xsl:variable name="elementPosY" select="es:number($maxCY - ($elementHeight div 2))"/>
-        <xsl:variable name="contentPosY" select="es:number($maxCY - $contentSVGs/@es:cY)"/>
-
-        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - ($elementHeight div 2), 0))"/>
-        <xsl:variable name="position" select="(0, $posY)"/>
-
-        <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - $elementHeight, 0))}">
-            <desc/>
-            <xsl:variable name="fontSize" select="11"/>
-            <xsl:variable name="paddingLR" select="5"/>
-            <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
-            <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
-            <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
-            <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
-
-            <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
-                <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="#070" stoke-width="1" fill="#8f8"/>
-                </g>
-                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                    <xsl:value-of select="$label"/>
-                </text>
-            </g>
-            <xsl:for-each select="$contentSVGs">
-                <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height) + $contentPosY"/>
-                <g transform="translate({$width + $parentWidth}, {$precHeight})">
-                    <xsl:copy-of select="."/>
-                </g>
-            </xsl:for-each>
-            <g transform="translate({$width + $parentWidth}, {$elementPosY})">
-                <xsl:copy-of select="$doku"/>
-            </g>
-
-            <g transform="translate(0,{$parentPosY})">
-                <xsl:copy-of select="$parents"/>
-            </g>
-
-        </svg>
-    </xsl:template>
-
-    <xsl:template match="xs:restriction" mode="es:xsd2svg">
+    <xsl:template match="xs:restriction" mode="es:xsd2svg-content">
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
         <xsl:param name="st-table-title" as="xs:string?" tunnel="yes"/>
 
@@ -855,7 +854,7 @@
 
 
 
-    <xsl:template match="xs:annotation[xs:documentation]" mode="es:xsd2svg">
+    <xsl:template match="xs:annotation[xs:documentation]" mode="es:xsd2svg-content">
         <xsl:param name="hover_id" tunnel="yes" select="''"/>
         <xsl:param name="invisible_ids" tunnel="yes" select="()"/>
         <xsl:param name="color" select="'#007'"/>
@@ -900,7 +899,7 @@
         </es:docu>
     </xsl:template>
 
-    <xsl:template match="xs:documentation" mode="es:xsd2svg">
+    <xsl:template match="xs:documentation" mode="es:xsd2svg-content">
         <xsl:param name="text-width" select="300"/>
         <xsl:variable name="fontSize" select="11"/>
 
@@ -933,11 +932,11 @@
         <xsl:copy-of select="$wrap"/>
     </xsl:template>
 
-    <xsl:template match="@maxOccurs | @minOccurs" mode="es:xsd2svg"/>
+    <xsl:template match="@maxOccurs | @minOccurs" mode="es:xsd2svg-content"/>
 
 
 
-    <xsl:template match="@*" mode="es:xsd2svg">
+    <xsl:template match="@*" mode="es:xsd2svg-content">
         <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The attribute ' || name() || ' is not supported.')"/>
     </xsl:template>
 
@@ -958,7 +957,7 @@
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
 
         <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg">
+            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="12.5"/>
             </xsl:apply-templates>
@@ -1011,7 +1010,7 @@
         <xsl:variable name="height" select="$header/@height"/>
 
         <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg">
+            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$height div 2"/>
                 <xsl:with-param name="color" select="$color"/>
@@ -1045,7 +1044,7 @@
 
     <xsl:template name="createAttributeBox">
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="es:xsd2svg"/>
+            <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="es:xsd2svg-content"/>
         </xsl:variable>
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="content">
