@@ -9,7 +9,11 @@
 
     <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
-
+    
+<!--    
+    Model main elements
+    -->
+    
     <xsl:template match="xs:schema/xs:element[@name]" mode="es:xsd2svg" priority="10">
         <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
@@ -28,9 +32,7 @@
 
 
         <xsl:variable name="parents">
-            <xsl:call-template name="makeParentSVGs">
-                <xsl:with-param name="this" select="."/>
-            </xsl:call-template>
+            <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
         <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
@@ -97,24 +99,8 @@
             <xsl:apply-templates select="." mode="es:xsd2svg-content"/>
         </xsl:variable>
 
-        <!--<xsl:variable name="content">
-            <xsl:choose>
-                <xsl:when test="$content-line">
-                    <xsl:call-template name="drawObjectPaths">
-                        <xsl:with-param name="content" select="$content/svg:svg"/>
-                    </xsl:call-template>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:sequence select="$content"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>-->
-
-
         <xsl:variable name="parents">
-            <xsl:call-template name="makeParentSVGs">
-                <xsl:with-param name="this" select="."/>
-            </xsl:call-template>
+            <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
         <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
@@ -239,6 +225,10 @@
         </svg>
     </xsl:template>
 
+
+<!--
+    Model contents
+    -->
     <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="es:xsd2svg-content">
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="multiValue" select="es:getMultiValue(.)" as="xs:string"/>
@@ -948,6 +938,10 @@
         <xsl:sequence select="error(xs:QName('es:not-supported-parent'), 'The element ' || name() || ' is not be as an parent XSD node.')"/>
     </xsl:template>
 
+<!--
+    Parents
+    -->
+
     <xsl:template match="xs:element[@name]" mode="es:xsd2svg-parent">
         <xsl:param name="childId"/>
         <xsl:param name="model-id" tunnel="yes"/>
@@ -1001,7 +995,7 @@
 
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
-                <xsl:with-param name="title" select="$groupName"/>
+                <xsl:with-param name="title" select="es:printQName($groupName, $schema-context)"/>
                 <xsl:with-param name="color" select="$color"/>
             </xsl:call-template>
         </xsl:variable>

@@ -359,7 +359,7 @@
     </xsl:template>
 
     <xsl:template name="groupTitle">
-        <xsl:param name="title"/>
+        <xsl:param name="title" as="xs:string"/>
         <xsl:param name="color" select="'#007'"/>
         <xsl:param name="font-color" select="'black'"/>
         <xsl:variable name="fontSize" select="11"/>
