@@ -12,8 +12,8 @@
 <!--    
     Model main elements
     -->
-    
-    <xsl:template match="xs:schema/xs:element[@name]" mode="es:xsd2svg" priority="10">
+
+    <xsl:template match="xs:schema/xs:element[@name] | xs:schema/xs:attribute[@name]" mode="es:xsd2svg" priority="10">
         <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
