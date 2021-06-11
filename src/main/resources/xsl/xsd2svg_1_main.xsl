@@ -1359,31 +1359,78 @@
     </xsl:template>
 
     <xsl:template name="createAttributeBox">
-        <xsl:variable name="content">
-            <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="es:xsd2svg-content"/>
+
+        <xsl:call-template name="createContentBox">
+            <xsl:with-param name="colors" select="$colorScheme('attribute')"/>
+            <xsl:with-param name="content">
+                <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="es:xsd2svg-content"/>
+            </xsl:with-param>
+        </xsl:call-template>
+    </xsl:template>
+
+    <xsl:template name="createContentBox">
+        <xsl:param name="content" required="yes"/>
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="title" select="()" as="xs:string?"/>
+        <xsl:param name="titleSymbol" as="node()?"/>
+
+        <xsl:variable name="strokeColor" select="$colors?main"/>
+        <xsl:variable name="titleBgColor" select="$colors?secondary"/>
+        <xsl:variable name="titleColor" select="$colors?text"/>
+
+
+        <xsl:variable name="titleSvg">
+            <xsl:if test="$title">
+                <xsl:call-template name="boxTitle">
+                    <xsl:with-param name="title" select="$title"/>
+                    <xsl:with-param name="font-color" select="$titleColor"/>
+                    <xsl:with-param name="symbol" select="$titleSymbol"/>
+                </xsl:call-template>
+            </xsl:if>
         </xsl:variable>
+
+        <xsl:variable name="titleHeight" select="
+                ($titleSvg/svg:svg/(@height), 0) => max()"/>
+
+        <xsl:variable name="titleWidth" select="($titleSvg/svg:svg/(@width + 10), 0) => max()"/>
+
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" select="$content/svg:svg"/>
-                <xsl:with-param name="strokeColor" select="'#F5844C'"/>
+                <xsl:with-param name="strokeColor" select="$strokeColor"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="content" select="$content/svg:svg"/>
-        <xsl:variable name="contentHeight" select="sum($content/@height)"/>
-        <xsl:variable name="contentWidth" select="max($content/@width)"/>
+        <xsl:variable name="contentHeight" select="sum($content/@height) + $titleHeight"/>
+        <xsl:variable name="contentWidth" select="max(($content/@width, $titleWidth))"/>
+
 
         <xsl:variable name="svgWidth" select="$contentWidth + 2.5"/>
         <xsl:if test="$content">
-            <svg width="{$svgWidth}" height="{$contentHeight + 10}" class="attribute_box" es:cY="{$content/@es:cY + 5}" es:multiValue="{es:multiValuesMerge($contentSVGs)}" es:stroke="#F5844C">
+            <svg width="{$svgWidth}" height="{$contentHeight + 10}" class="attribute_box" es:cY="{$content/@es:cY + 5 + $titleHeight}" es:multiValue="{es:multiValuesMerge($contentSVGs)}" es:stroke="{$strokeColor}">
                 <g transform="translate(0, 2.5)">
-                    <rect height="{$contentHeight + 5}" width="{$svgWidth}" rx="10" ry="10" stroke="#F5844C" stoke-width="1" fill="white"/>
-                    <g transform="translate(0, 2.5)">
+
+                    <xsl:if test="$title">
+                        <g>
+                            <rect height="{$titleHeight}" width="{$svgWidth}" rx="10" ry="10" fill="{$titleBgColor}"/>
+                            <rect y="{$titleHeight div 2}" height="{$titleHeight div 2}" width="{$svgWidth}" fill="{$titleBgColor}"/>
+                            <xsl:sequence select="$titleSvg"/>
+                            <path d="M 2.5 {$titleHeight} L {$svgWidth - 4.5} {$titleHeight}" fill="none" stroke="{$strokeColor}" stroke-width="0.25"/>
+                            <!--<text y="{$titleHeight - 5}" x="5" font-family="Arial" font-size="9" fill="{$titleColor}">
+                            <xsl:value-of select="$title"/>
+                        </text>-->
+                        </g>
+                    </xsl:if>
+
+                    <rect height="{$contentHeight + 5}" width="{$svgWidth}" rx="10" ry="10" stroke="{$strokeColor}" stoke-width="1" fill="none"/>
+                    <g transform="translate(0, {2.5 + $titleHeight})">
                         <xsl:copy-of select="$content"/>
                     </g>
                 </g>
             </svg>
         </xsl:if>
+
     </xsl:template>
 
     <xsl:template name="makeParentSVGs">
