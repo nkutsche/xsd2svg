@@ -469,58 +469,41 @@
     </xsl:template>
 
     <xsl:template match="xs:element/@type | xs:attribute/@type" mode="es:xsd2svg-content">
-        <xsl:param name="elementName" select="es:getQName(.)"/>
+        <xsl:param name="typeName" select="es:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
 
-        <xsl:variable name="namespace" select="namespace-uri-from-QName($elementName)"/>
+        <xsl:variable name="namespace" select="namespace-uri-from-QName($typeName)"/>
+
+        <xsl:variable name="reference" select="es:getReference(., $schema-context)"/>
+
+        <xsl:variable name="isXsd" select="$namespace = $XSDNS"/>
+
+        <xsl:variable name="kindOfType" select="
+                if ($isXsd) then
+                    'simpleType'
+                else
+                    local-name($reference)"/>
+
+        <xsl:variable name="colors" select="$colorScheme($kindOfType)"/>
+
 
         <xsl:variable name="content">
 
             <xsl:choose>
-                <xsl:when test="$namespace = $XSDNS">
+                <xsl:when test="$isXsd">
 
-                    <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
-                    <xsl:variable name="cY" select="15"/>
-
-
-                    <xsl:variable name="fontSize" select="11"/>
-                    <xsl:variable name="paddingLR" select="5"/>
-                    <xsl:variable name="label" select="es:printQName($elementName, $schema-context)"/>
-                    <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
-                    <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
-
-                    <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:displayW="{$width}" es:displayH="0" es:multiValue="one">
-                        <xsl:attribute name="es:minOccurs" select="1"/>
-                        <xsl:attribute name="es:maxOccurs" select="1"/>
-                        <desc/>
-                        <g alignment-baseline="baseline" class="svg-element-ref" transform="translate(0, 2.5)">
-                            <g id="{$hoverId}">
-                                <!--                    
-                                    TODO
-                                    <xsl:variable name="isDoku" select="root($refElement) = $dokuSchema" as="xs:boolean"/>
-                                -->
-                                <xsl:variable name="rect">
-                                    <rect height="25" width="{$width}" rx="10" ry="10" stroke="#8d99ae" stoke-width="1" fill="white"/>
-                                </xsl:variable>
-                                <xsl:copy-of select="$rect"/>
-
-                                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                                    <xsl:value-of select="$label"/>
-                                </text>
-
-
-                            </g>
-                        </g>
-                    </svg>
+                    <xsl:call-template name="xsdSimpleTypeRef">
+                        <xsl:with-param name="typeName" select="$typeName"/>
+                    </xsl:call-template>
 
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:call-template name="elementRef">
-                        <xsl:with-param name="elementName" select="$elementName"/>
+                        <xsl:with-param name="elementName" select="$typeName"/>
                         <xsl:with-param name="multiValue" select="'one'"/>
-                        <xsl:with-param name="mode" select="('simpleType', 'complexType')"/>
-                        <xsl:with-param name="stroke" select="'#8d99ae'"/>
+                        <xsl:with-param name="refAttribute" select="."/>
+                        <xsl:with-param name="colors" select="$colors"/>
                     </xsl:call-template>
                 </xsl:otherwise>
             </xsl:choose>
@@ -529,7 +512,7 @@
 
         <xsl:call-template name="drawObjectPaths">
             <xsl:with-param name="content" select="$content/svg:svg"/>
-            <xsl:with-param name="strokeColor" select="'#8d99ae'"/>
+            <xsl:with-param name="strokeColor" select="$colors?main"/>
         </xsl:call-template>
 
     </xsl:template>
