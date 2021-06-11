@@ -970,6 +970,50 @@
         </xsl:apply-templates>
     </xsl:template>
 
+    <xsl:template match="xs:union" mode="es:xsd2svg-content" priority="10">
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+
+        <xsl:variable name="union" select="."/>
+        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+
+        <xsl:variable name="content">
+            <xsl:call-template name="choice">
+                <xsl:with-param name="colors" select="$colors"/>
+                <xsl:with-param name="content">
+                    <xsl:for-each select="@memberTypes/tokenize(., '\s')">
+                        <xsl:variable name="qname" select="es:getQName(., $union)"/>
+                        <xsl:variable name="ns" select="namespace-uri-from-QName($qname)"/>
+                        <xsl:for-each select="$union">
+                            <xsl:choose>
+                                <xsl:when test="$ns = $XSDNS">
+                                    <xsl:call-template name="xsdSimpleTypeRef">
+                                        <xsl:with-param name="typeName" select="$qname"/>
+                                    </xsl:call-template>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:call-template name="elementRef">
+                                        <xsl:with-param name="elementName" select="$qname"/>
+                                        <xsl:with-param name="refTarget" select="es:getReferenceByQName($qname, $schema-context, 'simpleType')"/>
+                                        <xsl:with-param name="multiValue" select="'one'"/>
+                                        <!--                                        <xsl:with-param name="colors" select="$colors"/>-->
+                                    </xsl:call-template>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:for-each>
+                    </xsl:for-each>
+                </xsl:with-param>
+                <xsl:with-param name="overwriteSymbol">
+                    <xsl:call-template name="st_unionSymbol">
+                        <xsl:with-param name="colors" select="$colors"/>
+                    </xsl:call-template>
+                </xsl:with-param>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:call-template name="drawObjectPaths">
+            <xsl:with-param name="content" select="$content/svg:svg"/>
+            <xsl:with-param name="strokeColor" select="$colors?main"/>
+        </xsl:call-template>
+    </xsl:template>
     <xsl:template match="xs:restriction" mode="es:xsd2svg-content">
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
         <xsl:param name="st-table-title" as="xs:string?" tunnel="yes"/>
