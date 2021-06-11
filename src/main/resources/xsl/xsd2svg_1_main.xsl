@@ -260,14 +260,12 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="es:xsd2svg">
+    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" name="namedGroup" mode="es:xsd2svg">
         <xsl:param name="id" select="generate-id()"/>
         <xsl:param name="multiValue" select="$MultiValues[2]"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
-        
-        <xsl:variable name="isRoot" select="$id = generate-id()" as="xs:boolean"/>
-        
+        <xsl:param name="isRoot" select="true()" as="xs:boolean"/>
 
         <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
 
@@ -293,15 +291,17 @@
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="content" select="$content/svg:svg"/>
-        
+
         <xsl:variable name="parents">
-            <xsl:call-template name="makeParentSVGs"/>
+            <xsl:if test="$isRoot">
+                <xsl:call-template name="makeParentSVGs"/>
+            </xsl:if>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
         <xsl:variable name="parentsWidth" select="es:number($parents/@width)"/>
         <xsl:variable name="parentsHeight" select="es:number($parents/@height)"/>
         <xsl:variable name="parentsCY" select="es:number($parents/@es:cY)"/>
-        
+
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
                 <xsl:with-param name="title" select="es:printQName($groupName, $schema-context)"/>
@@ -310,26 +310,26 @@
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="header" select="$header/svg:svg"/>
-        
+
         <xsl:variable name="cY" select="$content/@es:cY + $header/@height + 7.5"/>
-        
-        
+
+
         <xsl:variable name="maxCY" select="max(($cY, $parents/@es:cY))"/>
-        
+
         <xsl:variable name="parentPosY" select="es:number($maxCY - $parentsCY)"/>
         <xsl:variable name="groupPosY" select="es:number($maxCY - $cY)"/>
         <xsl:variable name="groupHeight" select="sum(($content/@height, $header/@height))"/>
-        
+
         <xsl:variable name="width" select="max(($content/@width, $header/@width))"/>
         <xsl:variable name="height" select="max(($groupHeight, $parentsHeight))"/>
-        
-        
+
+
         <svg width="{$width + 7.5 + $parentsWidth}" height="{$height + 15}" es:cY="{$cY}" es:displayW="{es:number($dokuSVG/@width)}" es:displayH="{es:number($dokuSVG/@height)}" class="element_group" es:multiValue="{$multiValue}">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="$height + 18.5"/>
             </xsl:if>
             <g transform="translate({$parentsWidth}, {$groupPosY + 5})" id="{$hoverId}">
-                
+
                 <xsl:variable name="rect">
                     <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" stroke="{$color}" stroke-width="1">
                         <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
@@ -356,15 +356,18 @@
                     <xsl:copy-of select="$header"/>
                     <path d="M 2.5 {$header/@height} L {$width} {$header/@height}" fill="none" stroke="{$color}" stroke-width="0.25"/>
                 </xsl:variable>
-                    
-                <path fill="{$color}" opacity="0.1">
-                    <xsl:attribute name="d" select="'M', 0, $header/@height,
-                        'L', 0, 7, 
-                        'Q', 0, 0, 7, 0,
-                        'L', $width - 4.5, 0,
-                        'Q', $width + 2.5, 0, $width + 2.5, 7,
-                        'L', $width + 2.5, $header/@height, 'Z'"/>
-                </path>
+
+                <xsl:if test="$isRoot">
+                    <path fill="{$color}" opacity="0.1">
+                        <xsl:attribute name="d" select="
+                                'M', 0, $header/@height,
+                                'L', 0, 7,
+                                'Q', 0, 0, 7, 0,
+                                'L', $width - 4.5, 0,
+                                'Q', $width + 2.5, 0, $width + 2.5, 7,
+                                'L', $width + 2.5, $header/@height, 'Z'"/>
+                    </path>
+                </xsl:if>
                 <xsl:copy-of select="$headerWithBorder"/>
                 
                 <g transform="translate({$width + 1}, 0)" es:z-index="0">
