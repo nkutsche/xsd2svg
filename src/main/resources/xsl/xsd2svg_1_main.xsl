@@ -818,7 +818,7 @@
                 map {
                     'font': 'Arial',
                     'style': 'plain',
-                    'font-size': 10
+                    'size': 10
                 }
                 "/>
 

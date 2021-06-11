@@ -57,10 +57,10 @@
     <xsl:key name="elementByAttributename" match="xs:element[@name] | xs:attributeGroup[@name] | xs:complexType[@name]" use="
             ((.//xs:attribute[@ref] | .//xs:attributeGroup) except .//xs:element[@name]//*) ! es:getName(.)
             "/>
-    
+
     <xsl:key name="parentByType" match="xs:element[@type] | xs:attribute[@type]" use="
-        es:getQName(@type)
-        "/>
+            es:getQName(@type)
+            "/>
 
     <xsl:key name="globalAttributesByName" match="xs:schema/xs:attribute" use="es:getName(@name)"/>
 
@@ -78,8 +78,12 @@
                 else
                     $schema-context($namespace)"/>
         <xsl:variable name="prefix" select="($schemas//namespace::*[. = $namespace]/name())[1]" as="xs:string?"/>
-        
-        <xsl:variable name="prefix" select=" if ($prefix) then ($prefix || ':') else ('')"/>
+
+        <xsl:variable name="prefix" select="
+                if ($prefix) then
+                    ($prefix || ':')
+                else
+                    ('')"/>
 
         <xsl:sequence select="$prefix || $local-name"/>
 
@@ -1085,9 +1089,9 @@
     <xsl:function name="es:renderedTextLength" xmlns:font="java:java.awt.Font" xmlns:frc="java:java.awt.font.FontRenderContext" xmlns:at="java:java.awt.geom.AffineTransform" xmlns:r2d="java:java.awt.geom.Rectangle2D">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="fontStyle" as="map(*)"/>
-        <xsl:sequence select="es:renderedTextLength($text, $fontStyle?font, $fontStyle?style, $fontStyle?font-size)"/>
+        <xsl:sequence select="es:renderedTextLength($text, $fontStyle?font, $fontStyle?style, $fontStyle?size)"/>
     </xsl:function>
-    
+
     <xsl:function name="es:renderedTextLength" xmlns:font="java:java.awt.Font" xmlns:frc="java:java.awt.font.FontRenderContext" xmlns:at="java:java.awt.geom.AffineTransform" xmlns:r2d="java:java.awt.geom.Rectangle2D">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="font" as="xs:string"/>
@@ -1162,6 +1166,7 @@
                     'element': 'parentByElementRef',
                     'group': 'parentByGroupRef',
                     'attribute': 'elementByAttributename',
+                    'attributeGroup': 'elementByAttributename',
                     'simpleType': 'parentByType',
                     'complexType': 'parentByType'
                 }
