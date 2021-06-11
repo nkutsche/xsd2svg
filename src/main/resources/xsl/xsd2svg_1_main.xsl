@@ -1024,6 +1024,42 @@
         </xsl:call-template>
     </xsl:template>
 
+    <xsl:template match="xs:any" mode="es:xsd2svg-content">
+        <xsl:param name="model-id" tunnel="yes"/>
+
+        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+
+        <xsl:variable name="ns" select="(@namespace, '##any')[1]"/>
+        <xsl:variable name="tns" select="root(.)/xs:schema/@targetNamespace"/>
+        <xsl:variable name="labels" select="
+                map {
+                    '##any': 'Any of *',
+                    '##local': 'Any of Q{}*',
+                    '##targetNamespace': 'Any of Q{' || $tns || '}*',
+                    '##other': 'Any other than Q{' || $tns || '}*'
+                }
+                "/>
+        <xsl:variable name="label" select="
+                if (starts-with($ns, '##')) then
+                    ($labels($ns))
+                else
+                    ('Any of Q{' || @namespace || '}*')"/>
+
+        <xsl:call-template name="elementRef">
+            <xsl:with-param name="elementName" select="QName($XSDNS, 'any')"/>
+            <xsl:with-param name="label" select="$label"/>
+            <xsl:with-param name="model-id" select="$model-id" tunnel="yes"/>
+            <xsl:with-param name="refAttribute" select="@namespace"/>
+            <xsl:with-param name="colors" select="$colors"/>
+            <xsl:with-param name="text-style" as="map(*)" select="
+                    map {
+                        'font': 'Arial',
+                        'style': 'italic',
+                        'size': 11
+                    }"/>
+        </xsl:call-template>
+    </xsl:template>
+
     <xsl:function name="es:create-table">
         <xsl:param name="cells" as="array(array(xs:string?))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
