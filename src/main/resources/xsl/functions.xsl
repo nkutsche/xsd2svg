@@ -500,6 +500,97 @@
             </g>
         </svg>
     </xsl:template>
+    <xsl:template name="st_unionSymbol">
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <g>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <g>
+                    <svg width="20" height="20" class="core">
+                        <g transform="rotate(45, 10, 10)">
+                            <circle r="6" stroke="{$color}" stroke-width="1" cx="10" cy="10" fill="white"/>
+                            <circle r="2" fill="{$color}" cx="10" cy="4"/>
+                            <circle r="2" fill="{$color}" cx="15.2" cy="13"/>
+                            <circle r="2" fill="{$color}" cx="4.8" cy="13"/>
+                        </g>
+                    </svg>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
+    <xsl:template name="st_listSymbol">
+        <xsl:param name="colors" select="$colorScheme('simpleType')"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <g>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <g transform="translate(4, 4)">
+                    <svg width="13" height="13" class="core">
+                        <g>
+                            <rect width="2" height="2" x="1" y="2" fill="{$color}"/>
+                            <rect width="2" height="2" x="1" y="5" fill="{$color}"/>
+                            <rect width="2" height="2" x="1" y="8" fill="{$color}"/>
+                            <rect width="6" height="2" x="4" y="2" fill="{$color}"/>
+                            <rect width="6" height="2" x="4" y="5" fill="{$color}"/>
+                            <rect width="6" height="2" x="4" y="8" fill="{$color}"/>
+                        </g>
+                    </svg>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
+    <xsl:template name="extensionSymbol">
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="connectCount" select="3"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <g>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <g transform="translate(4.5, 2.5)">
+                    <svg width="13" height="13" class="core">
+                        <g>
+                            <rect width="4" height="4" x="1" y="3" fill="{$color}"/>
+                            <rect width="4" height="4" x="1" y="8" fill="{$color}"/>
+                            <rect width="4" height="4" x="6" y="8" fill="{$color}"/>
+                            <rect width="4" height="4" x="7" y="2" fill="{$color}" transform="rotate(45, 9, 4)"/>
+                        </g>
+                    </svg>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
+    <xsl:template name="restrictionSymbol">
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="connectCount" select="3"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <g>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <g transform="translate(4,4)">
+                    <svg class="core" width="12" height="12">
+                        <g>
+                            <rect width="10" height="2" x="1" y="1.5" fill="{$color}"/>
+                            <path d="M1 4 L 11 4 L 8 8 L 4 8z" fill="{$color}"/>
+                            <rect width="4" height="2" x="4" y="8.5" fill="{$color}"/>
+                        </g>
+                    </svg>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
 
     <xsl:template name="groupTitle">
         <xsl:param name="title" as="xs:string"/>
