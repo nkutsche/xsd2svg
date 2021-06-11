@@ -1452,6 +1452,48 @@
         <xsl:copy-of select="$parentConnect"/>
     </xsl:template>
 
+    <xsl:template name="xsdSimpleTypeRef">
+        <xsl:param name="typeName" select="es:getQName(.)"/>
+        <xsl:param name="model-id" tunnel="yes"/>
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="colors" select="$colorScheme('simpleType')" as="map(xs:string, xs:string)"/>
+
+        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
+        <xsl:variable name="cY" select="15"/>
+
+
+        <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="paddingLR" select="5"/>
+        <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
+        <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
+        <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+
+        <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:displayW="{$width}" es:displayH="0" es:multiValue="one">
+            <xsl:attribute name="es:minOccurs" select="1"/>
+            <xsl:attribute name="es:maxOccurs" select="1"/>
+            <desc/>
+            <g alignment-baseline="baseline" class="svg-element-ref" transform="translate(0, 2.5)">
+                <g id="{$hoverId}">
+                    <!--                    
+                                    TODO
+                                    <xsl:variable name="isDoku" select="root($refElement) = $dokuSchema" as="xs:boolean"/>
+                                -->
+                    <xsl:variable name="rect">
+                        <rect height="25" width="{$width}" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="white"/>
+                    </xsl:variable>
+                    <xsl:copy-of select="$rect"/>
+
+                    <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                        <xsl:value-of select="$label"/>
+                    </text>
+
+
+                </g>
+            </g>
+        </svg>
+
+    </xsl:template>
+
 
 
 
