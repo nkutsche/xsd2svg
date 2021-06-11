@@ -965,9 +965,15 @@
     </xsl:template>
 
     <xsl:template match="xs:element/xs:simpleType" mode="es:xsd2svg-content">
-        <xsl:apply-templates select="xs:*" mode="#current">
-            <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
-        </xsl:apply-templates>
+        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:call-template name="drawObjectPaths">
+            <xsl:with-param name="content" as="element(svg:svg)">
+                <xsl:apply-templates select="xs:*" mode="#current">
+                    <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
+                </xsl:apply-templates>
+            </xsl:with-param>
+            <xsl:with-param name="strokeColor" select="$colors?main"/>
+        </xsl:call-template>
     </xsl:template>
 
     <xsl:template match="xs:union" mode="es:xsd2svg-content" priority="10">
