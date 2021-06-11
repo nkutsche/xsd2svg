@@ -103,20 +103,26 @@
     </xsl:function>
 
     <xsl:function name="es:getQName" as="xs:QName">
-        <xsl:param name="node" as="attribute()"/>
+        <xsl:param name="attr" as="attribute()"/>
+        <xsl:sequence select="es:getQName(string($attr), $attr/parent::*)"/>
+    </xsl:function>
+
+    <xsl:function name="es:getQName" as="xs:QName">
+        <xsl:param name="name" as="xs:string"/>
+        <xsl:param name="namespace-context" as="element()"/>
         <xsl:variable name="prefix" select="
-                if (contains($node, ':')) then
-                    replace($node, '([^:]+):.*', '$1')
+                if (contains($name, ':')) then
+                    replace($name, '([^:]+):.*', '$1')
                 else
                     ''
                 "/>
-        <xsl:variable name="local-name" select="replace($node, '[^:]+:', '')"/>
-        <xsl:variable name="namespace" select="$node/../namespace::*[name() = $prefix]"/>
+        <xsl:variable name="local-name" select="replace($name, '[^:]+:', '')"/>
+        <xsl:variable name="namespace" select="$namespace-context/namespace::*[name() = $prefix]"/>
         <xsl:sequence select="
                 if ($prefix != '' and not($namespace)) then
-                    es:error('unbound-prefix', 'Unbound prefix ' || $prefix || ' at ' || path($node))
+                    es:error('unbound-prefix', 'Unbound prefix ' || $prefix || ' at ' || path($namespace-context))
                 else
-                    QName(string($namespace), $node)"/>
+                    QName(string($namespace), $name)"/>
     </xsl:function>
 
 
