@@ -727,42 +727,12 @@
         </xsl:variable>
 
 
-        <xsl:variable name="content">
-            <xsl:call-template name="drawObjectPaths">
-                <xsl:with-param name="content" select="$content/svg:svg"/>
-                <xsl:with-param name="x1" select="3"/>
-                <xsl:with-param name="x2" select="30"/>
-                <xsl:with-param name="strokeColor" select="$colors?main"/>
-            </xsl:call-template>
-        </xsl:variable>
-
-        <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
-        <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
-        <xsl:variable name="elementSVG" select="$elementSymbol/svg:svg"/>
-        <xsl:variable name="elementHeight" select="sum($elementSVG/@height)"/>
-        <xsl:variable name="elementWidth" select="max($elementSVG/@width)"/>
-
-
-        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2)), 0))"/>
-        <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
-        <xsl:variable name="svgWidth" select="
-                (if ($contentSVGs/@width) then
-                    (max($contentSVGs/@width))
-                else
-                    (0)) + $elementWidth"/>
-
-        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" es:cY="{max(($contentSVGs/@es:cY, es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2))))}">
-            <xsl:attribute name="es:minOccurs" select="1"/>
-            <xsl:attribute name="es:maxOccurs" select="1"/>
-            <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
-
-            <g transform="translate(0,{$posY})">
-                <xsl:copy-of select="$elementSVG"/>
-            </g>
-            <g transform="translate({$elementWidth},0)">
-                <xsl:copy-of select="$contentSVGs"/>
-            </g>
-        </svg>
+        
+        <xsl:call-template name="createTreeNode">
+            <xsl:with-param name="symbol" select="$elementSymbol"/>
+            <xsl:with-param name="content" select="$content"/>
+            <xsl:with-param name="colors" select="$colors"/>
+        </xsl:call-template>
 
     </xsl:template>
 
