@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:java="java:java.lang.Math" exclude-result-prefixes="xs" version="3.0">
 
+    <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
     <xsl:param name="defaultColor" select="
             map {
@@ -153,6 +154,82 @@
         <xsl:variable name="nameRef" select="$node/@*[name() = $attrName]"/>
         <xsl:variable name="localName" select="replace($nameRef, '^sqf:|^sch:', '')"/>
         <xsl:value-of select="$localName"/>
+    </xsl:function>
+
+    <xsl:function name="es:getReference" as="node()?">
+        <xsl:param name="attr" as="attribute()"/>
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+
+        <xsl:variable name="attrName" select="$attr/local-name()"/>
+        <xsl:variable name="element" select="
+                if ($attrName = ('type', 'base')) then
+                    ('simpleType', 'complexType')
+                else
+                    if ($attrName = 'itemType') then
+                        'simpleType'
+                    else
+                        ($attr/parent::*/local-name())
+                "/>
+
+        <xsl:choose>
+            <xsl:when test="$attr/self::attribute(namespace)">
+                <xsl:variable name="ns" select="
+                        if ($attr = '##targetNamespace') then
+                            root($attr)/xs:schema/@targetNamespace
+                        else
+                            if ($attr = '##local') then
+                                ('')
+                            else
+                                ($attr)"/>
+                <xsl:sequence select="$schema-context($ns)[1]/xs:schema"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:variable name="qnameRef" select="es:getQName($attr)"/>
+                <xsl:variable name="namespace" select="namespace-uri-from-QName($qnameRef)"/>
+                <xsl:sequence select="
+                        if ($namespace = $XSDNS) then
+                            ()
+                        else
+                            es:getReferenceByQName($qnameRef, $schema-context, $element)"/>
+            </xsl:otherwise>
+        </xsl:choose>
+
+
+    </xsl:function>
+
+    <xsl:function name="es:getReferenceByQName" as="node()*">
+        <xsl:param name="qname" as="xs:QName"/>
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="refKind" as="xs:string*"/>
+        <xsl:sequence select="es:getReferenceByQName($qname, $schema-context, $refKind, true())"/>
+    </xsl:function>
+
+    <xsl:function name="es:getReferenceByQName" as="node()*">
+        <xsl:param name="qname" as="xs:QName"/>
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="refKind" as="xs:string*"/>
+        <xsl:param name="exactlyOneRef" as="xs:boolean"/>
+
+
+        <xsl:variable name="namespace" select="namespace-uri-from-QName($qname)"/>
+
+        <xsl:variable name="target" select="
+                $schema-context($namespace)/key('elementByQName', $qname)
+                [local-name() = $refKind]"/>
+
+
+        <xsl:variable name="qnamePrint" select="es:printQName($qname, $schema-context)"/>
+        <xsl:sequence select="
+                if (count($target) eq 1 or not($exactlyOneRef)) then
+                    ($target)
+                else
+                    if (count($target) lt 1) then
+                        es:error('missing-ref-target', 'There is no defintion for the reference target ' || $qnamePrint)
+                    else
+                        es:error('duplicate-ref-target', 'There is more than one defintion for the reference target ' || $qnamePrint)
+                "/>
+
+
     </xsl:function>
 
     <xsl:function name="es:convertId" as="xs:string">

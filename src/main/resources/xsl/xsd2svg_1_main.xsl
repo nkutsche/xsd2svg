@@ -7,7 +7,6 @@
     <xsl:mode name="es:xsd2svg-parent"/>
     <xsl:mode name="es:xsd2svg-content"/>
 
-    <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
     
 <!--    
