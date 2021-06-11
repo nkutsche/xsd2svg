@@ -8,8 +8,10 @@
     <xsl:mode name="es:xsd2svg-content"/>
 
 
-    
-<!--    
+
+
+
+    <!--    
     Model main elements
     -->
 
@@ -184,7 +186,7 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
-        
+
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" as="element(svg:svg)?">
@@ -215,16 +217,16 @@
         <xsl:variable name="elementHeight" select="30"/>
         <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
         <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
-        
+
         <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
-        
+
         <xsl:variable name="parentPosY" select="es:number($maxCY - $parents/@es:cY)"/>
         <xsl:variable name="elementPosY" select="es:number($maxCY - ($elementHeight div 2))"/>
         <xsl:variable name="contentPosY" select="es:number($maxCY - $contentSVGs/@es:cY)"/>
-        
+
         <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - ($elementHeight div 2), 0))"/>
         <xsl:variable name="position" select="(0, $posY)"/>
-        
+
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - $elementHeight, 0))}">
             <desc/>
@@ -234,7 +236,7 @@
             <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
-            
+
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <g>
                     <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
@@ -243,6 +245,7 @@
                     <xsl:value-of select="$label"/>
                 </text>
             </g>
+            
             <xsl:for-each select="$contentSVGs">
                 <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height) + $contentPosY"/>
                 <g transform="translate({$width + $parentWidth}, {$precHeight})">
@@ -252,11 +255,11 @@
             <g transform="translate({$width + $parentWidth}, {$elementPosY})">
                 <xsl:copy-of select="$doku"/>
             </g>
-            
+
             <g transform="translate(0,{$parentPosY})">
                 <xsl:copy-of select="$parents"/>
             </g>
-            
+
         </svg>
     </xsl:template>
 
@@ -369,7 +372,7 @@
                     </path>
                 </xsl:if>
                 <xsl:copy-of select="$headerWithBorder"/>
-                
+
                 <g transform="translate({$width + 1}, 0)" es:z-index="0">
                     <xsl:copy-of select="$dokuSVG"/>
                 </g>
@@ -383,7 +386,7 @@
         </svg>
     </xsl:template>
 
-<!--
+    <!--
     Model contents
     -->
     <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="es:xsd2svg-content">
@@ -436,6 +439,7 @@
                 es:renderedTextLength($typeLabel, 'Arial', 'plain', $fontSize)
                 "/>
 
+
         <xsl:variable name="width" select="$widths => max()"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
         <svg width="{$width}" height="{$elementHeight + 5}" es:cY="{$cY}" class="attribute" id="{$model-id}_attribute_{es:convertId($label)}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - ($elementHeight + 5), 0))}" es:multiValue="{$multiValue}">
@@ -443,6 +447,8 @@
             <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})" id="{$hoverId}">
                 <g>
                     <xsl:if test="@type">
+
+
                         <rect width="{$width}" height="{$elementHeight div 2}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}" ry="10" rx="10"/>
                         <rect width="{$width}" height="{$elementHeight div 2 - 10}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}"/>
                         <!--                        <rect width="{$width}" height="{$titleHeight - 7.5}" x="0" y="7.5" fill="{$type-bg}"/>-->
@@ -968,20 +974,22 @@
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
         <xsl:param name="st-table-title" as="xs:string?" tunnel="yes"/>
 
-        <xsl:variable name="labels" select="map{
-            'length' : 'Length',
-            'pattern' : 'Pattern',
-            'maxLength' : 'Maximal Length',
-            'minLength' : 'Minimal Length',
-            'whiteSpace' : 'Whitespace',
-            'fractionDigits' : 'Fractional Digits',
-            'totalDigits' : 'Total Digits',
-            'maxExclusive' : 'Maximal Value (Exclusive)',
-            'maxInclusive' : 'Maximal Value (Inclusive)',
-            'minInclusive' : 'Minimal Value (Inclusive)',
-            'minExclusive' : 'Minimal Value (Exclusive)'
-            }"/>
         <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+
+        <xsl:variable name="labels" select="
+                map {
+                    'length': 'Length',
+                    'pattern': 'Pattern',
+                    'maxLength': 'Maximal Length',
+                    'minLength': 'Minimal Length',
+                    'whiteSpace': 'Whitespace',
+                    'fractionDigits': 'Fractional Digits',
+                    'totalDigits': 'Total Digits',
+                    'maxExclusive': 'Maximal Value (Exclusive)',
+                    'maxInclusive': 'Maximal Value (Inclusive)',
+                    'minInclusive': 'Minimal Value (Inclusive)',
+                    'minExclusive': 'Minimal Value (Exclusive)'
+                }"/>
         <xsl:variable name="textStyle" select="
                 map {
                     'font': 'Arial',
@@ -1268,14 +1276,14 @@
     </xsl:template>
 
     <xsl:template match="*" mode="es:xsd2svg">
-        <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The element ' || name() || ' can not be converted to an SVG model.')"/>
+        <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The element ' || name() || ' can not be converted to a SVG model.')"/>
     </xsl:template>
 
     <xsl:template match="*" mode="es:xsd2svg-parent">
-        <xsl:sequence select="error(xs:QName('es:not-supported-parent'), 'The element ' || name() || ' is not be as an parent XSD node.')"/>
+        <xsl:sequence select="error(xs:QName('es:not-supported-parent'), 'The element ' || name() || ' is not supported as a parent XSD node.')"/>
     </xsl:template>
 
-<!--
+    <!--
     Parents
     -->
 
