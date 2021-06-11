@@ -829,10 +829,13 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:choice" mode="es:xsd2svg-content" priority="10">
-        <xsl:variable name="content">
+    <xsl:template match="xs:choice" name="choice" mode="es:xsd2svg-content" priority="10">
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
-        </xsl:variable>
+        </xsl:param>
+        <xsl:param name="overwriteSymbol"/>
+
         <xsl:variable name="content" select="$content/svg:svg"/>
         <xsl:variable name="contentCount" select="count($content)"/>
         <xsl:variable name="contentMod" select="$contentCount mod 3"/>
@@ -856,6 +859,7 @@
         </xsl:variable>
         <xsl:variable name="contentNet">
             <xsl:call-template name="drawObjectPaths">
+                <xsl:with-param name="strokeColor" select="$colors?main"/>
                 <xsl:with-param name="content" select="$contentTop/svg:svg"/>
                 <xsl:with-param name="x1" select="0"/>
                 <xsl:with-param name="x2" select="30"/>
@@ -866,6 +870,7 @@
                             (15)"/>
             </xsl:call-template>
             <xsl:call-template name="drawObjectPaths">
+                <xsl:with-param name="strokeColor" select="$colors?main"/>
                 <xsl:with-param name="content" select="$contentRight/svg:svg"/>
                 <xsl:with-param name="x1" select="0"/>
                 <xsl:with-param name="x2" select="30"/>
@@ -876,6 +881,7 @@
                             (15)"/>
             </xsl:call-template>
             <xsl:call-template name="drawObjectPaths">
+                <xsl:with-param name="strokeColor" select="$colors?main"/>
                 <xsl:with-param name="content" select="$contentBottom/svg:svg"/>
                 <xsl:with-param name="x1" select="0"/>
                 <xsl:with-param name="x2" select="30"/>
@@ -889,14 +895,22 @@
 
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
         <xsl:variable name="elementSymbol">
-            <xsl:call-template name="choiceSymbol">
-                <xsl:with-param name="multiValue" select="$multiValue"/>
-                <xsl:with-param name="connectCount" select="
-                        if ($contentCount ge 3) then
-                            (3)
-                        else
-                            ($contentCount)"/>
-            </xsl:call-template>
+            <xsl:choose>
+                <xsl:when test="$overwriteSymbol">
+                    <xsl:sequence select="$overwriteSymbol"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="choiceSymbol">
+                        <xsl:with-param name="colors" select="$colors"/>
+                        <xsl:with-param name="multiValue" select="$multiValue"/>
+                        <xsl:with-param name="connectCount" select="
+                                if ($contentCount ge 3) then
+                                    (3)
+                                else
+                                    ($contentCount)"/>
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
 
         <xsl:variable name="contentSVGs" select="$contentNet/svg:svg"/>
@@ -939,7 +953,7 @@
                 </g>
             </xsl:for-each>
             <xsl:if test="$countContent gt 1">
-                <path fill="none" stroke-width="1" stroke="#007">
+                <path fill="none" stroke-width="1" stroke="{$colors?main}">
                     <xsl:variable name="ctop" select="$elementSVG/@es:cXTop, $elementSVG/@es:cYTop"/>
                     <xsl:attribute name="d" select="
                             ('M', $ctop[1], $posY + $ctop[2],
@@ -947,7 +961,7 @@
                             'Q', $ctop[1], $contentSVGs[1]/@es:cY, $ctop[1] + 7, $contentSVGs[1]/@es:cY,
                             'L', $elementWidth, $contentSVGs[1]/@es:cY)"/>
                 </path>
-                <path fill="none" stroke-width="1" stroke="#007">
+                <path fill="none" stroke-width="1" stroke="{$colors?main}">
                     <xsl:variable name="cbot" select="$elementSVG/@es:cXBottom, $elementSVG/@es:cYBottom"/>
                     <xsl:variable name="lastCY" select="sum($contentSVGs[position() != last()]/@height) + $contentSVGs[last()]/@es:cY"/>
                     <xsl:attribute name="d" select="
