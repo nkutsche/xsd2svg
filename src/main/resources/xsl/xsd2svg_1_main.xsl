@@ -669,6 +669,114 @@
         </xsl:call-template>
     </xsl:template>
 
+
+    <xsl:template match="xs:complexContent/xs:extension | xs:simpleContent/xs:extension | xs:simpleContent/xs:restriction | xs:simpleType/xs:restriction" mode="es:xsd2svg-content">
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+
+        <xsl:variable name="baseName" select="es:getQName(@base)"/>
+        <xsl:variable name="baseNs" select="namespace-uri-from-QName($baseName)"/>
+
+        <xsl:variable name="ref" select="es:getReference(@base, $schema-context)"/>
+        <xsl:variable name="colorType" select="
+                if (parent::xs:complexContent) then
+                    'complexType'
+                else
+                    'simpleType'"/>
+        <xsl:variable name="colors" select="$colorScheme($colorType)"/>
+
+        <xsl:variable name="baseIsXSD" select="$baseNs = $XSDNS"/>
+        <xsl:variable name="boxTitle" select="
+                (
+                'Base: ',
+                es:printQName(es:getQName(@base), $schema-context)[not($baseIsXSD)]
+                ) => string-join()
+                "/>
+
+        <xsl:variable name="elementSymbol">
+            <xsl:choose>
+                <xsl:when test="self::xs:restriction">
+                    <xsl:call-template name="restrictionSymbol">
+                        <xsl:with-param name="colors" select="$colors"/>
+                    </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="extensionSymbol">
+                        <xsl:with-param name="colors" select="$colors"/>
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="content">
+            <xsl:call-template name="createContentBox">
+                <xsl:with-param name="content">
+                    <xsl:choose>
+                        <xsl:when test="$baseIsXSD">
+                            <xsl:call-template name="xsdSimpleTypeRef">
+                                <xsl:with-param name="typeName" select="$baseName"/>
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="$ref/*" mode="#current"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:with-param>
+                <xsl:with-param name="colors" select="$colors => map:put('secondary', 'none') => map:put('text', 'black')"/>
+                <xsl:with-param name="title" select="$boxTitle"/>
+                <xsl:with-param name="titleSymbol" select="$elementSymbol//*[@class = 'core'][1]" as="node()"/>
+            </xsl:call-template>
+
+            <xsl:choose>
+                <xsl:when test="self::xs:restriction">
+                    <xsl:next-match/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="createAttributeBox"/>
+                    <xsl:apply-templates select="xs:* except (xs:attribute | xs:attributeGroup)" mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+
+        <xsl:variable name="content">
+            <xsl:call-template name="drawObjectPaths">
+                <xsl:with-param name="content" select="$content/svg:svg"/>
+                <xsl:with-param name="x1" select="3"/>
+                <xsl:with-param name="x2" select="30"/>
+                <xsl:with-param name="strokeColor" select="$colors?main"/>
+            </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
+        <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
+        <xsl:variable name="elementSVG" select="$elementSymbol/svg:svg"/>
+        <xsl:variable name="elementHeight" select="sum($elementSVG/@height)"/>
+        <xsl:variable name="elementWidth" select="max($elementSVG/@width)"/>
+
+
+        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2)), 0))"/>
+        <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
+        <xsl:variable name="svgWidth" select="
+                (if ($contentSVGs/@width) then
+                    (max($contentSVGs/@width))
+                else
+                    (0)) + $elementWidth"/>
+
+        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" es:cY="{max(($contentSVGs/@es:cY, es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2))))}">
+            <xsl:attribute name="es:minOccurs" select="1"/>
+            <xsl:attribute name="es:maxOccurs" select="1"/>
+            <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
+
+            <g transform="translate(0,{$posY})">
+                <xsl:copy-of select="$elementSVG"/>
+            </g>
+            <g transform="translate({$elementWidth},0)">
+                <xsl:copy-of select="$contentSVGs"/>
+            </g>
+        </svg>
+
+    </xsl:template>
+
     <xsl:template match="xs:sequence" mode="es:xsd2svg-content">
 
         <xsl:variable name="colors" select="$colorScheme('#default')"/>
