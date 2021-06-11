@@ -1279,7 +1279,7 @@
     Parents
     -->
 
-    <xsl:template match="xs:element[@name]" mode="es:xsd2svg-parent">
+    <xsl:template match="xs:element[@name] | xs:attribute[@name] | xs:complexType[@name]" mode="es:xsd2svg-parent">
         <xsl:param name="childId"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
