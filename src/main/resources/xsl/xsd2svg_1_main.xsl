@@ -193,7 +193,6 @@
                     <xsl:apply-templates select="xs:* except xs:annotation" mode="es:xsd2svg-content">
                         <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                         <xsl:with-param name="cY" select="$cY"/>
-                        <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
                     </xsl:apply-templates>
                 </xsl:with-param>
                 <xsl:with-param name="strokeColor" select="$colors?main"/>
@@ -820,9 +819,7 @@
         <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
         <xsl:call-template name="drawObjectPaths">
             <xsl:with-param name="content" as="element(svg:svg)">
-                <xsl:apply-templates select="xs:*" mode="#current">
-                    <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
-                </xsl:apply-templates>
+                <xsl:apply-templates select="xs:*" mode="#current"/>
             </xsl:with-param>
             <xsl:with-param name="strokeColor" select="$colors?main"/>
         </xsl:call-template>
@@ -929,7 +926,7 @@
 
     <xsl:template match="xs:restriction" mode="es:xsd2svg-content">
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
-        <xsl:param name="st-table-title" as="xs:string?" tunnel="yes"/>
+        <xsl:param name="st-table-title" select="'Facets'" as="xs:string?" tunnel="yes"/>
 
         <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
 
@@ -958,14 +955,12 @@
         <xsl:variable name="enumValues" select="xs:enumeration/@value => es:cut-join(' | ', '...', 100.0, $textStyle)"/>
 
         <xsl:variable name="table" as="array(xs:string)*">
-            <xsl:sequence select="['Type:', 'Restriction']"/>
-            <xsl:sequence select="['Base:', es:printQName(es:getQName(@base), $schema-context)]"/>
             <xsl:sequence select="(['Values:', $enumValues])[exists(.?2)]"/>
             <xsl:for-each select="* except xs:enumeration">
                 <xsl:sequence select="[$labels(local-name()), @value/string()]"/>
             </xsl:for-each>
         </xsl:variable>
-
+        
         <xsl:call-template name="drawObjectPaths">
             <xsl:with-param name="content" select="es:create-table(array {$table}, 10, $colors, $st-table-title)"/>
             <xsl:with-param name="strokeColor" select="$colors?main"/>
