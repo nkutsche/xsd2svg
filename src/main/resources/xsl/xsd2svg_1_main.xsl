@@ -402,8 +402,12 @@
         <xsl:variable name="position" select="(0, 2.5)"/>
         <xsl:variable name="cY" select="$position[2] + ($elementHeight div 2)"/>
 
-        <xsl:variable name="type-bg" select="'#8f8'"/>
         <xsl:variable name="stroke" select="$colors?main"/>
+
+        <xsl:variable name="type-target" select="@type/es:getReference(., $schema-context)"/>
+        <xsl:variable name="type-mode" select="($type-target/local-name(), 'simpleType')[1]"/>
+        <xsl:variable name="type-bg" select="$colorScheme($type-mode)?secondary"/>
+        <xsl:variable name="type-text-color" select="$colorScheme($type-mode)?text"/>
 
 
         <xsl:variable name="hoverId" select="concat($model-id, '_attributName_', generate-id())"/>
@@ -453,7 +457,7 @@
                     <xsl:value-of select="$label"/>
                 </text>
                 <xsl:if test="@type">
-                    <text x="{$paddingLR}" y="32" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                    <text x="{$paddingLR}" y="32" fill="{$type-text-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                         <xsl:value-of select="$typeLabel"/>
                     </text>
                 </xsl:if>
