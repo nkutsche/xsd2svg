@@ -27,19 +27,26 @@
         <xsl:variable name="cY" select="12.5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:* | @type" mode="es:xsd2svg-content">
+            <xsl:apply-templates select="xs:* except xs:annotation | @type" mode="es:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$cY"/>
             </xsl:apply-templates>
         </xsl:variable>
 
+        <xsl:variable name="doku">
+            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
+                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
+                <xsl:with-param name="color" select="$color"/>
+                <xsl:with-param name="cY" select="$cY"/>
+            </xsl:apply-templates>
+        </xsl:variable>
 
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
+        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
@@ -102,14 +109,22 @@
         <xsl:variable name="cY" select="12.5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="." mode="es:xsd2svg-content"/>
+            <xsl:apply-templates select=". except xs:annotation" mode="es:xsd2svg-content"/>
+        </xsl:variable>
+
+        <xsl:variable name="doku">
+            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
+                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
+                <xsl:with-param name="color" select="$colors?main"/>
+                <xsl:with-param name="cY" select="$cY"/>
+            </xsl:apply-templates>
         </xsl:variable>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
+        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
@@ -171,18 +186,30 @@
         <xsl:variable name="cY" select="12.5"/>
         
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:*" mode="es:xsd2svg-content">
+            <xsl:call-template name="drawObjectPaths">
+                <xsl:with-param name="content" as="element(svg:svg)?">
+                    <xsl:apply-templates select="xs:* except xs:annotation" mode="es:xsd2svg-content">
+                        <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
+                        <xsl:with-param name="cY" select="$cY"/>
+                        <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
+                    </xsl:apply-templates>
+                </xsl:with-param>
+                <xsl:with-param name="strokeColor" select="$colors?main"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="doku">
+            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
+                <xsl:with-param name="color" select="$colors?main"/>
                 <xsl:with-param name="cY" select="$cY"/>
-                <xsl:with-param name="st-table-title" select="'Simple Type Facets'" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$content/es:docu/svg:svg"/>
-        
+        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
+
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
