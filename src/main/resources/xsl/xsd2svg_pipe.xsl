@@ -35,6 +35,7 @@
         <xsl:variable name="raw-model">
             <xsl:apply-templates select="$xsdnode" mode="es:xsd2svg">
                 <xsl:with-param name="schema-context" select="$schema-context" tunnel="yes"/>
+                <xsl:with-param name="model-id" select="generate-id($xsdnode)" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="handle-transform">
