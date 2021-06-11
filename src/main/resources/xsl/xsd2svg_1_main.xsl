@@ -638,6 +638,27 @@
         </svg>
     </xsl:template>
 
+    <xsl:template match="xs:group[@ref] | xs:attributeGroup[@ref]" mode="es:xsd2svg-content">
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:variable name="groupName" select="es:getName(.)"/>
+        <xsl:variable name="namespace" select="namespace-uri-from-QName($groupName)"/>
+        <xsl:variable name="mode" select="local-name()"/>
+        <xsl:variable name="refGroup" select="es:getReference(@ref, $schema-context)" as="node()"/>
+
+        <xsl:apply-templates select="$refGroup" mode="#current">
+            <xsl:with-param name="id" select="generate-id()"/>
+            <xsl:with-param name="multiValue" select="es:getMultiValue(.)"/>
+        </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="es:xsd2svg-content">
+        <xsl:param name="multiValue"/>
+        <xsl:call-template name="namedGroup">
+            <xsl:with-param name="isRoot" select="false()"/>
+            <xsl:with-param name="multiValue" select="$multiValue"/>
+        </xsl:call-template>
+    </xsl:template>
+
     <xsl:template match="xs:complexType" mode="es:xsd2svg-content">
         <xsl:variable name="content">
             <xsl:call-template name="createAttributeBox"/>
