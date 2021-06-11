@@ -1014,6 +1014,61 @@
             <xsl:with-param name="strokeColor" select="$colors?main"/>
         </xsl:call-template>
     </xsl:template>
+
+    <xsl:template match="xs:list" mode="es:xsd2svg-content" priority="10">
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+
+        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+
+        <xsl:variable name="content">
+            <xsl:choose>
+                <xsl:when test="@itemType">
+                    <xsl:call-template name="elementRef">
+                        <xsl:with-param name="elementName" select="es:getQName(@itemType)"/>
+                        <xsl:with-param name="refAttribute" select="@itemType"/>
+                        <xsl:with-param name="multiValue" select="'one'"/>
+                        <xsl:with-param name="colors" select="$colors"/>
+                    </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="xs:simpleType" mode="#current"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="content">
+            <xsl:call-template name="choice">
+                <xsl:with-param name="content" select="$content"/>
+                <xsl:with-param name="overwriteSymbol">
+                    <xsl:call-template name="st_listSymbol"/>
+                </xsl:with-param>
+                <xsl:with-param name="colors" select="$colors"/>
+            </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:call-template name="drawObjectPaths">
+            <xsl:with-param name="content" select="$content/svg:svg"/>
+            <xsl:with-param name="strokeColor" select="$colors?main"/>
+        </xsl:call-template>
+    </xsl:template>
+
+    <xsl:template match="xs:list/xs:simpleType" mode="es:xsd2svg-content">
+        <xsl:variable name="content">
+            <xsl:apply-templates select="xs:*" mode="#current"/>
+        </xsl:variable>
+        <xsl:variable name="content">
+            <svg>
+                <xsl:sequence select="$content/svg:svg/(@* except @es:multiValue)"/>
+                <xsl:sequence select="$content"/>
+            </svg>
+        </xsl:variable>
+        <xsl:call-template name="createContentBox">
+            <xsl:with-param name="content" select="$content"/>
+            <xsl:with-param name="colors" select="$colorScheme(local-name())"/>
+        </xsl:call-template>
+    </xsl:template>
+
+
     <xsl:template match="xs:restriction" mode="es:xsd2svg-content">
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
         <xsl:param name="st-table-title" as="xs:string?" tunnel="yes"/>
