@@ -534,34 +534,42 @@
 
     </xsl:template>
 
-    <xsl:template match="xs:element[@ref]" name="elementRef" mode="es:xsd2svg-content">
+    <xsl:template match="xs:element[@ref] | xs:attribute[@ref]" name="elementRef" mode="es:xsd2svg-content">
         <xsl:param name="elementName" select="es:getName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
         <xsl:param name="multiValue" select="es:getMultiValue(.)"/>
-        <xsl:param name="mode" select="'element'"/>
-        <xsl:param name="stroke" select="'#007'"/>
+        <xsl:param name="refAttribute" select="@ref" as="attribute()?"/>
+        <xsl:param name="refTarget" select="$refAttribute/es:getReference(., $schema-context)" as="node()?"/>
+        <xsl:param name="colors" select="$colorScheme(local-name($refTarget))"/>
+        <xsl:param name="stroke" select="$colors?main"/>
+        <xsl:param name="label" select="es:printQName($elementName, $schema-context)"/>
+        <xsl:param name="text-style" as="map(*)" select="
+                map {
+                    'font': 'Arial',
+                    'style': 'plain',
+                    'size': 11
+                }"/>
 
-        <xsl:variable name="namespace" select="namespace-uri-from-QName($elementName)"/>
 
-        <xsl:variable name="refElement" select="
-                $schema-context($namespace)/key('elementByQName', $elementName)[local-name() = $mode]
-                " as="node()"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="doku">
-            <xsl:apply-templates select="$refElement/xs:annotation" mode="#current">
+            <xsl:apply-templates select="$refTarget/xs:annotation" mode="#current">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$cY"/>
+                <xsl:with-param name="color" select="$stroke"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
         <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
         <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
 
-        <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="fontSize" select="$text-style?size"/>
+        <xsl:variable name="fontStyle" select="($text-style?style, 'normal')[. != 'plain'][1]"/>
         <xsl:variable name="paddingLR" select="5"/>
-        <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'plain', $fontSize)"/>
+
+        <xsl:variable name="width" select="es:renderedTextLength($label, $text-style)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
 
 
@@ -610,15 +618,15 @@
                         <xsl:when test="false()">
                             <!--                       TODO <xsl:when test="$isDoku">-->
                             <a xlink:href="#{es:convertId($elementName)}" target="_top">
-                                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                <text x="{$paddingLR}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
                                     <set attributeName="fill" to="#fff" begin="{$hoverId}.mouseover" end="{$hoverId}.mouseout"/>
-                                    <xsl:value-of select="$elementName"/>
+                                    <xsl:value-of select="$label"/>
                                 </text>
                             </a>
                         </xsl:when>
                         <xsl:otherwise>
-                            <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                                <xsl:value-of select="$elementName"/>
+                            <text x="{$paddingLR}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
+                                <xsl:value-of select="$label"/>
                             </text>
                         </xsl:otherwise>
                     </xsl:choose>
