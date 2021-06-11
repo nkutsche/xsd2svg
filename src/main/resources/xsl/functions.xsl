@@ -1119,11 +1119,10 @@
         <xsl:variable name="includeURIs" select="$includes/resolve-uri(@schemaLocation, base-uri(.))"/>
 
         <xsl:variable name="namespaceuri" select="($schema/xs:schema/@targetNamespace, '')[1]" as="xs:string"/>
-        <xsl:variable name="schema-map" select="map{$namespaceuri : $schema}"/>
 
         <xsl:variable name="importSchemas" select="
                 for $iu
-                in ($importURIs, $includeURIs)[not(. = $knownURIs)]
+                in ($importURIs)[not(. = $knownURIs)]
                 return
                     es:getReferencedSchemas(doc($iu),
                     ($knownURIs, $schemaUri, $importURIs, $includeURIs))" as="map(xs:string, document-node(element(xs:schema))*)*"/>
@@ -1137,9 +1136,9 @@
 
 
 
-        <xsl:variable name="maps" select="map:entry($namespaceuri, $schema), $importSchemas, $includeSchemas"/>
+        <xsl:variable name="maps" select="map {$namespaceuri: $schema}, $importSchemas, $includeSchemas"/>
         <xsl:sequence select="
-            map:merge($maps, map{'duplicates' : 'combine'})"/>
+                map:merge($maps, map {'duplicates': 'combine'})"/>
     </xsl:function>
 
     <xsl:function name="es:getParents" as="element()*">
