@@ -91,6 +91,17 @@
         <xsl:sequence select="error(QName('http://www.escali.schematron-quickfix.com/', $id), $message)"/>
     </xsl:function>
 
+    <xsl:function name="es:exactly-one" as="item()">
+        <xsl:param name="item" as="item()*"/>
+        <xsl:param name="message"/>
+        <xsl:sequence select="
+                if (count($item) eq 1) then
+                    ($item)
+                else
+                    es:error('exactly-one', $message)
+                "/>
+    </xsl:function>
+
     <xsl:function name="es:getQName" as="xs:QName">
         <xsl:param name="node" as="attribute()"/>
         <xsl:variable name="prefix" select="
@@ -145,6 +156,10 @@
                             $trg_namespace
                         else
                             ''" as="xs:string"/>
+
+                <xsl:if test="not($local-name castable as xs:NCName)">
+                    <xsl:sequence select="es:error('bad-qname', 'Can not create QName for ' || name($node) || '. ''' || $local-name || ''' is not a valid NCName.')"/>
+                </xsl:if>
 
                 <xsl:sequence select="QName($namespace, $local-name)"/>
             </xsl:otherwise>
@@ -559,7 +574,7 @@
                     then
                         (((es:number($lastContentConnect) - es:number($firstContentConnect)) div 2) + es:number($firstContentConnect))
                     else
-                        ($content/@es:cY)"/>
+                        es:number($content/@es:cY)"/>
             <xsl:variable name="x1ForOne" select="
                     if ($rightPathPosition and not($moreThenOne))
                     then
@@ -1033,7 +1048,10 @@
                     'complexType': 'parentByType'
                 }
                 "/>
+
         <xsl:variable name="key" select="$key-map($this/local-name())"/>
+
+        <xsl:variable name="key" select="es:exactly-one($key, 'No parents available for ' || $this/local-name() || ' elements.')"/>
 
         <xsl:variable name="schemas" select="map:keys($schema-context) ! $schema-context(.)"/>
 
