@@ -596,17 +596,39 @@
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="color" select="'#007'"/>
         <xsl:param name="font-color" select="'black'"/>
+
+        <xsl:call-template name="boxTitle">
+            <xsl:with-param name="title" select="$title"/>
+            <xsl:with-param name="font-color" select="$font-color"/>
+            <xsl:with-param name="symbol">
+                <svg width="15" height="15">
+                    <rect width="5" height="5" x="1" y="1" fill="{$color}" opacity="0.5"/>
+                    <rect width="5" height="5" x="1" y="9" fill="{$color}" opacity="0.5"/>
+                    <rect width="5" height="5" x="9" y="9" fill="{$color}" opacity="0.5"/>
+                    <rect width="5" height="5" x="1" y="1" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
+                    <rect width="5" height="5" x="1" y="9" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
+                    <rect width="5" height="5" x="9" y="9" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
+                </svg>
+            </xsl:with-param>
+        </xsl:call-template>
+
+    </xsl:template>
+    <xsl:template name="boxTitle">
+        <xsl:param name="title" as="xs:string"/>
+        <xsl:param name="font-color" select="'black'"/>
+        <xsl:param name="symbol" as="node()?"/>
         <xsl:variable name="fontSize" select="11"/>
-        <xsl:variable name="width" select="es:renderedTextLength($title, 'Arial', 'plain', $fontSize) + 29"/>
-        <svg width="{$width + 6}" height="25">
+        <xsl:variable name="symbol" select="$symbol/(self::svg:svg, svg:svg)[1]"/>
+        <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
+        <xsl:variable name="space" select="6"/>
+        <xsl:variable name="width" select="es:renderedTextLength($title, 'Arial', 'plain', $fontSize) + $symbolWidth + 3 * $space"/>
+
+        <svg width="{max(($width, 0))}" height="25">
             <g transform="translate(3,3)">
-                <rect width="5" height="5" x="6" y="3" fill="{$color}" opacity="0.5"/>
-                <rect width="5" height="5" x="6" y="11" fill="{$color}" opacity="0.5"/>
-                <rect width="5" height="5" x="14" y="11" fill="{$color}" opacity="0.5"/>
-                <rect width="5" height="5" x="6" y="3" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
-                <rect width="5" height="5" x="6" y="11" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
-                <rect width="5" height="5" x="14" y="11" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
-                <text x="26" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                <g transform="translate({$space}, {$space div 2})">
+                    <xsl:sequence select="$symbol"/>
+                </g>
+                <text x="{$symbolWidth + 2 * $space}" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                     <xsl:value-of select="$title"/>
                 </text>
             </g>
