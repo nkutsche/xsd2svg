@@ -19,6 +19,11 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
 
+        <xsl:param name="colors" select="$colorScheme(local-name())"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="fill" select="$colors?secondary"/>
+
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
 
@@ -63,9 +68,9 @@
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="#007" stoke-width="1" fill="#88f"/>
+                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$color}" stoke-width="1" fill="{$fill}"/>
                 </g>
-                <text x="{$paddingLR}" y="16" fill="white" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                <text x="{$paddingLR}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                     <xsl:value-of select="$elementName"/>
                 </text>
             </g>
@@ -91,6 +96,8 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
         <xsl:param name="content-line" select="exists(self::xs:complexType)" as="xs:boolean"/>
+
+        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
@@ -131,9 +138,9 @@
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="#007" stoke-width="1" fill="#88f"/>
+                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
                 </g>
-                <text x="{$paddingLR}" y="16" fill="white" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                <text x="{$paddingLR}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                     <xsl:value-of select="$elementName"/>
                 </text>
             </g>
@@ -158,7 +165,9 @@
         <xsl:param name="typeName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
-        
+
+        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
         
@@ -202,9 +211,9 @@
             
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="#070" stoke-width="1" fill="#8f8"/>
+                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
                 </g>
-                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                <text x="{$paddingLR}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                     <xsl:value-of select="$label"/>
                 </text>
             </g>
@@ -233,7 +242,10 @@
         
         <xsl:variable name="isRoot" select="$id = generate-id()" as="xs:boolean"/>
         
-        <xsl:variable name="color" select="if (self::xs:group) then ('#007') else ('#F5844C')"/>
+
+        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="groupName" select="es:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_group_', $id)"/>
         <xsl:variable name="content">
@@ -350,6 +362,8 @@
         <xsl:param name="multiValue" select="es:getMultiValue(.)" as="xs:string"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
 
+        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+
         <xsl:variable name="attributName" select="es:getName(.)"/>
         <xsl:variable name="elementHeight" select="
                 if (@type) then
@@ -359,12 +373,9 @@
         <xsl:variable name="position" select="(0, 2.5)"/>
         <xsl:variable name="cY" select="$position[2] + ($elementHeight div 2)"/>
 
-        <xsl:variable name="stroke" select="
-                if (self::xs:attribute) then
-                    ('#F5844C')
-                else
-                    ('#007')"/>
         <xsl:variable name="type-bg" select="'#8f8'"/>
+        <xsl:variable name="stroke" select="$colors?main"/>
+
 
         <xsl:variable name="hoverId" select="concat($model-id, '_attributName_', generate-id())"/>
         <xsl:variable name="doku">
@@ -597,6 +608,9 @@
     </xsl:template>
 
     <xsl:template match="xs:sequence" mode="es:xsd2svg-content">
+
+        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
 
         <xsl:variable name="content">
@@ -607,6 +621,7 @@
                 <xsl:with-param name="content" select="$content/svg:svg"/>
                 <xsl:with-param name="x1" select="3"/>
                 <xsl:with-param name="x2" select="30"/>
+                <xsl:with-param name="strokeColor" select="$colors?main"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="elementSymbol">
@@ -799,6 +814,7 @@
             'minInclusive' : 'Minimal Value (Inclusive)',
             'minExclusive' : 'Minimal Value (Exclusive)'
             }"/>
+        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
         <xsl:variable name="textStyle" select="
                 map {
                     'font': 'Arial',
@@ -819,27 +835,29 @@
         </xsl:variable>
 
         <xsl:call-template name="drawObjectPaths">
-            <xsl:with-param name="content" select="es:create-table(array{$table}, 10, $st-table-title)"/>
-            <xsl:with-param name="strokeColor" select="'#070'"/>
+            <xsl:with-param name="content" select="es:create-table(array {$table}, 10, $colors, $st-table-title)"/>
+            <xsl:with-param name="strokeColor" select="$colors?main"/>
         </xsl:call-template>
     </xsl:template>
 
     <xsl:function name="es:create-table">
         <xsl:param name="cells" as="array(array(xs:string?))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
-        <xsl:sequence select="es:create-table($cells, $cell-padding, ())"/>
+        <xsl:param name="colors" as="map(xs:string, xs:string)"/>
+        <xsl:sequence select="es:create-table($cells, $cell-padding, $colors, ())"/>
     </xsl:function>
 
     <xsl:function name="es:create-table">
         <xsl:param name="cells" as="array(array(xs:string?))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
+        <xsl:param name="colors" as="map(xs:string, xs:string)"/>
         <xsl:param name="title" as="xs:string?"/>
 
         <xsl:variable name="lineheight" select="14"/>
         <xsl:variable name="fontSize" select="10"/>
         <xsl:variable name="stroke-width" select="0.5"/>
-        <xsl:variable name="stroke-color" select="'#070'"/>
-        <xsl:variable name="title-bg" select="'#8f8'"/>
+        <xsl:variable name="stroke-color" select="$colors?main"/>
+        <xsl:variable name="title-bg" select="$colors?secondary"/>
 
 
         <xsl:variable name="stroke" as="attribute()*">
@@ -878,7 +896,7 @@
                 <g>
                     <rect width="{$tableWidth}" height="{$titleHeight}" x="0" y="0" fill="{$title-bg}" ry="7.5" rx="7.5"/>
                     <rect width="{$tableWidth}" height="{$titleHeight - 7.5}" x="0" y="7.5" fill="{$title-bg}"/>
-                    <text x="{$cell-padding}" y="{$titleHeight - 7.5}" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                    <text x="{$cell-padding}" y="{$titleHeight - 7.5}" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                         <xsl:value-of select="$title"/>
                     </text>
                     <line x1="0" x2="{$tableWidth}" y1="{$titleHeight}" y2="{$titleHeight}">
@@ -963,7 +981,7 @@
     <xsl:template match="xs:annotation[xs:documentation]" mode="es:xsd2svg-content">
         <xsl:param name="hover_id" tunnel="yes" select="''"/>
         <xsl:param name="invisible_ids" tunnel="yes" select="()"/>
-        <xsl:param name="color" select="'#007'"/>
+        <xsl:param name="color" select="$colorScheme('#default')?main"/>
         <xsl:param name="cY" select="15"/>
         <xsl:variable name="textContent" select="string-join(xs:documentation, '')"/>
         <xsl:variable name="textLength" select="es:renderedTextLength($textContent, 'Arial', 'plain', 11)"/>
@@ -1063,8 +1081,13 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
 
+
+        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+
         <xsl:variable name="parentName" select="es:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
+
+        <xsl:variable name="stroke" select="$colors?main"/>
 
         <xsl:variable name="doku">
             <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
@@ -1083,7 +1106,7 @@
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
                 <!-- TODO               <a xlink:href="#{es:convertId($parentName)}" target="_top">-->
                 <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="#007" stoke-width="1" fill="white"/>
+                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white"/>
                 </g>
                 <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                     <xsl:value-of select="$label"/>
@@ -1101,11 +1124,10 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
 
-        <xsl:variable name="color" select="
-                if (self::xs:group) then
-                    ('#007')
-                else
-                    ('#F5844C')"/>
+        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+
+        <xsl:variable name="color" select="$colors?main"/>
+
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
         <xsl:variable name="groupName" select="es:getName(.)"/>
 
@@ -1193,6 +1215,7 @@
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" select="$parentContent/svg:svg"/>
                 <xsl:with-param name="rightPathPosition" select="true()"/>
+                <xsl:with-param name="strokeColor" select="$colorScheme(local-name($this))?main"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:copy-of select="$parentConnect"/>

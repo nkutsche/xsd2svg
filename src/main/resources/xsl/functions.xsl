@@ -2,6 +2,48 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:java="java:java.lang.Math" exclude-result-prefixes="xs" version="3.0">
 
 
+    <xsl:param name="defaultColor" select="
+            map {
+                'main': '#007',
+                'secondary': '#88f',
+                'text': 'white'
+            }"/>
+    <xsl:param name="colorScheme" select="
+            map {
+                '#default': $defaultColor,
+                'element': $defaultColor,
+                'attribute': map {
+                    'main': '#770',
+                    'secondary': '#ee8',
+                    'text': 'black'
+                },
+                'simpleType': map {
+                    'main': '#070',
+                    'secondary': '#8f8',
+                    'text': 'black'
+                },
+                'complexType': map {
+                    'main': '#077',
+                    'secondary': '#8ee',
+                    'text': 'black'
+                },
+                'group': map {
+                    'main': '#707',
+                    'secondary': '#e8e',
+                    'text': 'black'
+                },
+                'attributeGroup': map {
+                    'main': '#700',
+                    'secondary': '#f88',
+                    'text': 'white'
+                },
+                'any': map {
+                    'main': '#777',
+                    'secondary': '#fff',
+                    'text': 'black'
+                }
+            }" as="map(xs:string, map(xs:string, xs:string))"/>
+
     <xsl:key name="elementByQName" match="xs:schema/xs:*[@name]" use="es:getName(.)"/>
 
     <xsl:key name="parentByElement" match="xs:element[@name] | xs:group[@name]" use="
@@ -246,9 +288,12 @@
     </xsl:function>
 
     <xsl:template name="sequenceSymbol">
-        <xsl:param name="colorStroke" select="'#007'"/>
-        <xsl:param name="colorFill" select="'#88f'"/>
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
+
+        <xsl:variable name="colorStroke" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
         <svg width="20" height="20" es:cY="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="23.5"/>
@@ -293,10 +338,13 @@
         </svg>
     </xsl:template>
     <xsl:template name="choiceSymbol">
-        <xsl:param name="colorStroke" select="'#007'"/>
-        <xsl:param name="colorFill" select="'#88f'"/>
+        <xsl:param name="colors" select="$colorScheme('#default')"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="connectCount" select="3"/>
+
+        <xsl:variable name="colorStroke" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="es:cY" select="10"/>
@@ -382,7 +430,7 @@
 
     <xsl:template name="drawObjectPaths">
         <xsl:param name="content" as="element(svg:svg)*"/>
-        <xsl:param name="strokeColor" as="xs:string" select="'#007'"/>
+        <xsl:param name="strokeColor" as="xs:string" select="$colorScheme('#default')?main"/>
         <xsl:param name="x0" select="0"/>
         <xsl:param name="x1" select="25"/>
         <xsl:param name="x2" select="50"/>
