@@ -47,12 +47,15 @@
 
     <xsl:key name="elementByQName" match="xs:schema/xs:*[@name]" use="es:getName(.)"/>
 
-    <xsl:key name="parentByElement" match="xs:element[@name] | xs:group[@name]" use="
-            ((.//xs:element | .//xs:group) except .//xs:element[@name]//*) ! es:getName(.)
+    <xsl:key name="parentByElementRef" match="xs:element[@name] | xs:group[@name]" use="
+            (.//xs:element[@ref] except .//xs:element[@name]//*)/es:getName(.)
+            "/>
+    <xsl:key name="parentByGroupRef" match="xs:element[@name] | xs:group[@name]" use="
+            (.//xs:group[@ref] except .//xs:element[@name]//*)/es:getName(.)
             "/>
 
-    <xsl:key name="elementByAttributename" match="xs:element[@name] | xs:attributeGroup[@name]" use="
-            ((.//xs:attribute | .//xs:attributeGroup) except .//xs:element[@name]//*) ! es:getName(.)
+    <xsl:key name="elementByAttributename" match="xs:element[@name] | xs:attributeGroup[@name] | xs:complexType[@name]" use="
+            ((.//xs:attribute[@ref] | .//xs:attributeGroup) except .//xs:element[@name]//*) ! es:getName(.)
             "/>
     
     <xsl:key name="parentByType" match="xs:element[@type] | xs:attribute[@type]" use="
@@ -1020,17 +1023,16 @@
         <xsl:param name="this" as="element()"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
-        
+
         <xsl:variable name="key-map" select="
-            map{
-            'element' : 'parentByElement',
-            'group' : 'parentByElement',
-            'attribute' : 'elementByAttributename',
-            'simpleType' : 'parentByType',
-            'complexType' : 'parentByType'
-            }
-            "/>
-        
+                map {
+                    'element': 'parentByElementRef',
+                    'group': 'parentByGroupRef',
+                    'attribute': 'elementByAttributename',
+                    'simpleType': 'parentByType',
+                    'complexType': 'parentByType'
+                }
+                "/>
         <xsl:variable name="key" select="$key-map($this/local-name())"/>
 
         <xsl:variable name="schemas" select="map:keys($schema-context) ! $schema-context(.)"/>
