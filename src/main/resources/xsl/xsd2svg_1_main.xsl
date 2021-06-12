@@ -962,10 +962,7 @@
             </xsl:for-each>
         </xsl:variable>
         
-        <xsl:call-template name="drawObjectPaths">
-            <xsl:with-param name="content" select="es:create-table(array {$table}, 10, $colors, $st-table-title)"/>
-            <xsl:with-param name="strokeColor" select="$colors?main"/>
-        </xsl:call-template>
+        <xsl:sequence select="es:create-table(array {$table}, 10, $colors, $st-table-title)"/>
     </xsl:template>
 
     <xsl:template match="xs:any" mode="es:xsd2svg-content">
