@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:java="java:java.lang.Math" exclude-result-prefixes="xs" version="3.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" exclude-result-prefixes="xs" version="3.0" xmlns:math="http://www.w3.org/2005/xpath-functions/math">
 
     <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
@@ -895,7 +895,7 @@
         </xsl:if>
     </xsl:template>
 
-    <xsl:variable name="piHalf" select="java:acos(-1) div 2"/>
+    <xsl:variable name="piHalf" select="math:pi() div 2"/>
 
 
     <xsl:template name="drawPath">
@@ -913,11 +913,11 @@
                 <xsl:variable name="angle" select="
                         if ($xDiv != 0)
                         then
-                            ($piHalf - java:atan($yDiv div $xDiv))
+                            ($piHalf - math:atan($yDiv div $xDiv))
                         else
                             (0)"/>
-                <xsl:variable name="gabXdiv" select="java:cos($angle) * $doubleGap div 2"/>
-                <xsl:variable name="gabYdiv" select="java:sin($angle) * $doubleGap div 2"/>
+                <xsl:variable name="gabXdiv" select="math:cos($angle) * $doubleGap div 2"/>
+                <xsl:variable name="gabYdiv" select="math:sin($angle) * $doubleGap div 2"/>
                 <xsl:variable name="from1" select="$from[1] - $gabXdiv, $from[2] - $gabYdiv"/>
                 <xsl:variable name="to1" select="$to[1] - $gabXdiv, $to[2] - $gabYdiv"/>
                 <xsl:variable name="from2" select="$from[1] + $gabXdiv, $from[2] + $gabYdiv"/>
