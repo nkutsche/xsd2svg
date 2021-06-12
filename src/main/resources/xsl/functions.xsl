@@ -1086,29 +1086,41 @@
 
     </xsl:template>
 
-    <xsl:function name="es:renderedTextLength" xmlns:font="java:java.awt.Font" xmlns:frc="java:java.awt.font.FontRenderContext" xmlns:at="java:java.awt.geom.AffineTransform" xmlns:r2d="java:java.awt.geom.Rectangle2D">
+    <xsl:function name="es:renderedTextLength" as="xs:double">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="fontStyle" as="map(*)"/>
-        <xsl:sequence select="es:renderedTextLength($text, $fontStyle?font, $fontStyle?style, $fontStyle?size)"/>
+        <xsl:variable name="result" select="-1"/>
+        <xsl:variable name="result" use-when="function-available('r2d:getWidth')" xmlns:font="java:java.awt.Font" xmlns:frc="java:java.awt.font.FontRenderContext" xmlns:at="java:java.awt.geom.AffineTransform" xmlns:r2d="java:java.awt.geom.Rectangle2D">
+            <!--        
+            AffineTransform affinetransform = new AffineTransform();     
+            FontRenderContext frc = new FontRenderContext(affinetransform,true,true);     
+            Font font = new Font("Tahoma", Font.PLAIN, 12);
+            int textwidth = (int)(font.getStringBounds(text, frc).getWidth());
+            -->
+            <xsl:variable name="affinetransform" select="at:new()"/>
+            <xsl:variable name="frc" select="frc:new($affinetransform, true(), true())"/>
+            <xsl:variable name="jfont" select="font:new($fontStyle?font, 0, xs:integer($fontStyle?size))"/>
+            <xsl:variable name="r2d" select="font:getStringBounds($jfont, $text, $frc)"/>
+            <xsl:sequence select="r2d:getWidth($r2d)"/>
+        </xsl:variable>
+        <xsl:sequence select="$result"/>
+        
     </xsl:function>
 
-    <xsl:function name="es:renderedTextLength" xmlns:font="java:java.awt.Font" xmlns:frc="java:java.awt.font.FontRenderContext" xmlns:at="java:java.awt.geom.AffineTransform" xmlns:r2d="java:java.awt.geom.Rectangle2D">
+    <xsl:function name="es:renderedTextLength" as="xs:double">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="font" as="xs:string"/>
         <xsl:param name="style" as="xs:string"/>
         <xsl:param name="font-size" as="xs:double"/>
-
-        <!--        
-        AffineTransform affinetransform = new AffineTransform();     
-        FontRenderContext frc = new FontRenderContext(affinetransform,true,true);     
-        Font font = new Font("Tahoma", Font.PLAIN, 12);
-        int textwidth = (int)(font.getStringBounds(text, frc).getWidth());
-        -->
-        <xsl:variable name="affinetransform" select="at:new()"/>
-        <xsl:variable name="frc" select="frc:new($affinetransform, true(), true())"/>
-        <xsl:variable name="jfont" select="font:new($font, 0, xs:integer($font-size))"/>
-        <xsl:variable name="r2d" select="font:getStringBounds($jfont, $text, $frc)"/>
-        <xsl:sequence select="r2d:getWidth($r2d)"/>
+        
+        <xsl:variable name="fontinfo" select="map {
+                'font' : $font,
+                'style' : $style,
+                'size' : $font-size
+            }"/>
+        
+        <xsl:sequence select="es:renderedTextLength($text, $fontinfo)"/>
+        
     </xsl:function>
 
     <xsl:function name="es:getReferencedSchemas" as="map(xs:string, document-node(element(xs:schema))*)">
