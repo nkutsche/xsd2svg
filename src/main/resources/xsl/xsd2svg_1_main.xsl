@@ -856,6 +856,7 @@
                             </xsl:choose>
                         </xsl:for-each>
                     </xsl:for-each>
+                    <xsl:apply-templates select="xs:simpleType" mode="#current"/>
                 </xsl:with-param>
                 <xsl:with-param name="symbol">
                     <xsl:call-template name="st_unionSymbol">
@@ -907,7 +908,7 @@
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="xs:list/xs:simpleType" mode="es:xsd2svg-content">
+    <xsl:template match="xs:list/xs:simpleType | xs:union/xs:simpleType" mode="es:xsd2svg-content">
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
