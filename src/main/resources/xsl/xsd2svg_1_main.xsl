@@ -568,7 +568,7 @@
                     ('any')
                 else
                     $refTarget/local-name()
-                    "/>
+                "/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
@@ -745,7 +745,7 @@
         </xsl:variable>
 
 
-        
+
         <xsl:call-template name="createTreeNode">
             <xsl:with-param name="symbol" select="$elementSymbol"/>
             <xsl:with-param name="content" select="$content"/>
@@ -807,15 +807,15 @@
     </xsl:template>
 
     <xsl:template match="xs:choice" mode="es:xsd2svg-content" priority="10">
-        
+
         <xsl:variable name="colors" select="$colorScheme('#default')"/>
-        
+
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
-        
+
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
-        
+
         <xsl:call-template name="createTreeNode">
             <xsl:with-param name="content" select="$content"/>
             <xsl:with-param name="colors" select="$colors"/>
@@ -825,7 +825,7 @@
                     <xsl:with-param name="colors" select="$colors"/>
                     <xsl:with-param name="multiValue" select="$multiValue"/>
                     <xsl:with-param name="connectCount" select="
-                        (count($content/svg:svg), 3) => min()"/>
+                            (count($content/svg:svg), 3) => min()"/>
                 </xsl:call-template>
             </xsl:with-param>
         </xsl:call-template>
@@ -991,7 +991,7 @@
                 <xsl:sequence select="[$labels(local-name()), @value/string()]"/>
             </xsl:for-each>
         </xsl:variable>
-        
+
         <xsl:sequence select="es:create-table(array {$table}, 10, $colors, $st-table-title)"/>
     </xsl:template>
 
@@ -1169,11 +1169,11 @@
 
 
     <xsl:template match="@maxOccurs | @minOccurs" mode="es:xsd2svg-content"/>
-    
+
     <xsl:template match="xs:annotation" mode="es:xsd2svg-content"/>
-        
-    
-    
+
+
+
 
     <xsl:template match="@*" mode="es:xsd2svg-content">
         <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The attribute ' || name() || ' is not supported.')"/>
@@ -1199,10 +1199,10 @@
 
         <xsl:variable name="type" select="local-name(.)"/>
         <xsl:variable name="colors" select="$colorScheme($type)"/>
-        
-        
+
+
         <xsl:variable name="symbol" select="es:getSymbol($type)"/>
-        
+
         <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
 
         <xsl:variable name="parentName" select="es:getName(.)"/>
@@ -1224,11 +1224,11 @@
                         <g>
                             <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white"/>
                         </g>
-                        
+
                         <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
                             <xsl:sequence select="$symbol"/>
                         </g>
-                        
+
                         <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                             <xsl:value-of select="$label"/>
                         </text>
@@ -1358,7 +1358,7 @@
         </xsl:if>
 
     </xsl:template>
-    
+
     <xsl:template name="createTreeNode">
         <xsl:param name="this" as="node()" select="."/>
         <xsl:param name="symbol" required="yes"/>
@@ -1366,16 +1366,16 @@
         <xsl:param name="content">
             <xsl:apply-templates select="$this/xs:*" mode="#current"/>
         </xsl:param>
-        
+
         <xsl:variable name="content" select="$content/svg:svg"/>
         <xsl:variable name="contentCount" select="count($content)"/>
         <xsl:variable name="contentMod" select="$contentCount mod 3"/>
         <xsl:variable name="contentTopBotCount" select="
-            xs:integer(floor($contentCount div 3) + (if ($contentMod = 2) then
-            (1)
-            else
-            (0)))" as="xs:integer"/>
-        
+                xs:integer(floor($contentCount div 3) + (if ($contentMod = 2) then
+                    (1)
+                else
+                    (0)))" as="xs:integer"/>
+
         <xsl:variable name="contentTop" select="$content[position() le $contentTopBotCount]"/>
         <xsl:variable name="contentBottom" select="$content[position() gt (last() - $contentTopBotCount)]"/>
         <xsl:variable name="contentRight" select="$content except ($contentTop, $contentBottom)"/>
@@ -1395,10 +1395,10 @@
                 <xsl:with-param name="x1" select="0"/>
                 <xsl:with-param name="x2" select="30"/>
                 <xsl:with-param name="minX1" select="
-                    if ($contentCount gt 3) then
-                    (30)
-                    else
-                    (15)"/>
+                        if ($contentCount gt 3) then
+                            (30)
+                        else
+                            (15)"/>
             </xsl:call-template>
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="strokeColor" select="$colors?main"/>
@@ -1406,10 +1406,10 @@
                 <xsl:with-param name="x1" select="0"/>
                 <xsl:with-param name="x2" select="30"/>
                 <xsl:with-param name="minX1" select="
-                    if ($contentCount gt 3) then
-                    (30)
-                    else
-                    (15)"/>
+                        if ($contentCount gt 3) then
+                            (30)
+                        else
+                            (15)"/>
             </xsl:call-template>
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="strokeColor" select="$colors?main"/>
@@ -1417,43 +1417,43 @@
                 <xsl:with-param name="x1" select="0"/>
                 <xsl:with-param name="x2" select="30"/>
                 <xsl:with-param name="minX1" select="
-                    if ($contentCount gt 3) then
-                    (30)
-                    else
-                    (15)"/>
+                        if ($contentCount gt 3) then
+                            (30)
+                        else
+                            (15)"/>
             </xsl:call-template>
         </xsl:variable>
-        
+
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
-        
+
         <xsl:variable name="contentSVGs" select="$contentNet/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementSVG" select="$symbol/(self::svg:svg, svg:svg)[1]"/>
         <xsl:variable name="elementHeight" select="sum($elementSVG/@height)"/>
         <xsl:variable name="elementWidth" select="max($elementSVG/@width)"/>
-        
+
         <xsl:variable name="countContent" select="count($contentSVGs)"/>
         <xsl:variable name="contentCY" select="
-            if ($countContent = 2)
-            then
-            (
-            ($contentSVGs[2]/@es:cY + $contentSVGs[1]/@height + $contentSVGs[1]/@es:cY
-            ) div 2
-            )
-            else
-            if ($countContent = 1)
-            then
-            ($contentSVGs[1]/@es:cY)
-            else
-            ($contentSVGs[2]/@es:cY + $contentSVGs[1]/@height)"/>
-        
+                if ($countContent = 2)
+                then
+                    (
+                    ($contentSVGs[2]/@es:cY + $contentSVGs[1]/@height + $contentSVGs[1]/@es:cY
+                    ) div 2
+                    )
+                else
+                    if ($countContent = 1)
+                    then
+                        ($contentSVGs[1]/@es:cY)
+                    else
+                        ($contentSVGs[2]/@es:cY + $contentSVGs[1]/@height)"/>
+
         <xsl:variable name="posY" select="max(($contentCY - es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2)), 0))"/>
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
         <xsl:variable name="svgWidth" select="
-            (if ($contentSVGs/@width) then
-            (max($contentSVGs/@width))
-            else
-            (0)) + $elementWidth"/>
+                (if ($contentSVGs/@width) then
+                    (max($contentSVGs/@width))
+                else
+                    (0)) + $elementWidth"/>
         <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" es:cY="{max(($contentCY, es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2))))}" es:multiValue="{$multiValue}">
             <g transform="translate(0,{$posY})">
                 <xsl:copy-of select="$elementSVG"/>
@@ -1469,25 +1469,25 @@
                 <path fill="none" stroke-width="1" stroke="{$colors?main}">
                     <xsl:variable name="ctop" select="$elementSVG/@es:cXTop, $elementSVG/@es:cYTop"/>
                     <xsl:attribute name="d" select="
-                        ('M', $ctop[1], $posY + $ctop[2],
-                        'L', $ctop[1], $contentSVGs[1]/@es:cY + 7,
-                        'Q', $ctop[1], $contentSVGs[1]/@es:cY, $ctop[1] + 7, $contentSVGs[1]/@es:cY,
-                        'L', $elementWidth, $contentSVGs[1]/@es:cY)"/>
+                            ('M', $ctop[1], $posY + $ctop[2],
+                            'L', $ctop[1], $contentSVGs[1]/@es:cY + 7,
+                            'Q', $ctop[1], $contentSVGs[1]/@es:cY, $ctop[1] + 7, $contentSVGs[1]/@es:cY,
+                            'L', $elementWidth, $contentSVGs[1]/@es:cY)"/>
                 </path>
                 <path fill="none" stroke-width="1" stroke="{$colors?main}">
                     <xsl:variable name="cbot" select="$elementSVG/@es:cXBottom, $elementSVG/@es:cYBottom"/>
                     <xsl:variable name="lastCY" select="sum($contentSVGs[position() != last()]/@height) + $contentSVGs[last()]/@es:cY"/>
                     <xsl:attribute name="d" select="
-                        ('M', $cbot[1], $posY + $cbot[2],
-                        'L', $cbot[1], $lastCY - 7,
-                        'Q', $cbot[1], $lastCY, $cbot[1] + 7, $lastCY,
-                        'L', $elementWidth, $lastCY)"/>
+                            ('M', $cbot[1], $posY + $cbot[2],
+                            'L', $cbot[1], $lastCY - 7,
+                            'Q', $cbot[1], $lastCY, $cbot[1] + 7, $lastCY,
+                            'L', $elementWidth, $lastCY)"/>
                 </path>
             </xsl:if>
         </svg>
-        
+
     </xsl:template>
-    
+
     <xsl:template name="makeParentSVGs">
         <xsl:param name="this" select="." as="element()"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
@@ -1515,7 +1515,6 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
-
 
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="paddingLR" select="5"/>
