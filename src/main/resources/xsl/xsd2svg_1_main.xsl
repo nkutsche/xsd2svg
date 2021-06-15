@@ -1142,88 +1142,12 @@
     </xsl:function>
 
 
-
-    <xsl:template match="xs:annotation[xs:documentation]" mode="es:xsd2svg-content">
-        <xsl:param name="hover_id" tunnel="yes" select="''"/>
-        <xsl:param name="invisible_ids" tunnel="yes" select="()"/>
-        <xsl:param name="color" select="$colorScheme('#default')?main"/>
-        <xsl:param name="cY" select="15"/>
-        <xsl:variable name="textContent" select="string-join(xs:documentation, '')"/>
-        <xsl:variable name="textLength" select="es:renderedTextLength($textContent, 'Arial', 'plain', 11)"/>
-
-        <xsl:variable name="content">
-            <xsl:apply-templates select="xs:documentation" mode="#current">
-                <xsl:with-param name="text-width" select="
-                        if ($textLength lt 2000) then
-                            (300)
-                        else
-                            (500)"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="content" select="$content/svg:svg"/>
-        <xsl:variable name="contentWidth" select="max($content/@width)"/>
-        <xsl:variable name="contentHeight" select="sum($content/@height)"/>
-        <es:docu>
-            <svg width="{$contentWidth + 32}" height="{$contentHeight + 17}" class="annotation">
-                <g visibility="hidden" style="z-index:1000">
-                    <set attributeName="visibility" to="visible" begin="{$hover_id}.mouseover" end="{$hover_id}.mouseout" es:dokuViewer="{$hover_id}"/>
-                    <xsl:for-each select="$invisible_ids">
-                        <set attributeName="visibility" to="hidden" begin="{.}.mouseover" end="{.}.mouseout"/>
-                    </xsl:for-each>
-                    <g transform="translate(1,1)">
-                        <xsl:variable name="curve" select="min((10, $cY - 5))"/>
-                        <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" fill="white" opacity="1" stroke="{$color}" stroke-width="1"/>
-                        <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" fill="{$color}" opacity="0.1" stroke="{$color}" stroke-width="1"/>
-                        <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" fill="none" opacity="1" stroke="{$color}" stroke-width="1"/>
-                        <xsl:for-each select="$content">
-                            <xsl:variable name="precHeight" select="sum(preceding-sibling::*/@height)"/>
-                            <g transform="translate(20,{$precHeight + 5})">
-                                <xsl:copy-of select="."/>
-                            </g>
-                        </xsl:for-each>
-                    </g>
-
-                </g>
-            </svg>
-        </es:docu>
-    </xsl:template>
-
-    <xsl:template match="xs:documentation" mode="es:xsd2svg-content">
-        <xsl:param name="text-width" select="300"/>
-        <xsl:variable name="fontSize" select="11"/>
-
-        <xsl:if test="@source or not(preceding-sibling::xs:documentation)">
-            <xsl:variable name="title">
-                <xsl:call-template name="wrap">
-                    <xsl:with-param name="text" select="
-                            if (@source) then
-                                (@source)
-                            else
-                                ('Documentation')"/>
-                    <xsl:with-param name="fontSize" select="$fontSize"/>
-                    <xsl:with-param name="font" select="'Arial'"/>
-                    <xsl:with-param name="width" select="$text-width"/>
-                    <xsl:with-param name="style" select="'bold'"/>
-                    <xsl:with-param name="spaceAfter" select="2"/>
-                </xsl:call-template>
-            </xsl:variable>
-            <xsl:copy-of select="$title"/>
-        </xsl:if>
-
-        <xsl:variable name="wrap">
-            <xsl:call-template name="wrap">
-                <xsl:with-param name="text" select="."/>
-                <xsl:with-param name="fontSize" select="$fontSize"/>
-                <xsl:with-param name="font" select="'Arial'"/>
-                <xsl:with-param name="width" select="$text-width"/>
-            </xsl:call-template>
-        </xsl:variable>
-        <xsl:copy-of select="$wrap"/>
-    </xsl:template>
-
     <xsl:template match="@maxOccurs | @minOccurs" mode="es:xsd2svg-content"/>
-
-
+    
+    <xsl:template match="xs:annotation" mode="es:xsd2svg-content"/>
+        
+    
+    
 
     <xsl:template match="@*" mode="es:xsd2svg-content">
         <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The attribute ' || name() || ' is not supported.')"/>
