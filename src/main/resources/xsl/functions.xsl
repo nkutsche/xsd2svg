@@ -871,18 +871,24 @@
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="font-color" select="'black'"/>
         <xsl:param name="symbol" as="node()?"/>
+        <xsl:param name="bold" select="false()" as="xs:boolean" tunnel="yes"/>
         <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="weight" select="
+                if ($bold) then
+                    ('bold')
+                else
+                    ('normal')"/>
         <xsl:variable name="symbol" select="$symbol/(self::svg:svg, svg:svg)[1]"/>
         <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
         <xsl:variable name="space" select="6"/>
-        <xsl:variable name="width" select="es:renderedTextLength($title, 'Arial', 'plain', $fontSize) + $symbolWidth + 3 * $space"/>
+        <xsl:variable name="width" select="es:renderedTextLength($title, 'Arial', $weight, $fontSize) + $symbolWidth + 4 * $space + 3"/>
 
         <svg width="{max(($width, 0))}" height="25">
             <g transform="translate(3,3)">
                 <g transform="translate({$space}, {$space div 2})">
                     <xsl:sequence select="$symbol"/>
                 </g>
-                <text x="{$symbolWidth + 2 * $space}" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                <text x="{$symbolWidth + 2 * $space}" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
                     <xsl:value-of select="$title"/>
                 </text>
             </g>
@@ -1359,15 +1365,22 @@
         <xsl:param name="font" as="xs:string"/>
         <xsl:param name="style" as="xs:string"/>
         <xsl:param name="font-size" as="xs:double"/>
-        
-        <xsl:variable name="fontinfo" select="map {
-                'font' : $font,
-                'style' : $style,
-                'size' : $font-size
-            }"/>
-        
+
+        <xsl:variable name="style" select="
+                if ($style ! lower-case(.) ! normalize-space(.) = 'normal') then
+                    ('plain')
+                else
+                    $style"/>
+
+        <xsl:variable name="fontinfo" select="
+                map {
+                    'font': $font,
+                    'style': $style,
+                    'size': $font-size
+                }"/>
+
         <xsl:sequence select="es:renderedTextLength($text, $fontinfo)"/>
-        
+
     </xsl:function>
 
     <xsl:function name="es:getReferencedSchemas" as="map(xs:string, document-node(element(xs:schema))*)">
