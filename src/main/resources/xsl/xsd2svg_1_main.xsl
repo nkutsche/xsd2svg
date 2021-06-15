@@ -549,16 +549,26 @@
                     'size': 11
                 }"/>
 
+        <xsl:variable name="refType" select="
+                if ($elementName = QName($XSDNS, 'any')) then
+                    ('any')
+                else
+                    $refTarget/local-name()
+                    "/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
+        <xsl:variable name="paddingLR" select="5"/>
+
+        <xsl:variable name="symbol" select="$refType ! es:getSymbol(.)"/>
+
+        <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
 
         <xsl:variable name="fontSize" select="$text-style?size"/>
         <xsl:variable name="fontStyle" select="($text-style?style, 'normal')[. != 'plain'][1]"/>
-        <xsl:variable name="paddingLR" select="5"/>
 
         <xsl:variable name="width" select="es:renderedTextLength($label, $text-style)"/>
-        <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+        <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
 
         <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:multiValue="{$multiValue}">
@@ -570,55 +580,52 @@
             <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
             <desc/>
             <g alignment-baseline="baseline" class="svg-element-ref" transform="translate(0, 2.5)">
-                <g id="{$hoverId}">
-                    <!--                    
-                        TODO
-                        <xsl:variable name="isDoku" select="root($refElement) = $dokuSchema" as="xs:boolean"/>
-                    -->
-                    <xsl:variable name="rect">
-                        <rect height="25" width="{$width}" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white">
-                            <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
-                                <xsl:attribute name="stroke-dashoffset" select="2"/>
-                                <xsl:attribute name="stroke-dasharray" select="2"/>
-                            </xsl:if>
-                            <!--
-                                TODO    
-                                <xsl:if test="$isDoku">
-                                <set attributeName="fill" to="#88f" begin="{$hoverId}.mouseover" end="{$hoverId}.mouseout"/>
-                            </xsl:if>
-                            -->
-                        </rect>
-                    </xsl:variable>
-                    <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
-                        <rect>
-                            <xsl:copy-of select="$rect/svg:rect/@*"/>
-                            <xsl:attribute name="y" select="3.5"/>
-                            <xsl:attribute name="stroke-width" select="0.33"/>
-                        </rect>
-                        <rect>
-                            <xsl:copy-of select="$rect/svg:rect/@*"/>
-                            <xsl:attribute name="y" select="2"/>
-                            <xsl:attribute name="stroke-width" select="0.66"/>
-                        </rect>
-                    </xsl:if>
-                    <xsl:copy-of select="$rect"/>
-                    <xsl:choose>
-                        <xsl:when test="false()">
-                            <!--                       TODO <xsl:when test="$isDoku">-->
-                            <a xlink:href="#{es:convertId($elementName)}" target="_top">
-                                <text x="{$paddingLR}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
-                                    <set attributeName="fill" to="#fff" begin="{$hoverId}.mouseover" end="{$hoverId}.mouseout"/>
+                <svg width="{$width + 1}" height="29">
+                    <g id="{$hoverId}" transform="translate(0.5, 0.5)">
+                        <xsl:variable name="rect">
+                            <rect height="25" width="{$width}" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white">
+                                <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
+                                    <xsl:attribute name="stroke-dashoffset" select="2"/>
+                                    <xsl:attribute name="stroke-dasharray" select="2"/>
+                                </xsl:if>
+                            </rect>
+                        </xsl:variable>
+                        <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                            <rect>
+                                <xsl:copy-of select="$rect/svg:rect/@*"/>
+                                <xsl:attribute name="y" select="3.5"/>
+                                <xsl:attribute name="stroke-width" select="0.33"/>
+                            </rect>
+                            <rect>
+                                <xsl:copy-of select="$rect/svg:rect/@*"/>
+                                <xsl:attribute name="y" select="2"/>
+                                <xsl:attribute name="stroke-width" select="0.66"/>
+                            </rect>
+                        </xsl:if>
+                        <xsl:copy-of select="$rect"/>
+
+                        <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
+                            <xsl:sequence select="$symbol"/>
+                        </g>
+
+                        <xsl:choose>
+                            <xsl:when test="false()">
+                                <!--                       TODO <xsl:when test="$isDoku">-->
+                                <a xlink:href="#{es:convertId($elementName)}" target="_top">
+                                    <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
+                                        <set attributeName="fill" to="#fff" begin="{$hoverId}.mouseover" end="{$hoverId}.mouseout"/>
+                                        <xsl:value-of select="$label"/>
+                                    </text>
+                                </a>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
                                     <xsl:value-of select="$label"/>
                                 </text>
-                            </a>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <text x="{$paddingLR}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
-                                <xsl:value-of select="$label"/>
-                            </text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </g>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </g>
+                </svg>
             </g>
         </svg>
     </xsl:template>
@@ -1560,9 +1567,15 @@
 
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="paddingLR" select="5"/>
+
+        <xsl:variable name="symbol">
+            <xsl:call-template name="simpleTypeSymbol"/>
+        </xsl:variable>
+        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
+
         <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
         <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
-        <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+        <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
         <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:displayW="{$width}" es:displayH="0" es:multiValue="one">
             <xsl:attribute name="es:minOccurs" select="1"/>
@@ -1574,14 +1587,24 @@
                                     TODO
                                     <xsl:variable name="isDoku" select="root($refElement) = $dokuSchema" as="xs:boolean"/>
                                 -->
-                    <xsl:variable name="rect">
-                        <rect height="25" width="{$width}" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="white"/>
-                    </xsl:variable>
-                    <xsl:copy-of select="$rect"/>
+                    <svg width="{$width + 1}" height="26">
+                        <xsl:variable name="rect">
+                            <rect height="25" width="{$width}" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="white"/>
+                        </xsl:variable>
+                        <g transform="translate(0.5, 0.5)">
+                            <xsl:copy-of select="$rect"/>
 
-                    <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                        <xsl:value-of select="$label"/>
-                    </text>
+                            <g transform="translate({$paddingLR}, {$paddingLR div 2})">
+                                <xsl:sequence select="$symbol"/>
+                            </g>
+
+                            <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                <xsl:value-of select="$label"/>
+                            </text>
+                        </g>
+
+
+                    </svg>
 
 
                 </g>
