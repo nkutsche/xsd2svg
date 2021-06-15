@@ -23,20 +23,20 @@
     
     
     
-    <xsl:template match="*[namespace-uri()='']/svg" priority="15" mode="es:xsd2svg-zindex">
+    <xsl:template match="svg[not(parent::svg:*)]" priority="15" mode="es:xsd2svg-zindex">
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="#current"/>
-            <xsl:for-each select="*">
-                <xsl:variable name="this" select="."/>
-                <xsl:variable name="ZLevels" select="es:getZLevels($this)"/>
-                <xsl:for-each select="$ZLevels">
-                    <xsl:sort select="." data-type="number"/>
-                    <xsl:variable name="level" select="."/>
-                    <xsl:apply-templates select="$this" mode="#current">
-                        <xsl:with-param name="z-index" select="$level"/>
-                    </xsl:apply-templates>
-                </xsl:for-each>
+            <xsl:variable name="this" select="."/>
+            <xsl:variable name="ZLevels" select="es:getZLevels($this/*)"/>
+            <xsl:for-each select="$ZLevels">
+                <xsl:sort select="." data-type="number"/>
+                
+                <xsl:variable name="level" select="."/>
+                <xsl:apply-templates select="$this/*" mode="#current">
+                    <xsl:with-param name="z-index" select="$level"/>
+                </xsl:apply-templates>
             </xsl:for-each>
+            
         </xsl:copy>
     </xsl:template>
     
@@ -65,11 +65,16 @@
         <xsl:sequence select="for $dl in $distLev return xs:double($dl)"/>
     </xsl:function>
     
-    <xsl:key name="zLevelById" match="@es:z-index" use="for $e in ..//* return generate-id($e)"/>
     <xsl:function name="es:getInhertZ" as="xs:double">
-        <xsl:param name="element" as="element()"/>
-        <xsl:variable name="root" select="root($element)"/>
-        <xsl:value-of select="es:number(key('zLevelById', generate-id($element), $root))"/>
+        <xsl:param name="e" as="element()"/>
+        <xsl:variable name="root" select="root($e)"/>
+        <xsl:variable name="parent" select="$e/parent::*"/>
+        <xsl:variable name="z-index" select="$e/@es:z-index"/>
+        <xsl:value-of select="es:number( 
+            if ($z-index) 
+            then ($z-index) 
+            else $parent/es:getInhertZ(.)
+            )"/>
     </xsl:function>
     
     
