@@ -1422,6 +1422,19 @@
         <xsl:sequence select="
                 map:merge($maps, map {'duplicates': 'combine'})"/>
     </xsl:function>
+    
+    <xsl:function name="es:getColors">
+        <xsl:param name="type" as="xs:string"/>
+        <xsl:choose>
+            <xsl:when test="map:contains($colorScheme, $type)">
+                <xsl:sequence select="$colorScheme($type)"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:message terminate="no" expand-text="yes">Unknown color type {$type}, using default color set.</xsl:message>
+                <xsl:sequence select="$colorScheme('#default')"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
 
     <xsl:function name="es:getParents" as="element()*">
         <xsl:param name="this" as="element()"/>
