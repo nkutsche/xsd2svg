@@ -35,26 +35,15 @@
             </xsl:apply-templates>
         </xsl:variable>
 
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="color" select="$color"/>
-                <xsl:with-param name="cY" select="$cY"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
-        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
-        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
 
         <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
 
@@ -66,7 +55,7 @@
         <xsl:variable name="position" select="(0, $posY)"/>
 
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - $elementHeight, 0))}">
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
             <xsl:variable name="fontSize" select="11"/>
             <xsl:variable name="paddingLR" select="5"/>
@@ -88,9 +77,6 @@
                     <xsl:copy-of select="."/>
                 </g>
             </xsl:for-each>
-            <g transform="translate({$width + $parentWidth}, {$elementPosY})">
-                <xsl:copy-of select="$doku"/>
-            </g>
 
             <g transform="translate(0,{$parentPosY})">
                 <xsl:copy-of select="$parents"/>
@@ -114,25 +100,15 @@
             <xsl:apply-templates select=". except xs:annotation" mode="es:xsd2svg-content"/>
         </xsl:variable>
 
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="color" select="$colors?main"/>
-                <xsl:with-param name="cY" select="$cY"/>
-            </xsl:apply-templates>
-        </xsl:variable>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
-        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
-        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
 
         <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
 
@@ -144,7 +120,7 @@
         <xsl:variable name="position" select="(0, $posY)"/>
 
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - $elementHeight, 0))}">
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
             <xsl:variable name="fontSize" select="11"/>
             <xsl:variable name="paddingLR" select="5"/>
@@ -166,9 +142,6 @@
                     <xsl:copy-of select="."/>
                 </g>
             </xsl:for-each>
-            <g transform="translate({$width + $parentWidth}, {$elementPosY})">
-                <xsl:copy-of select="$doku"/>
-            </g>
 
             <g transform="translate(0,{$parentPosY})">
                 <xsl:copy-of select="$parents"/>
@@ -198,24 +171,15 @@
                 <xsl:with-param name="strokeColor" select="$colors?main"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="color" select="$colors?main"/>
-                <xsl:with-param name="cY" select="$cY"/>
-            </xsl:apply-templates>
-        </xsl:variable>
+
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
-        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
-        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
 
         <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
 
@@ -227,7 +191,7 @@
         <xsl:variable name="position" select="(0, $posY)"/>
 
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - $elementHeight, 0))}">
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
             <xsl:variable name="fontSize" select="11"/>
             <xsl:variable name="paddingLR" select="5"/>
@@ -251,9 +215,6 @@
                     <xsl:copy-of select="."/>
                 </g>
             </xsl:for-each>
-            <g transform="translate({$width + $parentWidth}, {$elementPosY})">
-                <xsl:copy-of select="$doku"/>
-            </g>
 
             <g transform="translate(0,{$parentPosY})">
                 <xsl:copy-of select="$parents"/>
@@ -277,15 +238,6 @@
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:* except xs:annotation" mode="es:xsd2svg-content"/>
         </xsl:variable>
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="cY" select="15"/>
-                <xsl:with-param name="invisible_ids" select="$content//svg:set/@es:dokuViewer" tunnel="yes"/>
-                <xsl:with-param name="color" select="$color"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="dokuSVG" select="$doku/es:docu/svg:svg"/>
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" select="$content/svg:svg"/>
@@ -326,7 +278,7 @@
         <xsl:variable name="height" select="max(($groupHeight, $parentsHeight))"/>
 
 
-        <svg width="{$width + 7.5 + $parentsWidth}" height="{$height + 15}" es:cY="{$cY}" es:displayW="{es:number($dokuSVG/@width)}" es:displayH="{es:number($dokuSVG/@height)}" class="element_group" es:multiValue="{$multiValue}">
+        <svg width="{$width + 8 + $parentsWidth}" height="{$height + 15}" es:cY="{$cY}" class="element_group" es:multiValue="{$multiValue}">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="$height + 18.5"/>
             </xsl:if>
@@ -372,9 +324,6 @@
                 </xsl:if>
                 <xsl:copy-of select="$headerWithBorder"/>
 
-                <g transform="translate({$width + 1}, 0)" es:z-index="0">
-                    <xsl:copy-of select="$dokuSVG"/>
-                </g>
                 <g transform="translate(0, {$header/@height + 2.5})">
                     <xsl:copy-of select="$content"/>
                 </g>
@@ -413,16 +362,6 @@
 
 
         <xsl:variable name="hoverId" select="concat($model-id, '_attributName_', generate-id())"/>
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="#current">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="color" select="$stroke"/>
-                <xsl:with-param name="cY" select="$cY"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
-        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
-        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
 
 
         <xsl:variable name="fontSize" select="11"/>
@@ -441,7 +380,7 @@
 
         <xsl:variable name="width" select="$widths => max()"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
-        <svg width="{$width}" height="{$elementHeight + 5}" es:cY="{$cY}" class="attribute" id="{$model-id}_attribute_{es:convertId($label)}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - ($elementHeight + 5), 0))}" es:multiValue="{$multiValue}">
+        <svg width="{$width}" height="{$elementHeight + 5}" es:cY="{$cY}" class="attribute" id="{$model-id}_attribute_{es:convertId($label)}" es:multiValue="{$multiValue}">
             <desc/>
             <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})" id="{$hoverId}">
                 <g>
@@ -467,9 +406,7 @@
                     </text>
                 </xsl:if>
             </g>
-            <g transform="translate({$width}, 0)" es:z-index="0">
-                <xsl:copy-of select="$doku"/>
-            </g>
+
         </svg>
     </xsl:template>
 
@@ -542,16 +479,6 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="$refTarget/xs:annotation" mode="#current">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="cY" select="$cY"/>
-                <xsl:with-param name="color" select="$stroke"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
-        <xsl:variable name="dokuWidth" select="es:number(max($doku/@width))"/>
-        <xsl:variable name="dokuHeight" select="sum($doku/@height)"/>
 
         <xsl:variable name="fontSize" select="$text-style?size"/>
         <xsl:variable name="fontStyle" select="($text-style?style, 'normal')[. != 'plain'][1]"/>
@@ -561,7 +488,7 @@
         <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
 
 
-        <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:displayW="{$dokuWidth}" es:displayH="{max(($dokuHeight - 30, 0))}" es:multiValue="{$multiValue}">
+        <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:multiValue="{$multiValue}">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="33.5"/>
             </xsl:if>
@@ -619,9 +546,6 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </g>
-            </g>
-            <g transform="translate({$width}, 0)" es:z-index="0">
-                <xsl:copy-of select="$doku"/>
             </g>
         </svg>
     </xsl:template>
