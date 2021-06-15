@@ -806,6 +806,46 @@
         </svg>
     </xsl:template>
     
+    <xsl:function name="es:getSymbol" as="element(svg:svg)?">
+        <xsl:param name="type"/>
+        <xsl:choose>
+            <xsl:when test="$type = 'attribute'">
+                <xsl:call-template name="attributeSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'simpleType'">
+                <xsl:call-template name="simpleTypeSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'complexType'">
+                <xsl:call-template name="complexTypeSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'extension'">
+                <xsl:call-template name="extensionSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'restriction'">
+                <xsl:call-template name="restrictionSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = ('any', 'schema')">
+                <xsl:call-template name="anySymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'choice'">
+                <xsl:call-template name="choiceSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'sequence'">
+                <xsl:call-template name="sequenceSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'list'">
+                <xsl:call-template name="st_listSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'union'">
+                <xsl:call-template name="st_unionSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = ('element', 'schema')"/>
+            <xsl:otherwise>
+                <xsl:sequence select="es:error('bad-symbol-type-request', 'No symbol for type ' || $type || ' available.')"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
     <xsl:template name="groupTitle">
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="color" select="'#007'"/>
