@@ -14,8 +14,8 @@
     
     <xsl:import href="functions.xsl"/>
     <xsl:import href="xsd2svg_1_main.xsl"/>
-    <xsl:import href="xsd2svg_2_transform.xsl"/>
-    <xsl:import href="xsd2svg_3_zindex.xsl"/>
+    <xsl:import href="xsd2svg_3_transform.xsl"/>
+    <xsl:import href="xsd2svg_4_zindex.xsl"/>
     
     <xsl:mode name="es:xsd2svg"/>
 
