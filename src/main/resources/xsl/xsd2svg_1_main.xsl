@@ -15,7 +15,7 @@
     Model main elements
     -->
 
-    <xsl:template match="xs:schema/xs:element[@name] | xs:schema/xs:attribute[@name]" mode="es:xsd2svg" priority="10">
+    <xsl:template match="xs:element[@name] | xs:attribute[@name]" mode="es:xsd2svg" priority="10">
         <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
@@ -314,6 +314,7 @@
                 <xsl:with-param name="title" select="es:printQName($groupName, $schema-context)"/>
                 <xsl:with-param name="color" select="$color"/>
                 <xsl:with-param name="font-color" select="'black'"/>
+                <xsl:with-param name="bold" select="$isRoot" tunnel="yes"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="header" select="$header/svg:svg"/>
@@ -335,7 +336,7 @@
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="$height + 18.5"/>
             </xsl:if>
-            <g transform="translate({$parentsWidth}, {$groupPosY + 5})" id="{$hoverId}">
+            <g transform="translate({$parentsWidth + 0.5}, {$groupPosY + 5})" id="{$hoverId}">
 
                 <xsl:variable name="rect">
                     <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" stroke="{$color}" stroke-width="1">
@@ -831,9 +832,9 @@
 
 
     </xsl:template>
-    
-    
-    <xsl:template match="xs:element/xs:simpleType" mode="es:xsd2svg-content">
+
+
+    <xsl:template match="xs:element/xs:simpleType | xs:attribute/xs:simpleType" mode="es:xsd2svg-content">
         <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
         <xsl:call-template name="drawObjectPaths">
             <xsl:with-param name="content" as="element(svg:svg)">
@@ -897,12 +898,23 @@
         <xsl:variable name="content">
             <xsl:choose>
                 <xsl:when test="@itemType">
-                    <xsl:call-template name="elementRef">
-                        <xsl:with-param name="elementName" select="es:getQName(@itemType)"/>
-                        <xsl:with-param name="refAttribute" select="@itemType"/>
-                        <xsl:with-param name="multiValue" select="'one'"/>
-                        <xsl:with-param name="colors" select="$colors"/>
-                    </xsl:call-template>
+                    <xsl:variable name="qname" select="es:getQName(@itemType)"/>
+                    <xsl:variable name="ns" select="namespace-uri-from-QName($qname)"/>
+                    <xsl:choose>
+                        <xsl:when test="$ns = $XSDNS">
+                            <xsl:call-template name="xsdSimpleTypeRef">
+                                <xsl:with-param name="typeName" select="$qname"/>
+                            </xsl:call-template>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="elementRef">
+                                <xsl:with-param name="elementName" select="es:getQName(@itemType)"/>
+                                <xsl:with-param name="refAttribute" select="@itemType"/>
+                                <xsl:with-param name="multiValue" select="'one'"/>
+                                <xsl:with-param name="colors" select="$colors"/>
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates select="xs:simpleType" mode="#current"/>
@@ -1168,7 +1180,7 @@
     </xsl:template>
 
     <xsl:template match="*" mode="es:xsd2svg">
-        <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The element ' || name() || ' can not be converted to a SVG model.')"/>
+        <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The element ' || name() || ' can not be converted to a SVG model. [' || path(.) || ']')"/>
     </xsl:template>
 
     <xsl:template match="*" mode="es:xsd2svg-parent">
@@ -1322,8 +1334,8 @@
 
         <xsl:variable name="svgWidth" select="$contentWidth + 2.5"/>
         <xsl:if test="$content">
-            <svg width="{$svgWidth}" height="{$contentHeight + 10}" class="attribute_box" es:cY="{$content/@es:cY + 5 + $titleHeight}" es:multiValue="{es:multiValuesMerge($contentSVGs)}" es:stroke="{$strokeColor}">
-                <g transform="translate(0, 2.5)">
+            <svg width="{$svgWidth + 1}" height="{$contentHeight + 10}" class="attribute_box" es:cY="{$content/@es:cY + 5 + $titleHeight}" es:multiValue="{es:multiValuesMerge($contentSVGs)}" es:stroke="{$strokeColor}">
+                <g transform="translate(0.5, 2.5)">
 
                     <xsl:if test="$title">
                         <g>
