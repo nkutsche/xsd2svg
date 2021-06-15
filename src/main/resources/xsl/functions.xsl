@@ -602,6 +602,181 @@
         </svg>
     </xsl:template>
 
+    <xsl:template name="anySymbol">
+        <xsl:param name="colors" select="$colorScheme('any')"/>
+        <xsl:param name="connectCount" select="3"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:any</title>
+        </xsl:param>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
+            <g transform="translate(5, 9)">
+                <rect width="10" height="2" fill="{$color}"/>
+                <g transform="rotate(90, 5, 1)">
+                    <rect width="10" height="2" fill="{$color}"/>
+                </g>
+                <g transform="rotate(45, 5, 1)">
+                    <rect width="10" height="2" fill="{$color}"/>
+                </g>
+                <g transform="rotate(135, 5, 1)">
+                    <rect width="10" height="2" fill="{$color}"/>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
+
+    <xsl:template name="complexTypeSymbol">
+        <xsl:param name="colors" select="$colorScheme('complexType')"/>
+        <xsl:param name="connectCount" select="3"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:complexType</title>
+        </xsl:param>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
+
+            <g>
+                <rect x="8" y="4" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
+
+                <rect x="8" y="12" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
+                <rect x="2" y="12" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
+                <rect x="14" y="12" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
+
+                <path d="M 10 8 L 10 12" stroke="{$color}" stroke-width="1"/>
+                <path d="M 6 14 L 8 14" stroke="{$color}" stroke-width="1"/>
+                <path d="M 12 14 L 14 14" stroke="{$color}" stroke-width="1"/>
+
+            </g>
+
+        </svg>
+    </xsl:template>
+    <xsl:template name="simpleTypeSymbol">
+        <xsl:param name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:param name="connectCount" select="3"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:simpleType</title>
+        </xsl:param>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
+
+            <g>
+                <path d="M 2 10 L 10 5 L 18 10 L 10 15Z" stroke="{$color}" fill="{$colorFill}" stroke-width="0.5"/>
+            </g>
+
+        </svg>
+    </xsl:template>
+
+    <xsl:template name="attributeSymbol">
+        <xsl:param name="colors" select="$colorScheme('attribute')"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:attribute</title>
+        </xsl:param>
+
+        <xsl:variable name="color" select="$colors?main"/>
+        <xsl:variable name="colorFill" select="$colors?secondary"/>
+
+        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
+
+            <g transform="translate(-19.5, -4)">
+                <path stroke="{$color}" stroke-width="0.5" fill="{$colorFill}" d="
+                    M26 18.966 
+                    c -0.859 -0.472 -1.533 -1.136 -2.021 -1.992 
+                    s -0.732 -1.832 -0.732 -2.928 
+                    c 0 -1.112 0.246 -2.12 0.738 -3.024
+                    c 0.492 -0.904 1.176 -1.614 2.052 -2.13
+                    c 0.876 -0.516 1.874 -0.774 2.994-0.774
+                    c 1.072 0 2.038 0.244 2.898 0.732
+                    c 0.859 0.488 1.531 1.164 2.016 2.028 
+                    c 0.484 0.864 0.727 1.84 0.727 2.928  
+                    c 0 0.76 -0.12 1.448 -0.36 2.064
+                    c -0.24 0.616 -0.588 1.104 -1.044 1.464 
+                    c -0.456 0.36 -0.988 0.54 -1.596 0.54 
+                    c -0.48 0 -0.851 -0.146 -1.11 -0.438
+                    c -0.26 -0.292 -0.426 -0.762 -0.498 -1.41 
+                    c -0.008 -0.056 -0.024 -0.088 -0.048 -0.096 
+                    c -0.024 -0.008 -0.048 0.012 -0.072 0.06
+                    c -0.232 0.392 -0.504 0.68 -0.815 0.864 
+                    c -0.313 0.184 -0.673 0.276 -1.08 0.276 
+                    c -0.648 0 -1.173 -0.22 -1.572 -0.66
+                    c -0.4 -0.44 -0.601 -1.052 -0.601 -1.836 
+                    c 0 -0.672 0.143 -1.324 0.427 -1.956 
+                    c 0.283 -0.632 0.682 -1.148 1.193 -1.548
+                    
+                    c 0.513 -0.4 1.088 -0.6 1.729 -0.6 
+                    c 0.344 0 0.636 0.068 0.876 0.204
+                    s 0.456 0.364 0.647 0.684 
+                    c 0.024 0.048 0.053 0.072 0.084 0.072
+                    
+                    c 0.04 0 0.064 -0.028 0.072 -0.084
+                    l 0.084 -0.432 
+                    c 0.016 -0.072 0.061 -0.108 0.132 -0.108
+                    h 0.648 
+                    c 0.088 0 0.124 0.044 0.107 0.132
+                    
+                    c -0.304 1.424 -0.527 2.512 -0.672 3.264 
+                    c -0.144 0.752 -0.216 1.328 -0.216 1.728 
+                    c 0 0.336 0.068 0.59 0.204 0.762
+                    
+                    c 0.136 0.172 0.336 0.258 0.6 0.258 
+                    c 0.393 0 0.738 -0.14 1.038 -0.42 
+                    c 0.301 -0.28 0.532 -0.662 0.696 -1.146
+                    s 0.246 -1.022 0.246 -1.614
+                    
+                    c 0 -0.936 -0.2 -1.768 -0.6 -2.496 
+                    c -0.4 -0.728 -0.959 -1.294 -1.675 -1.698
+                    C 30.78 9.232 29.967 9.03 29.055 9.03
+                    
+                    c -0.952 0 -1.803 0.218 -2.55 0.654 
+                    c -0.748 0.437 -1.328 1.034 -1.74 1.794 
+                    c -0.412 0.76 -0.618 1.616 -0.618 2.568
+                    
+                    c 0 0.936 0.202 1.762 0.606 2.478 
+                    c 0.403 0.716 0.966 1.268 1.686 1.656
+                    s 1.544 0.582 2.472 0.582 
+                    c 0.521 0 1.021 -0.076 1.5 -0.228
+                    
+                    l 0.048 -0.012 
+                    c 0.057 0 0.085 0.036 0.085 0.108v0.696 
+                    c 0 0.072 -0.036 0.12 -0.108 0.144 
+                    c -0.448 0.136 -0.96 0.204 -1.536 0.204
+                    
+                    C 27.826 19.674 26.86 19.438 26 18.966z 
+                    
+                    M29.313 15.744 
+                    c 0.372 -0.324 0.662 -0.74 0.87 -1.248 
+                    c 0.208 -0.508 0.312 -1.018 0.312 -1.53
+                    
+                    c 0 -0.52 -0.109 -0.904 -0.33 -1.152 
+                    c -0.22 -0.248 -0.525 -0.372 -0.918 -0.372 
+                    c -0.479 0 -0.907 0.156 -1.283 0.468
+                    c -0.377 0.312 -0.669 0.716 -0.876 1.212 
+                    c -0.209 0.496 -0.313 1.004 -0.313 1.524 
+                    c 0 0.536 0.112 0.934 0.336 1.194
+                    
+                    s 0.536 0.39 0.937 0.39
+                    C 28.519 16.23 28.94 16.068 29.313 15.744z
+                    "/>
+            </g>
+
+        </svg>
+    </xsl:template>
+    
     <xsl:template name="groupTitle">
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="color" select="'#007'"/>
