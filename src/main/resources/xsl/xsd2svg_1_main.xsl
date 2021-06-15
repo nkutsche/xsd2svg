@@ -1253,13 +1253,6 @@
 
         <xsl:variable name="stroke" select="$colors?main"/>
 
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="cY" select="12.5"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
 
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="paddingLR" select="5"/>
@@ -1286,9 +1279,6 @@
                 </svg>
                 <!--</a>-->
             </g>
-            <g transform="translate({$width}, 2.5)">
-                <xsl:copy-of select="$doku"/>
-            </g>
         </svg>
     </xsl:template>
 
@@ -1314,15 +1304,6 @@
         <xsl:variable name="width" select="$header/@width"/>
         <xsl:variable name="height" select="$header/@height"/>
 
-        <xsl:variable name="doku">
-            <xsl:apply-templates select="xs:annotation" mode="es:xsd2svg-content">
-                <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
-                <xsl:with-param name="cY" select="$height div 2"/>
-                <xsl:with-param name="color" select="$color"/>
-            </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:variable name="doku" select="$doku/es:docu/svg:svg"/>
-
         <svg width="{$width}" height="{$height + 5}" es:cY="{($height div 2) + 2.5}" es:stroke="{$color}">
             <g transform="translate(1,1)" id="{$hoverId}">
                 <!--    TODO            <a xlink:href="#{es:convertId($groupName)}" target="_top">-->
@@ -1340,9 +1321,6 @@
                     <xsl:copy-of select="$header"/>
                 </g>
                 <!--</a>-->
-            </g>
-            <g transform="translate({$width}, 2.5)">
-                <xsl:copy-of select="$doku"/>
             </g>
         </svg>
     </xsl:template>
