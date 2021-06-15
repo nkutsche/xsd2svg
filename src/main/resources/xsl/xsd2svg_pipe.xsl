@@ -14,11 +14,13 @@
     
     <xsl:import href="functions.xsl"/>
     <xsl:import href="xsd2svg_1_main.xsl"/>
+    <xsl:import href="xsd2svg_2_docs.xsl"/>
     <xsl:import href="xsd2svg_3_transform.xsl"/>
     <xsl:import href="xsd2svg_4_zindex.xsl"/>
     
     <xsl:mode name="es:xsd2svg"/>
 
+    <xsl:mode name="es:xsd2svg-docs" on-no-match="shallow-copy"/>
     <xsl:mode name="es:xsd2svg-transform" on-no-match="shallow-copy"/>
     <xsl:mode name="es:xsd2svg-zindex" on-no-match="shallow-copy"/>
     <xsl:mode name="es:xsd2svg-cleanup" on-no-match="shallow-copy"/>
@@ -32,14 +34,21 @@
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
         
+        <xsl:variable name="modelid" select="generate-id($xsdnode)"/>
         <xsl:variable name="raw-model">
             <xsl:apply-templates select="$xsdnode" mode="es:xsd2svg">
                 <xsl:with-param name="schema-context" select="$schema-context" tunnel="yes"/>
-                <xsl:with-param name="model-id" select="generate-id($xsdnode)" tunnel="yes"/>
+                <xsl:with-param name="model-id" select="$modelid" tunnel="yes"/>
+            </xsl:apply-templates>
+        </xsl:variable>
+        <xsl:variable name="handle-docs">
+            <xsl:apply-templates select="$raw-model" mode="es:xsd2svg-docs">
+                <xsl:with-param name="schema-context" select="$schema-context" tunnel="yes"/>
+                <xsl:with-param name="model-id" select="$modelid" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="handle-transform">
-            <xsl:apply-templates select="$raw-model" mode="es:xsd2svg-transform"/>
+            <xsl:apply-templates select="$handle-docs" mode="es:xsd2svg-transform"/>
         </xsl:variable>
         <xsl:variable name="handle-zindex">
             <xsl:apply-templates select="$handle-transform" mode="es:xsd2svg-zindex"/>
