@@ -27,6 +27,7 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
+        <xsl:variable name="paddingLR" select="5"/>
 
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:* | @type" mode="es:xsd2svg-content">
@@ -35,11 +36,25 @@
             </xsl:apply-templates>
         </xsl:variable>
 
+        <xsl:variable name="symbol">
+            <xsl:if test="self::xs:attribute">
+                <xsl:call-template name="attributeSymbol">
+                    <xsl:with-param name="colors" select="
+                        map{
+                            'main' : $colors?main,
+                            'secondary' : $colors?main
+                        }
+                        "/>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:variable>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
+
+        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width)"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
@@ -58,18 +73,23 @@
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
             <xsl:variable name="fontSize" select="11"/>
-            <xsl:variable name="paddingLR" select="5"/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'plain', $fontSize)"/>
-            <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
-                <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$color}" stoke-width="1" fill="{$fill}"/>
-                </g>
-                <text x="{$paddingLR}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                    <xsl:value-of select="$elementName"/>
-                </text>
+                <svg width="{$width + 1}" height="26">
+                    <g transform="translate(0.5, 0.5)">
+                        <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$color}" stroke-width="1" fill="{$fill}"> </rect>
+                        <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
+                            <xsl:sequence select="$symbol"/>
+                        </g>
+
+                        <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                            <xsl:value-of select="$elementName"/>
+                        </text>
+                    </g>
+                </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
                 <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height) + $contentPosY"/>
@@ -95,11 +115,22 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
+        <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="paddingLR" select="5"/>
 
         <xsl:variable name="content">
             <xsl:apply-templates select="." mode="es:xsd2svg-content"/>
         </xsl:variable>
 
+        <xsl:variable name="symbol">
+            <xsl:call-template name="complexTypeSymbol">
+                <xsl:with-param name="colors" select="map{
+                    'main' : $colors?main,
+                    'secondary' : $colors?main
+                    }"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
@@ -122,19 +153,22 @@
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
-            <xsl:variable name="fontSize" select="11"/>
-            <xsl:variable name="paddingLR" select="5"/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'plain', $fontSize)"/>
-            <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
-                <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
-                </g>
-                <text x="{$paddingLR}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                    <xsl:value-of select="$elementName"/>
-                </text>
+                <svg width="{$width + 1}" height="26">
+                    <g transform="translate(0.5, 0.5)">
+                        <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
+                    </g>
+                    <g transform="translate({$paddingLR}, {$paddingLR div 2})">
+                        <xsl:sequence select="$symbol"/>
+                    </g>
+                    <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                        <xsl:value-of select="$elementName"/>
+                    </text>
+                </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
                 <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height) + $contentPosY"/>
@@ -159,6 +193,8 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
+        <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="paddingLR" select="5"/>
 
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
@@ -171,6 +207,17 @@
                 <xsl:with-param name="strokeColor" select="$colors?main"/>
             </xsl:call-template>
         </xsl:variable>
+
+
+        <xsl:variable name="symbol">
+            <xsl:call-template name="simpleTypeSymbol">
+                <xsl:with-param name="colors" select="map{
+                    'main' : $colors?main,
+                    'secondary' : $colors?main
+                    }"/>
+            </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
@@ -193,22 +240,25 @@
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
-            <xsl:variable name="fontSize" select="11"/>
-            <xsl:variable name="paddingLR" select="5"/>
             <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
-            <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
-            <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+            <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
-                <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
-                </g>
-                <text x="{$paddingLR}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                    <xsl:value-of select="$label"/>
-                </text>
+                <svg width="{$width + 1}" height="26">
+                    <g transform="translate(0.5, 0.5)">
+                        <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
+                    </g>
+                    <g transform="translate({$paddingLR}, {$paddingLR div 2})">
+                        <xsl:sequence select="$symbol"/>
+                    </g>
+                    <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                        <xsl:value-of select="$label"/>
+                    </text>
+                </svg>
             </g>
-            
+
             <xsl:for-each select="$contentSVGs">
                 <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height) + $contentPosY"/>
                 <g transform="translate({$width + $parentWidth}, {$precHeight})">
@@ -351,9 +401,19 @@
                 else
                     25"/>
         <xsl:variable name="position" select="(0, 2.5)"/>
+        <xsl:variable name="fontSize" select="11"/>
+        <xsl:variable name="paddingLR" select="5"/>
+
         <xsl:variable name="cY" select="$position[2] + ($elementHeight div 2)"/>
 
         <xsl:variable name="stroke" select="$colors?main"/>
+
+        <xsl:variable name="symbol">
+            <xsl:if test="self::xs:attribute">
+                <xsl:call-template name="attributeSymbol"/>
+            </xsl:if>
+        </xsl:variable>
+        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width)"/>
 
         <xsl:variable name="type-target" select="@type/es:getReference(., $schema-context)"/>
         <xsl:variable name="type-mode" select="($type-target/local-name(), 'simpleType')[1]"/>
@@ -363,17 +423,16 @@
 
         <xsl:variable name="hoverId" select="concat($model-id, '_attributName_', generate-id())"/>
 
-
-        <xsl:variable name="fontSize" select="11"/>
-        <xsl:variable name="paddingLR" select="5"/>
         <xsl:variable name="label" select="es:printQName($attributName, $schema-context)"/>
         <xsl:variable name="typeLabel" select="
                 if (@type) then
                     'Type: ' || es:printQName(es:getQName(@type), $schema-context)
                 else
                     ''"/>
+
+
         <xsl:variable name="widths" select="
-                es:renderedTextLength($label, 'Arial', 'plain', $fontSize),
+                es:renderedTextLength($label, 'Arial', 'plain', $fontSize) + $symbolWidth,
                 es:renderedTextLength($typeLabel, 'Arial', 'plain', $fontSize)
                 "/>
 
@@ -383,28 +442,42 @@
         <svg width="{$width}" height="{$elementHeight + 5}" es:cY="{$cY}" class="attribute" id="{$model-id}_attribute_{es:convertId($label)}" es:multiValue="{$multiValue}">
             <desc/>
             <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})" id="{$hoverId}">
-                <g>
-                    <xsl:if test="@type">
 
-
-                        <rect width="{$width}" height="{$elementHeight div 2}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}" ry="10" rx="10"/>
-                        <rect width="{$width}" height="{$elementHeight div 2 - 10}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}"/>
-                        <!--                        <rect width="{$width}" height="{$titleHeight - 7.5}" x="0" y="7.5" fill="{$type-bg}"/>-->
-                    </xsl:if>
-                    <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="none">
-                        <xsl:if test="$multiValue = $MultiValues[1]">
-                            <xsl:attribute name="stroke-dasharray" select="5, 5" separator=","/>
-                        </xsl:if>
-                    </rect>
-                </g>
-                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                    <xsl:value-of select="$label"/>
-                </text>
                 <xsl:if test="@type">
-                    <text x="{$paddingLR}" y="32" fill="{$type-text-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                        <xsl:value-of select="$typeLabel"/>
-                    </text>
+                    <svg width="{$width + 1}" height="{($elementHeight) + 1}">
+                        <g transform="translate(0.5, 0.5)">
+                            <rect width="{$width}" height="{$elementHeight div 2}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}" ry="10" rx="10"/>
+                            <rect width="{$width}" height="{$elementHeight div 2 - 10}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}"/>
+                            <text x="{$paddingLR}" y="32" fill="{$type-text-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                <xsl:value-of select="$typeLabel"/>
+                            </text>
+                        </g>
+                    </svg>
                 </xsl:if>
+
+                <svg width="{$width + 1}" height="{$elementHeight + 1}">
+                    <g transform="translate(0.5, 0.5)">
+
+                        <rect width="{$width}" height="{$elementHeight div 2}" x="0" y="0" fill="white" ry="10" rx="10"/>
+                        <rect width="{$width}" height="{$elementHeight div 2 - 10}" x="0" y="{$elementHeight div 2 - 10}" fill="white"/>
+
+
+                        <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="none">
+                            <xsl:if test="$multiValue = $MultiValues[1]">
+                                <xsl:attribute name="stroke-dasharray" select="5, 5" separator=","/>
+                            </xsl:if>
+                        </rect>
+
+                        <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
+                            <xsl:sequence select="$symbol"/>
+                        </g>
+
+                        <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                            <xsl:value-of select="$label"/>
+                        </text>
+                    </g>
+                </svg>
+
             </g>
 
         </svg>
@@ -1167,7 +1240,13 @@
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
 
 
-        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+        <xsl:variable name="type" select="local-name(.)"/>
+        <xsl:variable name="colors" select="$colorScheme($type)"/>
+        
+        
+        <xsl:variable name="symbol" select="es:getSymbol($type)"/>
+        
+        <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
 
         <xsl:variable name="parentName" select="es:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
@@ -1186,16 +1265,25 @@
         <xsl:variable name="paddingLR" select="5"/>
         <xsl:variable name="label" select="es:printQName($parentName, $schema-context)"/>
         <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
-        <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
+        <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
         <svg width="{$width}" height="30" es:cY="15">
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
                 <!-- TODO               <a xlink:href="#{es:convertId($parentName)}" target="_top">-->
-                <g>
-                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white"/>
-                </g>
-                <text x="{$paddingLR}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                    <xsl:value-of select="$label"/>
-                </text>
+                <svg width="{$width + 1}" height="26">
+                    <g transform="translate(0.5, 0.5)">
+                        <g>
+                            <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white"/>
+                        </g>
+                        
+                        <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
+                            <xsl:sequence select="$symbol"/>
+                        </g>
+                        
+                        <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                            <xsl:value-of select="$label"/>
+                        </text>
+                    </g>
+                </svg>
                 <!--</a>-->
             </g>
             <g transform="translate({$width}, 2.5)">
