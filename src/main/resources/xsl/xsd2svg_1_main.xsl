@@ -89,6 +89,7 @@
                             <xsl:value-of select="$elementName"/>
                         </text>
                     </g>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -168,6 +169,7 @@
                     <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$elementName"/>
                     </text>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -256,6 +258,7 @@
                     <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$label"/>
                     </text>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
             </g>
 
@@ -361,8 +364,13 @@
                     <path d="M 2.5 {$header/@height} L {$width} {$header/@height}" fill="none" stroke="{$color}" stroke-width="0.25"/>
                 </xsl:variable>
 
-                <xsl:if test="$isRoot">
-                    <path fill="{$color}" opacity="0.1">
+                <svg height="{$header/@height}" width="{$width + 2.5}">
+                    <xsl:variable name="bg" select="
+                            if ($isRoot) then
+                                ($color)
+                            else
+                                ('white')"/>
+                    <path fill="{$bg}" opacity="0.1">
                         <xsl:attribute name="d" select="
                                 'M', 0, $header/@height,
                                 'L', 0, 7,
@@ -371,8 +379,11 @@
                                 'Q', $width + 2.5, 0, $width + 2.5, 7,
                                 'L', $width + 2.5, $header/@height, 'Z'"/>
                     </path>
-                </xsl:if>
-                <xsl:copy-of select="$headerWithBorder"/>
+
+                    <xsl:copy-of select="$headerWithBorder"/>
+
+                    <xsl:sequence select="es:createDoku(.)"/>
+                </svg>
 
                 <g transform="translate(0, {$header/@height + 2.5})">
                     <xsl:copy-of select="$content"/>
@@ -452,6 +463,7 @@
                                 <xsl:value-of select="$typeLabel"/>
                             </text>
                         </g>
+                        <xsl:sequence select="$type-target/es:createDoku(.)"/>
                     </svg>
                 </xsl:if>
 
@@ -476,6 +488,7 @@
                             <xsl:value-of select="$label"/>
                         </text>
                     </g>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
 
             </g>
@@ -625,6 +638,7 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </g>
+                    <xsl:sequence select="$refTarget/es:createDoku(.)"/>
                 </svg>
             </g>
         </svg>
@@ -1207,6 +1221,7 @@
                             <xsl:value-of select="$label"/>
                         </text>
                     </g>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
                 <!--</a>-->
             </g>
@@ -1253,6 +1268,7 @@
                 </g>
                 <!--</a>-->
             </g>
+            <xsl:sequence select="es:createDoku(.)"/>
         </svg>
     </xsl:template>
 
@@ -1527,6 +1543,7 @@
                             </text>
                         </g>
 
+                        <xsl:sequence select="es:createDoku($buildInTypeDocs, 'simpleType')"/>
 
                     </svg>
 
@@ -1536,6 +1553,12 @@
         </svg>
 
     </xsl:template>
+
+    <xsl:variable name="buildInTypeDocs" as="element(xs:annotation)">
+        <xs:annotation>
+            <xs:documentation>XSD build in type.</xs:documentation>
+        </xs:annotation>
+    </xsl:variable>
 
 
 

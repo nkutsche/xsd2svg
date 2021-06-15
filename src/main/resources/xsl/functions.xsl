@@ -1244,6 +1244,20 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
+    
+    
+    <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
+        <xsl:param name="element" as="element()"/>
+        <xsl:sequence select="es:createDoku($element/xs:annotation, $element/local-name())"/>
+    </xsl:function>
+    
+    <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
+        <xsl:param name="annotation" as="element(xs:annotation)*"/>
+        <xsl:param name="color-scheme" as="xs:string"/>
+        <foreignObject es:color-scheme="{$colorScheme($color-scheme) => serialize(map{'method' : 'json'})}">
+            <xsl:sequence select="$annotation"/>
+        </foreignObject>
+    </xsl:function>
 
     <xsl:template name="wrap">
         <xsl:param name="text" as="xs:string"/>
