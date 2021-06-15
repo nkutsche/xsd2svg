@@ -22,6 +22,8 @@
         <xsl:variable name="corrSize" select="max(($thisSize[1], $contentSize[1])), max(($thisSize[2], $contentSize[2]))"/>
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="#current"/>
+            <xsl:attribute name="width" select="$corrSize[1]"/>
+            <xsl:attribute name="height" select="$corrSize[2]"/>
             <xsl:attribute name="es:width" select="$corrSize[1]"/>
             <xsl:attribute name="es:height" select="$corrSize[2]"/>
             <xsl:copy-of select="$content"/>
@@ -29,7 +31,19 @@
         
     </xsl:template>
     
-    <xsl:template match="svg:*[@transform]" mode="es:xsd2svg-transform">
+    <xsl:template match="svg:g" mode="es:xsd2svg-transform">
+        <xsl:variable name="content">
+            <xsl:apply-templates select="node()" mode="#current"/>
+        </xsl:variable>
+        <xsl:copy>
+            <xsl:apply-templates select="@*" mode="#current"/>
+            <xsl:attribute name="es:width" select="es:number(max($content/svg:*/@es:width))"/>
+            <xsl:attribute name="es:height" select="es:number(max($content/svg:*/@es:height))"/>
+            <xsl:sequence select="$content"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="svg:*[@transform]" mode="es:xsd2svg-transform" priority="10">
         <xsl:variable name="content">
             <xsl:apply-templates select="node()" mode="#current"/>
         </xsl:variable>
