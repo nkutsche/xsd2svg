@@ -395,6 +395,9 @@
     <xsl:template name="sequenceSymbol">
         <xsl:param name="colors" select="$colorScheme('#default')"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:sequence</title>
+        </xsl:param>
 
         <xsl:variable name="colorStroke" select="$colors?main"/>
         <xsl:variable name="colorFill" select="$colors?secondary"/>
@@ -403,6 +406,7 @@
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="23.5"/>
             </xsl:if>
+            <xsl:sequence select="$title"/>
             <g>
                 <xsl:variable name="circle">
                     <circle r="9.5" stroke="{$colorStroke}" stroke-width="1" cx="10" cy="10" fill="white">
@@ -426,6 +430,7 @@
                 </xsl:if>
                 <xsl:copy-of select="$circle"/>
                 <g>
+
                     <path d="M 0 10 
                         L 3 10
                         M 8.5 10
@@ -446,6 +451,9 @@
         <xsl:param name="colors" select="$colorScheme('#default')"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="connectCount" select="3"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:choice</title>
+        </xsl:param>
 
         <xsl:variable name="colorStroke" select="$colors?main"/>
         <xsl:variable name="colorFill" select="$colors?secondary"/>
@@ -455,6 +463,7 @@
                 <xsl:attribute name="es:cY" select="10"/>
                 <xsl:attribute name="height" select="23.5"/>
             </xsl:if>
+            <xsl:sequence select="$title"/>
             <g>
                 <xsl:variable name="circle">
                     <circle r="9.5" stroke="{$colorStroke}" stroke-width="1" cx="10" cy="10" fill="white">
@@ -506,21 +515,27 @@
                         <path d="M 10 16
                                  L 10 20" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
                     </xsl:if>
+
                 </g>
             </g>
         </svg>
     </xsl:template>
     <xsl:template name="st_unionSymbol">
         <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:union</title>
+        </xsl:param>
 
         <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="colorFill" select="$colors?secondary"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
                 <g>
                     <svg width="20" height="20" class="core">
+                        <xsl:sequence select="$title"/>
                         <g transform="rotate(45, 10, 10)">
                             <circle r="6" stroke="{$color}" stroke-width="1" cx="10" cy="10" fill="white"/>
                             <circle r="2" fill="{$color}" cx="10" cy="4"/>
@@ -534,11 +549,15 @@
     </xsl:template>
     <xsl:template name="st_listSymbol">
         <xsl:param name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:list</title>
+        </xsl:param>
 
         <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="colorFill" select="$colors?secondary"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
                 <g transform="translate(4, 4)">
@@ -559,15 +578,20 @@
     <xsl:template name="extensionSymbol">
         <xsl:param name="colors" select="$colorScheme('#default')"/>
         <xsl:param name="connectCount" select="3"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:extension</title>
+        </xsl:param>
 
         <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="colorFill" select="$colors?secondary"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
                 <g transform="translate(4.5, 2.5)">
                     <svg width="13" height="13" class="core">
+                        <xsl:sequence select="$title"/>
                         <g>
                             <rect width="4" height="4" x="1" y="3" fill="{$color}"/>
                             <rect width="4" height="4" x="1" y="8" fill="{$color}"/>
@@ -582,14 +606,19 @@
     <xsl:template name="restrictionSymbol">
         <xsl:param name="colors" select="$colorScheme('#default')"/>
         <xsl:param name="connectCount" select="3"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:restriction</title>
+        </xsl:param>
 
         <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="colorFill" select="$colors?secondary"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+            <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
                 <g transform="translate(4,4)">
+                    <xsl:sequence select="$title"/>
                     <svg class="core" width="12" height="12">
                         <g>
                             <rect width="10" height="2" x="1" y="1.5" fill="{$color}"/>
