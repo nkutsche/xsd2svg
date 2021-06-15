@@ -1103,6 +1103,9 @@
             <xsl:variable name="r2d" select="font:getStringBounds($jfont, $text, $frc)"/>
             <xsl:sequence select="r2d:getWidth($r2d)"/>
         </xsl:variable>
+        <xsl:variable name="result" use-when="function-available('es:textdimensions')">
+            <xsl:sequence select="es:textdimensions($text, map:put($fontStyle, 'unit', 'pt'))?width ! xs:double(.)"/>
+        </xsl:variable>
         <xsl:sequence select="$result"/>
         
     </xsl:function>
