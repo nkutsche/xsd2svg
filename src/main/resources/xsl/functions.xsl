@@ -1445,27 +1445,37 @@
         <xsl:param name="this" as="element()"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
-
-        <xsl:variable name="key-map" select="
-                map {
-                    'element': 'parentByElementRef',
-                    'group': 'parentByGroupRef',
-                    'attribute': 'elementByAttributename',
-                    'attributeGroup': 'elementByAttributename',
-                    'simpleType': 'parentByType',
-                    'complexType': 'parentByType'
-                }
-                "/>
-
-        <xsl:variable name="key" select="$key-map($this/local-name())"/>
-
-        <xsl:variable name="key" select="es:exactly-one($key, 'No parents available for ' || $this/local-name() || ' elements.')"/>
-
-        <xsl:variable name="schemas" select="map:keys($schema-context) ! $schema-context(.)"/>
-
-        <xsl:variable name="parents" select="$schemas/key($key, es:getName($this))"/>
-
-        <xsl:sequence select="$parents"/>
+        
+        <xsl:choose>
+            <xsl:when test="$this/parent::xs:schema">
+                
+                <xsl:variable name="key-map" select="
+                        map {
+                            'element': 'parentByElementRef',
+                            'group': 'parentByGroupRef',
+                            'attribute': 'elementByAttributename',
+                            'attributeGroup': 'elementByAttributename',
+                            'simpleType': 'parentByType',
+                            'complexType': 'parentByType'
+                        }
+                        "/>
+        
+                <xsl:variable name="key" select="$key-map($this/local-name())"/>
+        
+                <xsl:variable name="key" select="es:exactly-one($key, 'No parents available for ' || $this/local-name() || ' elements.')"/>
+        
+                <xsl:variable name="schemas" select="map:keys($schema-context) ! $schema-context(.)"/>
+        
+                <xsl:variable name="parents" select="$schemas/key($key, es:getName($this))"/>
+        
+                <xsl:sequence select="$parents"/>
+                
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$this/ancestor::*[@name][1]"/>
+            </xsl:otherwise>
+        </xsl:choose>
+        
     </xsl:function>
 
 </xsl:stylesheet>
