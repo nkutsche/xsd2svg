@@ -29,7 +29,7 @@
         <xsl:variable name="cY" select="12.5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:* except xs:annotation | @type" mode="es:xsd2svg-content">
+            <xsl:apply-templates select="xs:* | @type" mode="es:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$cY"/>
             </xsl:apply-templates>
@@ -97,7 +97,7 @@
         <xsl:variable name="cY" select="12.5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select=". except xs:annotation" mode="es:xsd2svg-content"/>
+            <xsl:apply-templates select="." mode="es:xsd2svg-content"/>
         </xsl:variable>
 
 
@@ -163,7 +163,7 @@
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" as="element(svg:svg)?">
-                    <xsl:apply-templates select="xs:* except xs:annotation" mode="es:xsd2svg-content">
+                    <xsl:apply-templates select="xs:*" mode="es:xsd2svg-content">
                         <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                         <xsl:with-param name="cY" select="$cY"/>
                     </xsl:apply-templates>
@@ -236,7 +236,7 @@
         <xsl:variable name="groupName" select="es:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_group_', $id)"/>
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:* except xs:annotation" mode="es:xsd2svg-content"/>
+            <xsl:apply-templates select="xs:*" mode="es:xsd2svg-content"/>
         </xsl:variable>
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
