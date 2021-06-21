@@ -11,12 +11,21 @@
     version="3.0"
     >
     
+<!--    
+    Imports:
+    -->
     
     <xsl:import href="functions.xsl"/>
     <xsl:import href="xsd2svg_1_main.xsl"/>
     <xsl:import href="xsd2svg_2_docs.xsl"/>
     <xsl:import href="xsd2svg_3_transform.xsl"/>
     <xsl:import href="xsd2svg_4_zindex.xsl"/>
+    
+    
+    
+<!--    
+        Modes:
+    -->
     
     <xsl:mode name="es:xsd2svg"/>
 
@@ -26,6 +35,15 @@
     <xsl:mode name="es:xsd2svg-cleanup" on-no-match="shallow-copy"/>
     
     
+    
+<!--    
+    Functions:
+    -->
+    
+<!--    
+    
+    SVG MODEL
+    -->
     
     <xsl:function name="es:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
@@ -57,8 +75,6 @@
     </xsl:function>
     
     <xsl:template match="@es:*" mode="es:xsd2svg-cleanup"/>
-    
-    
     
     
 </xsl:stylesheet>
