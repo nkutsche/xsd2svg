@@ -14,7 +14,7 @@
     >
     
     
-    <xsl:import href="xsd2svg_pipe.xsl"/>
+    <xsl:import href="xsd2svg_api.xsl"/>
     
     
     
