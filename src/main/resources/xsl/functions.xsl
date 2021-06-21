@@ -68,22 +68,27 @@
 
     <xsl:function name="es:printQName" as="xs:string">
         <xsl:param name="qname" as="xs:QName"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+
+        <xsl:variable name="prefix-map" select="$schemaSetConfig?prefix-map"/>
 
         <xsl:variable name="namespace" select="namespace-uri-from-QName($qname)"/>
         <xsl:variable name="local-name" select="local-name-from-QName($qname)"/>
-        <xsl:variable name="schemas" select="
-                if ($namespace = $XSDNS) then
-                    (map:keys($schema-context) ! $schema-context(.))
-                else
-                    $schema-context($namespace)"/>
-        <xsl:variable name="prefix" select="($schemas//namespace::*[. = $namespace]/name())[1]" as="xs:string?"/>
 
         <xsl:variable name="prefix" select="
-                if ($prefix) then
-                    ($prefix || ':')
+                if (map:contains($prefix-map, $namespace)) then
+                    ($prefix-map($namespace))
                 else
-                    ('')"/>
+                    ()"/>
+
+        <xsl:variable name="prefix" select="
+                if ($prefix = '') then
+                    ''
+                else
+                    if ($prefix) then
+                        ($prefix || ':')
+                    else
+                        ('Q{' || $namespace || '}')"/>
 
         <xsl:sequence select="$prefix || $local-name"/>
 
@@ -186,7 +191,9 @@
 
     <xsl:function name="es:getReference" as="node()?">
         <xsl:param name="attr" as="attribute()"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+
+        <xsl:variable name="schema-context" select="$schemaSetConfig?schema-map" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
         <xsl:variable name="attrName" select="$attr/local-name()"/>
         <xsl:variable name="element" select="
@@ -227,16 +234,19 @@
 
     <xsl:function name="es:getReferenceByQName" as="node()*">
         <xsl:param name="qname" as="xs:QName"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="refKind" as="xs:string*"/>
-        <xsl:sequence select="es:getReferenceByQName($qname, $schema-context, $refKind, true())"/>
+        
+        <xsl:sequence select="es:getReferenceByQName($qname, $schemaSetConfig, $refKind, true())"/>
     </xsl:function>
 
     <xsl:function name="es:getReferenceByQName" as="node()*">
         <xsl:param name="qname" as="xs:QName"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="refKind" as="xs:string*"/>
         <xsl:param name="exactlyOneRef" as="xs:boolean"/>
+        
+        <xsl:variable name="schema-context" select="$schemaSetConfig?schema-map" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
 
         <xsl:variable name="namespace" select="namespace-uri-from-QName($qname)"/>
@@ -393,7 +403,8 @@
     </xsl:function>
 
     <xsl:template name="sequenceSymbol">
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:sequence</title>
@@ -448,7 +459,8 @@
         </svg>
     </xsl:template>
     <xsl:template name="choiceSymbol">
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
@@ -521,7 +533,8 @@
         </svg>
     </xsl:template>
     <xsl:template name="st_unionSymbol">
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:union</title>
         </xsl:param>
@@ -548,7 +561,8 @@
         </svg>
     </xsl:template>
     <xsl:template name="st_listSymbol">
-        <xsl:param name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:list</title>
         </xsl:param>
@@ -576,7 +590,8 @@
         </svg>
     </xsl:template>
     <xsl:template name="extensionSymbol">
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:extension</title>
@@ -604,7 +619,8 @@
         </svg>
     </xsl:template>
     <xsl:template name="restrictionSymbol">
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:restriction</title>
@@ -632,7 +648,8 @@
     </xsl:template>
 
     <xsl:template name="anySymbol">
-        <xsl:param name="colors" select="$colorScheme('any')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('any', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:any</title>
@@ -661,7 +678,8 @@
     </xsl:template>
 
     <xsl:template name="complexTypeSymbol">
-        <xsl:param name="colors" select="$colorScheme('complexType')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('complexType', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:complexType</title>
@@ -691,7 +709,8 @@
         </svg>
     </xsl:template>
     <xsl:template name="simpleTypeSymbol">
-        <xsl:param name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:simpleType</title>
@@ -711,7 +730,8 @@
     </xsl:template>
 
     <xsl:template name="attributeSymbol">
-        <xsl:param name="colors" select="$colorScheme('attribute')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('attribute', $schemaSetConfig)"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:attribute</title>
         </xsl:param>
@@ -847,9 +867,11 @@
     </xsl:function>
 
     <xsl:template name="groupTitle">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="title" as="xs:string"/>
-        <xsl:param name="color" select="'#007'"/>
-        <xsl:param name="font-color" select="'black'"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
+        <xsl:param name="color" select="$colors?main"/>
+        <xsl:param name="font-color" select="$colors?text"/>
 
         <xsl:call-template name="boxTitle">
             <xsl:with-param name="title" select="$title"/>
@@ -898,7 +920,8 @@
 
     <xsl:template name="drawObjectPaths">
         <xsl:param name="content" as="element(svg:svg)*"/>
-        <xsl:param name="strokeColor" as="xs:string" select="$colorScheme('#default')?main"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="strokeColor" as="xs:string" select="es:getColors('#default', $schemaSetConfig)?main"/>
         <xsl:param name="x0" select="0"/>
         <xsl:param name="x1" select="25"/>
         <xsl:param name="x2" select="50"/>
@@ -1244,17 +1267,19 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
-    
-    
+
+
     <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
         <xsl:param name="element" as="element()"/>
-        <xsl:sequence select="es:createDoku($element/xs:annotation, $element/local-name())"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+        <xsl:sequence select="es:createDoku($element/xs:annotation, $element/local-name(), $schemaSetConfig)"/>
     </xsl:function>
-    
+
     <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
         <xsl:param name="annotation" as="element(xs:annotation)*"/>
         <xsl:param name="color-scheme" as="xs:string"/>
-        <foreignObject es:color-scheme="{$colorScheme($color-scheme) => serialize(map{'method' : 'json'})}">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+        <foreignObject es:color-scheme="{es:getColors($color-scheme, $schemaSetConfig) => serialize(map{'method' : 'json'})}">
             <xsl:sequence select="$annotation"/>
         </foreignObject>
     </xsl:function>
@@ -1436,9 +1461,12 @@
         <xsl:sequence select="
                 map:merge($maps, map {'duplicates': 'combine'})"/>
     </xsl:function>
-    
+
     <xsl:function name="es:getColors">
         <xsl:param name="type" as="xs:string"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+
+        <xsl:variable name="colorScheme" select="$schemaSetConfig?config?styling?colors"/>
         <xsl:choose>
             <xsl:when test="map:contains($colorScheme, $type)">
                 <xsl:sequence select="$colorScheme($type)"/>
@@ -1450,19 +1478,22 @@
         </xsl:choose>
     </xsl:function>
 
-    <xsl:function name="es:getParents" as="element()*">
+    <!--<xsl:function name="es:getParents" as="element()*">
         <xsl:param name="this" as="element()"/>
         <xsl:sequence select="es:getParents($this, es:getReferencedSchemas(root($this)))"/>
-    </xsl:function>
+    </xsl:function>-->
 
     <xsl:function name="es:getParents" as="element()*">
         <xsl:param name="this" as="element()"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
-
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         
+        
+        <xsl:variable name="schema-context" select="$schemaSetConfig?schema-map" as="map(xs:string, document-node(element(xs:schema))*)"/>
+
+
         <xsl:choose>
             <xsl:when test="$this/parent::xs:schema">
-                
+
                 <xsl:variable name="key-map" select="
                         map {
                             'element': 'parentByElementRef',

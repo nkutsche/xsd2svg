@@ -18,9 +18,9 @@
     <xsl:template match="xs:element[@name] | xs:attribute[@name]" mode="es:xsd2svg" priority="10">
         <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:param name="colors" select="$colorScheme(local-name())"/>
+        <xsl:param name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="fill" select="$colors?secondary"/>
@@ -73,7 +73,7 @@
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
             <xsl:variable name="fontSize" select="11"/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), 'Arial', 'bold', $fontSize)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
@@ -89,7 +89,7 @@
                             <xsl:value-of select="$elementName"/>
                         </text>
                     </g>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -109,10 +109,10 @@
     <xsl:template match="xs:schema/xs:complexType[@name]" mode="es:xsd2svg" priority="10">
         <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="content-line" select="exists(self::xs:complexType)" as="xs:boolean"/>
 
-        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
@@ -154,7 +154,7 @@
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schema-context), 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), 'Arial', 'bold', $fontSize)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
@@ -169,7 +169,7 @@
                     <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$elementName"/>
                     </text>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -189,9 +189,9 @@
     <xsl:template match="xs:simpleType[@name]" mode="es:xsd2svg">
         <xsl:param name="typeName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
@@ -242,7 +242,7 @@
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
-            <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
+            <xsl:variable name="label" select="es:printQName($typeName, $schemaSetConfig)"/>
             <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'bold', $fontSize)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
@@ -258,7 +258,7 @@
                     <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$label"/>
                     </text>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
             </g>
 
@@ -280,10 +280,10 @@
         <xsl:param name="id" select="generate-id()"/>
         <xsl:param name="multiValue" select="$MultiValues[2]"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="isRoot" select="true()" as="xs:boolean"/>
 
-        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="groupName" select="es:getName(.)"/>
@@ -311,7 +311,7 @@
 
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
-                <xsl:with-param name="title" select="es:printQName($groupName, $schema-context)"/>
+                <xsl:with-param name="title" select="es:printQName($groupName, $schemaSetConfig)"/>
                 <xsl:with-param name="color" select="$color"/>
                 <xsl:with-param name="font-color" select="'black'"/>
                 <xsl:with-param name="bold" select="$isRoot" tunnel="yes"/>
@@ -383,7 +383,7 @@
 
                     <xsl:copy-of select="$headerWithBorder"/>
 
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
 
                 <g transform="translate(0, {$header/@height + 2.5})">
@@ -402,9 +402,9 @@
     <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="es:xsd2svg-content">
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="multiValue" select="es:getMultiValue(.)" as="xs:string"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="attributName" select="es:getName(.)"/>
         <xsl:variable name="elementHeight" select="
@@ -427,18 +427,18 @@
         </xsl:variable>
         <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width)"/>
 
-        <xsl:variable name="type-target" select="@type/es:getReference(., $schema-context)"/>
+        <xsl:variable name="type-target" select="@type/es:getReference(., $schemaSetConfig)"/>
         <xsl:variable name="type-mode" select="($type-target/local-name(), 'simpleType')[1]"/>
-        <xsl:variable name="type-bg" select="$colorScheme($type-mode)?secondary"/>
-        <xsl:variable name="type-text-color" select="$colorScheme($type-mode)?text"/>
+        <xsl:variable name="type-bg" select="es:getColors($type-mode, $schemaSetConfig)?secondary"/>
+        <xsl:variable name="type-text-color" select="es:getColors($type-mode, $schemaSetConfig)?text"/>
 
 
         <xsl:variable name="hoverId" select="concat($model-id, '_attributName_', generate-id())"/>
 
-        <xsl:variable name="label" select="es:printQName($attributName, $schema-context)"/>
+        <xsl:variable name="label" select="es:printQName($attributName, $schemaSetConfig)"/>
         <xsl:variable name="typeLabel" select="
                 if (@type) then
-                    'Type: ' || es:printQName(es:getQName(@type), $schema-context)
+                'Type: ' || es:printQName(es:getQName(@type), $schemaSetConfig)
                 else
                     ''"/>
 
@@ -464,7 +464,7 @@
                                 <xsl:value-of select="$typeLabel"/>
                             </text>
                         </g>
-                        <xsl:sequence select="$type-target/es:createDoku(.)"/>
+                        <xsl:sequence select="$type-target/es:createDoku(., $schemaSetConfig)"/>
                     </svg>
                 </xsl:if>
 
@@ -489,7 +489,7 @@
                             <xsl:value-of select="$label"/>
                         </text>
                     </g>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
 
             </g>
@@ -500,11 +500,11 @@
     <xsl:template match="xs:element/@type | xs:attribute/@type" mode="es:xsd2svg-content">
         <xsl:param name="typeName" select="es:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
         <xsl:variable name="namespace" select="namespace-uri-from-QName($typeName)"/>
 
-        <xsl:variable name="reference" select="es:getReference(., $schema-context)"/>
+        <xsl:variable name="reference" select="es:getReference(., $schemaSetConfig)"/>
 
         <xsl:variable name="isXsd" select="$namespace = $XSDNS"/>
 
@@ -514,7 +514,7 @@
                 else
                     local-name($reference)"/>
 
-        <xsl:variable name="colors" select="$colorScheme($kindOfType)"/>
+        <xsl:variable name="colors" select="es:getColors($kindOfType, $schemaSetConfig)"/>
 
 
         <xsl:variable name="content">
@@ -549,13 +549,13 @@
     <xsl:template match="xs:element[@ref] | xs:attribute[@ref]" name="elementRef" mode="es:xsd2svg-content">
         <xsl:param name="elementName" select="es:getName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="multiValue" select="es:getMultiValue(.)"/>
         <xsl:param name="refAttribute" select="@ref" as="attribute()?"/>
-        <xsl:param name="refTarget" select="$refAttribute/es:getReference(., $schema-context)" as="node()?"/>
-        <xsl:param name="colors" select="$colorScheme(local-name($refTarget))"/>
+        <xsl:param name="refTarget" select="$refAttribute/es:getReference(., $schemaSetConfig)" as="node()?"/>
+        <xsl:param name="colors" select="es:getColors(local-name($refTarget), $schemaSetConfig)"/>
         <xsl:param name="stroke" select="$colors?main"/>
-        <xsl:param name="label" select="es:printQName($elementName, $schema-context)"/>
+        <xsl:param name="label" select="es:printQName($elementName, $schemaSetConfig)"/>
         <xsl:param name="text-style" as="map(*)" select="
                 map {
                     'font': 'Arial',
@@ -639,18 +639,19 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </g>
-                    <xsl:sequence select="$refTarget/es:createDoku(.)"/>
+                    <xsl:sequence select="$refTarget/es:createDoku(., $schemaSetConfig)"/>
                 </svg>
             </g>
         </svg>
     </xsl:template>
 
     <xsl:template match="xs:group[@ref] | xs:attributeGroup[@ref]" mode="es:xsd2svg-content">
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+
         <xsl:variable name="groupName" select="es:getName(.)"/>
         <xsl:variable name="namespace" select="namespace-uri-from-QName($groupName)"/>
         <xsl:variable name="mode" select="local-name()"/>
-        <xsl:variable name="refGroup" select="es:getReference(@ref, $schema-context)" as="node()"/>
+        <xsl:variable name="refGroup" select="es:getReference(@ref, $schemaSetConfig)" as="node()"/>
 
         <xsl:apply-templates select="$refGroup" mode="#current">
             <xsl:with-param name="id" select="generate-id()"/>
@@ -678,24 +679,24 @@
 
 
     <xsl:template match="xs:complexContent/xs:extension | xs:simpleContent/xs:extension | xs:simpleContent/xs:restriction | xs:simpleType/xs:restriction" mode="es:xsd2svg-content">
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
         <xsl:variable name="baseName" select="es:getQName(@base)"/>
         <xsl:variable name="baseNs" select="namespace-uri-from-QName($baseName)"/>
 
-        <xsl:variable name="ref" select="es:getReference(@base, $schema-context)"/>
+        <xsl:variable name="ref" select="es:getReference(@base, $schemaSetConfig)"/>
         <xsl:variable name="colorType" select="
                 if (parent::xs:complexContent) then
                     'complexType'
                 else
                     'simpleType'"/>
-        <xsl:variable name="colors" select="$colorScheme($colorType)"/>
+        <xsl:variable name="colors" select="es:getColors($colorType, $schemaSetConfig)"/>
 
         <xsl:variable name="baseIsXSD" select="$baseNs = $XSDNS"/>
         <xsl:variable name="boxTitle" select="
                 (
                 'Base: ',
-                es:printQName(es:getQName(@base), $schema-context)[not($baseIsXSD)]
+                es:printQName(es:getQName(@base), $schemaSetConfig)[not($baseIsXSD)]
                 ) => string-join()
                 "/>
 
@@ -755,8 +756,9 @@
     </xsl:template>
 
     <xsl:template match="xs:sequence" mode="es:xsd2svg-content">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+        <xsl:variable name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
 
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
 
@@ -807,8 +809,9 @@
     </xsl:template>
 
     <xsl:template match="xs:choice" mode="es:xsd2svg-content" priority="10">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+        <xsl:variable name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
 
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
@@ -835,7 +838,8 @@
 
 
     <xsl:template match="xs:element/xs:simpleType | xs:attribute/xs:simpleType" mode="es:xsd2svg-content">
-        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:variable name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
         <xsl:call-template name="drawObjectPaths">
             <xsl:with-param name="content" as="element(svg:svg)">
                 <xsl:apply-templates select="xs:*" mode="#current"/>
@@ -845,10 +849,10 @@
     </xsl:template>
 
     <xsl:template match="xs:union" mode="es:xsd2svg-content" priority="10">
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
         <xsl:variable name="union" select="."/>
-        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:variable name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
 
         <xsl:variable name="content">
             <xsl:call-template name="createTreeNode">
@@ -867,7 +871,7 @@
                                 <xsl:otherwise>
                                     <xsl:call-template name="elementRef">
                                         <xsl:with-param name="elementName" select="$qname"/>
-                                        <xsl:with-param name="refTarget" select="es:getReferenceByQName($qname, $schema-context, 'simpleType')"/>
+                                        <xsl:with-param name="refTarget" select="es:getReferenceByQName($qname, $schemaSetConfig, 'simpleType')"/>
                                         <xsl:with-param name="multiValue" select="'one'"/>
                                         <!--                                        <xsl:with-param name="colors" select="$colors"/>-->
                                     </xsl:call-template>
@@ -891,9 +895,9 @@
     </xsl:template>
 
     <xsl:template match="xs:list" mode="es:xsd2svg-content" priority="10">
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:variable name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
 
         <xsl:variable name="content">
             <xsl:choose>
@@ -939,6 +943,7 @@
     </xsl:template>
 
     <xsl:template match="xs:list/xs:simpleType | xs:union/xs:simpleType" mode="es:xsd2svg-content">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
@@ -950,16 +955,16 @@
         </xsl:variable>
         <xsl:call-template name="createContentBox">
             <xsl:with-param name="content" select="$content"/>
-            <xsl:with-param name="colors" select="$colorScheme(local-name())"/>
+            <xsl:with-param name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
         </xsl:call-template>
     </xsl:template>
 
 
     <xsl:template match="xs:restriction" mode="es:xsd2svg-content">
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="st-table-title" select="'Facets'" as="xs:string?" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme('simpleType')"/>
+        <xsl:variable name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
 
         <xsl:variable name="labels" select="
                 map {
@@ -997,8 +1002,9 @@
 
     <xsl:template match="xs:any" mode="es:xsd2svg-content">
         <xsl:param name="model-id" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme(local-name(.))"/>
+        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="ns" select="(@namespace, '##any')[1]"/>
         <xsl:variable name="tns" select="root(.)/xs:schema/@targetNamespace"/>
@@ -1194,11 +1200,11 @@
     <xsl:template match="xs:element[@name] | xs:attribute[@name] | xs:complexType[@name]" mode="es:xsd2svg-parent">
         <xsl:param name="childId"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
 
         <xsl:variable name="type" select="local-name(.)"/>
-        <xsl:variable name="colors" select="$colorScheme($type)"/>
+        <xsl:variable name="colors" select="es:getColors($type, $schemaSetConfig)"/>
 
 
         <xsl:variable name="symbol" select="es:getSymbol($type)"/>
@@ -1213,7 +1219,7 @@
 
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="paddingLR" select="5"/>
-        <xsl:variable name="label" select="es:printQName($parentName, $schema-context)"/>
+        <xsl:variable name="label" select="es:printQName($parentName, $schemaSetConfig)"/>
         <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
         <svg width="{$width}" height="30" es:cY="15">
@@ -1233,7 +1239,7 @@
                             <xsl:value-of select="$label"/>
                         </text>
                     </g>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
                 <!--</a>-->
             </g>
@@ -1243,9 +1249,9 @@
     <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="es:xsd2svg-parent">
         <xsl:param name="childId"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="$colorScheme('#default')"/>
+        <xsl:variable name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
 
         <xsl:variable name="color" select="$colors?main"/>
 
@@ -1254,7 +1260,7 @@
 
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
-                <xsl:with-param name="title" select="es:printQName($groupName, $schema-context)"/>
+                <xsl:with-param name="title" select="es:printQName($groupName, $schemaSetConfig)"/>
                 <xsl:with-param name="color" select="$color"/>
             </xsl:call-template>
         </xsl:variable>
@@ -1280,14 +1286,15 @@
                 </g>
                 <!--</a>-->
             </g>
-            <xsl:sequence select="es:createDoku(.)"/>
+            <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
         </svg>
     </xsl:template>
 
     <xsl:template name="createAttributeBox">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
         <xsl:call-template name="createContentBox">
-            <xsl:with-param name="colors" select="$colorScheme('attribute')"/>
+            <xsl:with-param name="colors" select="es:getColors('attribute', $schemaSetConfig)"/>
             <xsl:with-param name="content">
                 <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="es:xsd2svg-content"/>
             </xsl:with-param>
@@ -1296,7 +1303,8 @@
 
     <xsl:template name="createContentBox">
         <xsl:param name="content" required="yes"/>
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="title" select="()" as="xs:string?"/>
         <xsl:param name="titleSymbol" as="node()?"/>
 
@@ -1362,7 +1370,8 @@
     <xsl:template name="createTreeNode">
         <xsl:param name="this" as="node()" select="."/>
         <xsl:param name="symbol" required="yes"/>
-        <xsl:param name="colors" select="$colorScheme('#default')"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="content">
             <xsl:apply-templates select="$this/xs:*" mode="#current"/>
         </xsl:param>
@@ -1490,9 +1499,9 @@
 
     <xsl:template name="makeParentSVGs">
         <xsl:param name="this" select="." as="element()"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="parents" select="es:getParents($this, $schema-context)"/>
+        <xsl:variable name="parents" select="es:getParents($this, $schemaSetConfig)"/>
 
         <xsl:variable name="parentContent">
             <xsl:apply-templates select="$parents" mode="es:xsd2svg-parent"/>
@@ -1501,7 +1510,7 @@
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" select="$parentContent/svg:svg"/>
                 <xsl:with-param name="rightPathPosition" select="true()"/>
-                <xsl:with-param name="strokeColor" select="$colorScheme(local-name($this))?main"/>
+                <xsl:with-param name="strokeColor" select="es:getColors(local-name($this), $schemaSetConfig)?main"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:copy-of select="$parentConnect"/>
@@ -1510,8 +1519,8 @@
     <xsl:template name="xsdSimpleTypeRef">
         <xsl:param name="typeName" select="es:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)" tunnel="yes"/>
-        <xsl:param name="colors" select="$colorScheme('simpleType')" as="map(xs:string, xs:string)"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)" as="map(xs:string, xs:string)"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="15"/>
@@ -1524,7 +1533,7 @@
         </xsl:variable>
         <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
-        <xsl:variable name="label" select="es:printQName($typeName, $schema-context)"/>
+        <xsl:variable name="label" select="es:printQName($typeName, $schemaSetConfig)"/>
         <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
@@ -1554,7 +1563,7 @@
                             </text>
                         </g>
 
-                        <xsl:sequence select="es:createDoku($buildInTypeDocs, 'simpleType')"/>
+                        <xsl:sequence select="es:createDoku($buildInTypeDocs, 'simpleType', $schemaSetConfig)"/>
 
                     </svg>
 

@@ -4,6 +4,8 @@
     <xsl:mode name="es:create-docs-tooltips"/>
 
     <xsl:template match="svg:svg[svg:foreignObject/xs:annotation]" mode="es:xsd2svg-docs">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+        
         <xsl:variable name="annotation" select="svg:foreignObject/xs:annotation"/>
         <xsl:variable name="docs-id" select="(@id, generate-id(.))[1]"/>
         
@@ -11,7 +13,7 @@
         <xsl:variable name="rectH" select="@height"/>
         
         <xsl:variable name="cY" select="(svg:foreignObject/@es:cY, 15)[1]"/>
-        <xsl:variable name="docs-colors" select="(svg:foreignObject/@es:color-scheme[. != 'null']/parse-json(.), es:getColors('#default'))[1]"/>
+        <xsl:variable name="docs-colors" select="(svg:foreignObject/@es:color-scheme[. != 'null']/parse-json(.), es:getColors('#default', $schemaSetConfig))[1]"/>
         
         <xsl:variable name="docs" select="es:create-docs-tooltips($annotation, $docs-id, $docs-colors, $cY)"/>
         

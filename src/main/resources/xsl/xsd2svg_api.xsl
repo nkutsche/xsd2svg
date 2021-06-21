@@ -25,25 +25,24 @@
     <xsl:mode name="es:xsd2svg-zindex" on-no-match="shallow-copy"/>
     <xsl:mode name="es:xsd2svg-cleanup" on-no-match="shallow-copy"/>
     
-    <xsl:function name="es:svg-model" visibility="final">
-        <xsl:param name="xsdnode" as="element()"/>
-        <xsl:sequence select="es:svg-model($xsdnode, es:getReferencedSchemas(root($xsdnode) treat as document-node()))"/>
-    </xsl:function>
     
-    <xsl:function name="es:svg-model" visibility="final">
+    
+    <xsl:function name="es:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
-        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="config" as="map(xs:string, map(*))"/>
         
         <xsl:variable name="modelid" select="generate-id($xsdnode)"/>
         <xsl:variable name="raw-model">
             <xsl:apply-templates select="$xsdnode" mode="es:xsd2svg">
-                <xsl:with-param name="schema-context" select="$schema-context" tunnel="yes"/>
+                <xsl:with-param name="schemaSetConfig" select="$config" tunnel="yes"/>
+                <xsl:with-param name="schema-context" select="$config?schema-map" tunnel="yes"/>
                 <xsl:with-param name="model-id" select="$modelid" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
         <xsl:variable name="handle-docs">
             <xsl:apply-templates select="$raw-model" mode="es:xsd2svg-docs">
-                <xsl:with-param name="schema-context" select="$schema-context" tunnel="yes"/>
+                <xsl:with-param name="schemaSetConfig" select="$config" tunnel="yes"/>
+                <xsl:with-param name="schema-context" select="$config?schema-map" tunnel="yes"/>
                 <xsl:with-param name="model-id" select="$modelid" tunnel="yes"/>
             </xsl:apply-templates>
         </xsl:variable>
