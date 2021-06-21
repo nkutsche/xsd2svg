@@ -3,13 +3,13 @@
 
     <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
-    <xsl:param name="defaultColor" select="
+    <!--<xsl:param name="defaultColor" select="
             map {
                 'main': '#007',
                 'secondary': '#88f',
                 'text': 'white'
-            }"/>
-    <xsl:param name="colorScheme" select="
+            }"/>-->
+    <!--<xsl:param name="colorScheme" select="
             map {
                 '#default': $defaultColor,
                 'element': $defaultColor,
@@ -43,7 +43,7 @@
                     'secondary': '#fff',
                     'text': 'black'
                 }
-            }" as="map(xs:string, map(xs:string, xs:string))"/>
+            }" as="map(xs:string, map(xs:string, xs:string))"/>-->
 
     <xsl:key name="elementByQName" match="xs:schema/xs:*[@name]" use="es:getName(.)"/>
 
@@ -65,6 +65,41 @@
     <xsl:key name="globalAttributesByName" match="xs:schema/xs:attribute" use="es:getName(@name)"/>
 
 
+
+    <xsl:function name="es:getPrefixes" as="map(xs:string, xs:string)">
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:sequence select="es:getPrefixes((map:keys($schema-context), $XSDNS), $schema-context)"/>
+    </xsl:function>
+
+    <xsl:function name="es:getPrefixes" as="map(xs:string, xs:string)">
+        <xsl:param name="namespaces" as="xs:string*"/>
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+
+
+        <xsl:variable name="head" select="head($namespaces)"/>
+        <xsl:variable name="others" select="
+            if (count($namespaces) gt 1) then es:getPrefixes(tail($namespaces), $schema-context) else map{}
+            "/>
+
+        <xsl:variable name="schema" select="$schema-context($head), $schema-context?*"/>
+
+        <xsl:variable name="possiblePrefixes" select="$schema ! .//namespace::*[. = $head]/name()"/>
+
+        <xsl:variable name="unusedPrefixes" select="$possiblePrefixes[not(. = $others?*)]"/>
+
+        <xsl:variable name="suffixedPrefix" select="
+                if (empty($unusedPrefixes)) then
+                    let $p := ($possiblePrefixes[. != ''][1] || '_', 'ns')[1]
+                    return
+                        (1 to count($others?*)) ! ($p || .)[not(. = $others?*)]
+                else
+                    ($unusedPrefixes)"/>
+
+        <xsl:variable name="suffixedPrefix" select="$suffixedPrefix[1]"/>
+
+        <xsl:sequence select="map:put($others, $head, $suffixedPrefix)"/>
+
+    </xsl:function>
 
     <xsl:function name="es:printQName" as="xs:string">
         <xsl:param name="qname" as="xs:QName"/>
@@ -825,7 +860,7 @@
 
         </svg>
     </xsl:template>
-    
+
     <xsl:function name="es:getSymbol" as="element(svg:svg)?">
         <xsl:param name="type"/>
         <xsl:choose>
@@ -889,6 +924,7 @@
         </xsl:call-template>
 
     </xsl:template>
+
     <xsl:template name="boxTitle">
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="font-color" select="'black'"/>
@@ -1396,7 +1432,7 @@
             <xsl:sequence select="es:textdimensions($text, map:put($fontStyle, 'unit', 'pt'))?width ! xs:double(.)"/>
         </xsl:variable>
         <xsl:sequence select="$result"/>
-        
+
     </xsl:function>
 
     <xsl:function name="es:renderedTextLength" as="xs:double">
@@ -1504,23 +1540,222 @@
                             'complexType': 'parentByType'
                         }
                         "/>
-        
+
                 <xsl:variable name="key" select="$key-map($this/local-name())"/>
-        
+
                 <xsl:variable name="key" select="es:exactly-one($key, 'No parents available for ' || $this/local-name() || ' elements.')"/>
-        
+
                 <xsl:variable name="schemas" select="map:keys($schema-context) ! $schema-context(.)"/>
-        
+
                 <xsl:variable name="parents" select="$schemas/key($key, es:getName($this))"/>
-        
+
                 <xsl:sequence select="$parents"/>
-                
+
             </xsl:when>
             <xsl:otherwise>
                 <xsl:sequence select="$this/ancestor::*[@name][1]"/>
             </xsl:otherwise>
         </xsl:choose>
+
+    </xsl:function>
+
+    <xsl:function name="es:getUses" as="element()*">
+        <xsl:param name="component"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         
+        
+        <xsl:variable name="containedLocals" select="$component//(xs:element | xs:attribute)[@name]"/>
+
+        <xsl:variable name="ignores" select="$containedLocals//*"/>
+
+        <xsl:variable name="containedLocals" select="$containedLocals except $ignores"/>
+
+        <xsl:variable name="typeRef" select="$component/(self::xs:element | self::xs:attribute)/@type/es:getReference(., $schema-context)"/>
+
+        <xsl:variable name="children" select="$component//xs:* except $ignores"/>
+        <xsl:variable name="refs" select="$children/(@ref | @base | @itemType)/es:getReference(., $schemaSetConfig)"/>
+
+        <xsl:variable name="memberTypes" select="
+                $children/@memberTypes/(
+                for $mt in tokenize(., '\s')
+                return
+                    es:getReferenceByQName(es:getQName($mt, ..), $schemaSetConfig, 'simpleType')
+                )
+                "/>
+
+
+        <xsl:sequence select="$containedLocals | $typeRef | $refs | $memberTypes"/>
+
+    </xsl:function>
+
+    <xsl:function name="es:mergeMaps" as="map(*)">
+        <xsl:param name="maps" as="map(*)*"/>
+
+        <xsl:sequence select="fold-left($maps, map{}, es:mergeMaps#2)"/>
+
+    </xsl:function>
+
+    <xsl:function name="es:mergeMaps" as="map(*)">
+        <xsl:param name="map1" as="map(*)"/>
+        <xsl:param name="map2" as="map(*)"/>
+
+        <xsl:map>
+            <xsl:for-each select="(($map1, $map2) ! map:keys(.)) => distinct-values()">
+                <xsl:variable name="key" select="."/>
+                <xsl:variable name="value1" select="$map1($key)"/>
+                <xsl:variable name="value2" select="$map2($key)"/>
+                <xsl:map-entry key="$key" select="
+                        if ($value1 instance of map(*) and $value2 instance of map(*)) then
+                            es:mergeMaps($value1, $value2)
+                        else
+                            if (empty($value1)) then
+                                ($value2)
+                            else
+                                ($value1)
+                        "/>
+            </xsl:for-each>
+        </xsl:map>
+    </xsl:function>
+
+
+
+
+    <!--    
+    Component Info
+    -->
+
+    <xsl:function name="es:group-components" as="map(xs:string, item()*)">
+        <xsl:param name="components" as="map(xs:string, item()*)*"/>
+        <xsl:param name="grouping" as="xs:string*"/>
+
+        <xsl:variable name="first-grouping" select="head($grouping)"/>
+        <xsl:variable name="rest-grouping" select="tail($grouping)"/>
+
+        <xsl:map>
+            <xsl:for-each-group select="$components" group-by=".($first-grouping)">
+                <xsl:sequence select="map{
+                    string(current-grouping-key()) : if (empty($rest-grouping)) then (current-group()) else es:group-components(current-group(), $rest-grouping)
+                    }"/>
+            </xsl:for-each-group>
+        </xsl:map>
+
+    </xsl:function>
+
+    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <xsl:sequence select="es:getComponentInfos($schemaSetConfig, '*')"/>
+    </xsl:function>
+
+    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <xsl:param name="types" as="xs:string*"/>
+        <xsl:sequence select="es:getComponentInfos($schemaSetConfig, $types, '*')"/>
+    </xsl:function>
+
+    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <xsl:param name="types" as="xs:string*"/>
+        <xsl:param name="namesapce" as="xs:string*"/>
+        <xsl:sequence select="es:getComponentInfos($schemaSetConfig, $types, $namesapce, '*')"/>
+    </xsl:function>
+
+    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <xsl:param name="types" as="xs:string*"/>
+        <xsl:param name="namesapce" as="xs:string*"/>
+        <xsl:param name="levels" as="xs:string*"/>
+
+
+        <xsl:variable name="schema-map" select="$schemaSetConfig?schema-map" as="map(xs:string, document-node(element(xs:schema))*)"/>
+
+        <xsl:variable name="schemas" select="
+                if ($namesapce = '*') then
+                    ($schema-map?*)
+                else
+                    ($namesapce ! $schema-map(.))" as="document-node(element(xs:schema))*"/>
+
+        <xsl:variable name="globals" select="$schemas/xs:*[@name]"/>
+        <xsl:variable name="locals" select="$schemas/xs:*//xs:*[@name]"/>
+
+        <xsl:variable name="all-components" select="$globals[$levels = ('global', '*')], $locals[$levels = ('locals', '*')]"/>
+
+        <xsl:variable name="components" select="$all-components[(local-name(), '*') = $types]"/>
+
+        <xsl:sequence select="$components ! es:getComponentInfo(., $schemaSetConfig)"/>
+
+    </xsl:function>
+
+
+    <xsl:function name="es:getComponentInfo" as="map(xs:string, item()*)">
+        <xsl:param name="comp" as="element()"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+
+        <xsl:variable name="nested" select="$comp//xs:*[@name]"/>
+        <xsl:variable name="nested" select="$nested except $nested//*"/>
+
+        <xsl:sequence select="
+            map{
+            'component' : $comp,
+            'type' : $comp/local-name(),
+            'namespace' : ($comp/root(.)/xs:schema/@targetNamespace/string(.), '')[1],
+            'scope' : if ($comp/parent::xs:schema) then ('global') else ('local'),
+            'used-by' : $comp/es:getParents(., $schemaSetConfig),
+            'uses' : $comp/es:getUses(., $schemaSetConfig),
+            'qname' : es:getQName($comp/@name),
+            'nested-compontents' : $nested/es:getComponentInfo(., $schemaSetConfig),
+            'svg-model' : es:svg-model($comp, $schemaSetConfig)
+            }"/>
+
+    </xsl:function>
+
+    <xsl:function name="es:svg-model">
+        <xsl:param name="xsdnode" as="element()"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <!--    
+                Dummy implementation! 
+                will be overwritten in  xsd2svg_model-pipe.xsl
+        -->
+    </xsl:function>
+
+    <xsl:function name="es:getMasterFiles" as="xs:anyURI*">
+        <xsl:param name="url" as="xs:anyURI"/>
+        <xsl:variable name="collection-urls" select="uri-collection($url)"/>
+
+        <!--        
+        make for each XSD url an include map
+        key: schema url
+        values: urls of included schemas (same namespace!)
+        -->
+        <xsl:variable name="schema-include-map" select="
+                ($collection-urls !
+                map {
+                    .:
+                    let $doc := doc(.),
+                        $tns := ($doc/*/@targetNamespace, '')[1]
+                    return
+                        es:getReferencedSchemas($doc)($tns) ! base-uri(/)
+                }
+                ) => map:merge()
+                "/>
+
+        <!--
+        make a "reverse map" of $schema-include-map:
+        key: schema-url, 
+        values: urls which includes this schema.
+        -->
+        <xsl:variable name="schema-include-reverse-map" select="
+            $collection-urls ! (
+            let $url := . return
+            $schema-include-map(.) ! map{
+            . : $url
+            }
+            ) => map:merge(map{'duplicates': 'combine'})
+            "/>
+
+        <!--        
+        Returns all urls, which are not included by any other url.
+        -->
+        <xsl:sequence select="$collection-urls[count($schema-include-reverse-map(.)) = 1]"/>
     </xsl:function>
 
 </xsl:stylesheet>
