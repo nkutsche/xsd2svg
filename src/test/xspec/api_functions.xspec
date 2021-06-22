@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:xsd2svg="http://www.xsd2svg.schematron-quickfix.com/" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:es="http://www.escali.schematron-quickfix.com/" stylesheet="../../main/resources/xsl/xsd2svg_api.xsl">
+    
+    <x:param name="config" select="'xsd/cfg/test-config.json' => resolve-uri(base-uri(/)) => json-doc()" href="api_functions.xspec"/>
+
+    <x:scenario label="Scenario for testing function getMasterFiles">
+        <x:call function="xsd2svg:getMasterFiles">
+            <x:param name="extension" position="2" select="'xsd'"/>
+            <x:param name="recursive" position="3" select="false()"/>
+        </x:call>
+        <x:variable name="base-uri" href="xsd/master-files/base-uri-provider.xml" select="resolve-uri('.', base-uri(/))"/>
+        <x:scenario label="trivial">
+            <x:call>
+                <x:param name="path" select="resolve-uri('trivial', $base-uri)"/>
+            </x:call>
+            <x:expect label="Result relative master file url" test="$x:result ! substring-after(., $base-uri)" select="'trivial/master.xsd'"/>
+        </x:scenario>
+        <x:scenario label="one-include">
+            <x:call>
+                <x:param name="path" select="resolve-uri('one-include', $base-uri)"/>
+            </x:call>
+            <x:expect label="Result relative master file url" test="$x:result ! substring-after(., $base-uri)" select="'one-include/master.xsd'"/>
+        </x:scenario>
+        <x:scenario label="nested-includes">
+            <x:call>
+                <x:param name="path" select="resolve-uri('nested-includes', $base-uri)"/>
+            </x:call>
+            <x:expect label="Result relative master file url" test="$x:result ! substring-after(., $base-uri)" select="('nested-includes/master1.xsd', 'nested-includes/master2.xsd')"/>
+        </x:scenario>
+        <x:scenario label="imports">
+            <x:scenario label="assymetric-import">
+                <x:call>
+                    <x:param name="path" select="resolve-uri('imports/assymetric-import', $base-uri)"/>
+                </x:call>
+                <x:expect label="Result relative master file url" test="$x:result ! substring-after(., $base-uri)" select="('imports/assymetric-import/master-ns1.xsd', 'imports/assymetric-import/master-ns2.xsd')"/>
+            </x:scenario>
+            <x:scenario label="symetric-import">
+                <x:call>
+                    <x:param name="path" select="resolve-uri('imports/symetric-import', $base-uri)"/>
+                </x:call>
+                <x:expect label="Result relative master file url" test="$x:result ! substring-after(., $base-uri)" select="('imports/symetric-import/master-ns1.xsd', 'imports/symetric-import/master-ns2.xsd')"/>
+            </x:scenario>
+            <x:scenario label="mix-with-includes">
+                <x:call>
+                    <x:param name="path" select="resolve-uri('imports/mix-with-includes', $base-uri)"/>
+                </x:call>
+                <x:expect label="Result relative master file url" test="$x:result ! substring-after(., $base-uri)" select="('imports/mix-with-includes/master-ns1.xsd', 'imports/mix-with-includes/master-ns2.xsd')"/>
+            </x:scenario>
+        </x:scenario>
+    </x:scenario>
+    <x:scenario label="Scenario for testing function xsd2svg:getSchemaInfo">
+        <x:call function="xsd2svg:getSchemaInfo"/>
+
+        <x:variable name="base-uri" href="xsd/components/base-uri-provider.xml" select="resolve-uri('.', base-uri(/))"/>
+        <x:variable name="ns1Doc" href="xsd/components/case1/ns1.xsd"/>
+        <x:variable name="ns2Doc" href="xsd/components/case1/ns2.xsd"/>
+        <x:scenario label="with default grouping">
+            <x:scenario label="case1">
+                <x:call>
+                    <x:param select="resolve-uri('case1/ns1.xsd', $base-uri)"/>
+                </x:call>
+                <x:expect label="component info of global ns1 element(s)" test="$x:result?grouped-components?ns1.com?element?global?component" select="$ns1Doc/*/xs:element[@name = 'foo']"/>
+                <x:expect label="local ns2 attribute(s)" test="$x:result?grouped-components?ns2.com?attribute?local?component" select="$ns2Doc/*/xs:attributeGroup[@name = 'attrGroup']/xs:attribute"/>
+                <x:expect label="all components of ns2" test="$x:result?grouped-components?ns2.com?*?*?component/self::*" select="$ns2Doc//*[@name]"/>
+                <x:expect label="all global components" test="$x:result?grouped-components?*?*?global?component/self::*" select="($ns1Doc | $ns2Doc)/*/*[@name]"/>
+            </x:scenario>
+        </x:scenario>
+        <x:scenario label="with scope-type-namespace grouping">
+            <x:call>
+                <x:param select="(map{'component-grouping' : ['scope', 'namespace', 'type']}, $config) => es:mergeMaps()" position="2"/>
+            </x:call>
+            <x:scenario label="case1">
+                <x:call>
+                    <x:param select="resolve-uri('case1/ns1.xsd', $base-uri)"/>
+                </x:call>
+                <x:expect label="component info of global ns1 element(s)" test="$x:result?grouped-components?global?ns1.com?element?component" select="$ns1Doc/*/xs:element[@name = 'foo']"/>
+                <x:expect label="local ns2 attribute(s)" test="$x:result?grouped-components?local?ns2.com?attribute?component" select="$ns2Doc/*/xs:attributeGroup[@name = 'attrGroup']/xs:attribute"/>
+                <x:expect label="all components of ns2" test="$x:result?grouped-components?*?ns2.com?*?component/self::*" select="$ns2Doc//*[@name]"/>
+                <x:expect label="all global components" test="$x:result?grouped-components?global?*?*?component/self::*" select="($ns1Doc | $ns2Doc)/*/*[@name]"/>
+                <x:expect label="distinct namespaces" test="$x:result?grouped-components?* ! map:keys(.) => distinct-values() => sort()" select="'ns1.com', 'ns2.com'"/>
+            </x:scenario>
+        </x:scenario>
+    </x:scenario>
+
+
+</x:description>

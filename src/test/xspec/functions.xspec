@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:es="http://www.escali.schematron-quickfix.com/"  xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema" stylesheet="../../main/resources/xsl/functions.xsl">
+    
+    <x:scenario label="Scenario for testing function es:getReference">
+        <x:call function="es:getReference"/>
+        <x:scenario label="with one namespace/xsd">
+            <x:variable name="schema" as="document-node()" select="/">
+                <xs:schema targetNamespace="http://www.escali.schematron-quickfix.com/">
+                    <xs:element name="foo">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element ref="es:bar"/>
+                                <xs:group ref="es:foo"/>
+                                <xs:any namespace="http://www.escali.schematron-quickfix.com/"/>
+                                <xs:any namespace="##targetNamespace"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="bar" type="es:barType"/>
+                    <xs:simpleType name="barType"/>
+                    <xs:group name="foo"/>
+                </xs:schema>
+            </x:variable>
+            <x:variable name="schema-context" select="map{'schema-map' : map{$schema/*/@targetNamespace/string() : $schema}}"/>
+            <x:call>
+                <x:param select="$schema-context" position="2"/>
+            </x:call>
+            <x:scenario label="for reference to bar">
+                <x:call>
+                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:element[@ref = 'es:bar'][1]/@ref"/>
+                </x:call>
+                <x:expect label="target name" test="$x:result/@name/string()" select="'bar'"/>
+            </x:scenario>
+            <x:scenario label="for type reference of bar">
+                <x:call>
+                    <x:param select="$schema/*/xs:element[@name = 'bar']/@type"/>
+                </x:call>
+                <x:expect label="target name" test="$x:result/@name/string()" select="'barType'"/>
+            </x:scenario>
+            <x:scenario label="for reference to bar" catch="true">
+                <x:call>
+                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:group[@ref = 'es:foo'][1]/@ref"/>
+                </x:call>
+                <x:expect label="result"><xs:group name="foo"/></x:expect>
+            </x:scenario>
+            <x:scenario label="for any namespace reference">
+                <x:call>
+                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:any[1]/@namespace"/>
+                </x:call>
+                <x:expect label="target name" test="$x:result/@targetNamespace/string()" select="'http://www.escali.schematron-quickfix.com/'"/>
+                <x:expect label="target type" test="$x:result/local-name()" select="'schema'"/>
+            </x:scenario>
+            <x:scenario label="for any namespace reference">
+                <x:call>
+                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:any[2]/@namespace"/>
+                </x:call>
+                <x:expect label="target name" test="$x:result/@targetNamespace/string()" select="'http://www.escali.schematron-quickfix.com/'"/>
+                <x:expect label="target type" test="$x:result/local-name()" select="'schema'"/>
+            </x:scenario>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="Scenario for testing function es:getParents">
+        <x:call function="es:getParents"/>
+        <x:scenario label="for case 1">
+            <x:scenario label="with element bar">
+                <x:call>
+                    <x:param href="xsd/parents/foo.xsd" select="/xs:schema/xs:element[1]"/>
+                    <x:param href="xsd/parents/foo.xsd" select="map{'schema-map' : es:getReferencedSchemas(/)}"/>
+                </x:call>
+                <x:expect label="amount of parents" test="count($x:result)" select="0"/>
+                <x:expect label="Parents"/>
+            </x:scenario>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="Scenario for testing function es:getReferencedSchemas">
+        <x:call function="es:getReferencedSchemas"/>
+        
+        <x:scenario label="simple include reference">
+            <x:call>
+                <x:param href="xsd/includes/foo.xsd"/>
+            </x:call>
+            <x:expect label="map keys" select="'foo.com'" test="map:keys($x:result)"/>
+            <x:expect label="schema amount for ns foo.com" select="2" test="$x:result('foo.com') => count()"/>
+        </x:scenario>
+        
+    </x:scenario>
+    
+    
+    <x:scenario label="Scenario for testing function es:getPrefixes">
+        <x:call function="es:getPrefixes"/>
+        
+        <x:scenario label="trivial">
+            <x:variable name="foo" href="xsd/prefixes/trivial/foo.xsd"/>
+            <x:call>
+                <x:param select="map{'foo.com' : $foo}"/>
+            </x:call>
+            <x:expect label="return value" select="map{'foo.com' : 'foo', $XSDNS : 'xs'}"/>
+        </x:scenario>
+        <x:scenario label="two namespaces">
+            <x:variable name="foo" href="xsd/prefixes/two-ns/foo.xsd"/>
+            <x:variable name="bar" href="xsd/prefixes/two-ns/bar.xsd"/>
+            <x:call>
+                <x:param select="map{'foo.com' : $foo, 'bar.com' : $bar}"/>
+            </x:call>
+            <x:expect label="return value" select="map{'foo.com' : 'foo', 'bar.com' : 'bar', $XSDNS : 'xs'}"/>
+        </x:scenario>
+        <x:scenario label="prefix conflict">
+            <x:variable name="foo" href="xsd/prefixes/conflict/foo.xsd"/>
+            <x:variable name="bar" href="xsd/prefixes/conflict/bar.xsd"/>
+            <x:call>
+                <x:param select="map{'foo.com' : $foo, 'bar.com' : $bar}"/>
+            </x:call>
+            <x:expect label="return value" select="map{'foo.com' : 'prx', 'bar.com' : 'prx_1', $XSDNS : 'xs'}"/>
+        </x:scenario>
+        <x:scenario label="prefix conflict-2">
+            <x:variable name="foo" href="xsd/prefixes/conflict-2/foo.xsd"/>
+            <x:variable name="bar" href="xsd/prefixes/conflict-2/bar.xsd"/>
+            <x:variable name="baz" href="xsd/prefixes/conflict-2/baz.xsd"/>
+            <x:call>
+                <x:param select="map{'foo.com' : $foo, 'bar.com' : $bar, 'baz.com' : $baz}" position="2"/>
+            </x:call>
+            <x:scenario label="with order foo, bar, baz">
+                <x:call>
+                    <x:param select="('foo.com', 'bar.com', 'baz.com')"/>
+                </x:call>
+                <x:expect label="return value" select="map{'foo.com' : 'prx_2', 'bar.com' : 'prx', 'baz.com' : 'prx_1'}"/>
+            </x:scenario>
+            <x:scenario label="with order baz, bar, foo">
+                <x:call>
+                    <x:param select="('baz.com', 'bar.com', 'foo.com')"/>
+                </x:call>
+                <x:expect label="return value" select="map{'foo.com' : 'prx', 'bar.com' : 'prx_1', 'baz.com' : 'prx_1_1'}"/>
+            </x:scenario>
+        </x:scenario>
+        <x:scenario label="default namespace">
+            <x:variable name="foo" href="xsd/prefixes/default-ns/foo.xsd"/>
+            <x:variable name="bar" href="xsd/prefixes/default-ns/bar.xsd"/>
+            <x:call>
+                <x:param select="map{'foo.com' : $foo, 'bar.com' : $bar}" position="2"/>
+            </x:call>
+            <x:scenario label="foo only">
+                <x:call>
+                    <x:param select="('foo.com')"/>
+                </x:call>
+                <x:expect label="return value" select="map{'foo.com' : 'ns1'}"/>
+            </x:scenario>
+            <x:scenario label="foo and bar -> conflict">
+                <x:call>
+                    <x:param select="('foo.com', 'bar.com')"/>
+                </x:call>
+                <x:expect label="return value" select="map{'foo.com' : 'ns2', 'bar.com' : 'ns1'}"/>
+            </x:scenario>
+        </x:scenario>
+    </x:scenario>
+    
+    <x:scenario label="Scenario for testing function es:mergeMaps">
+        <x:call function="es:mergeMaps"/>
+        
+        <x:scenario label="empty map">
+            <x:call>
+                <x:param select="map{}"/>
+            </x:call>
+            <x:expect label="return map" select="map{}"/>
+        </x:scenario>
+
+        <x:scenario label="one map">
+            <x:call>
+                <x:param select="map{'foo' : 'bar'}"/>
+            </x:call>
+            <x:expect label="return map" select="map{'foo' : 'bar'}"/>
+        </x:scenario>
+
+        <x:scenario label="two maps, different fields">
+            <x:call>
+                <x:param select="map{'foo' : 'fooval'}, map{'bar' : 'barval'}"/>
+            </x:call>
+            <x:expect label="return map" select="map{'foo' : 'fooval', 'bar' : 'barval'}"/>
+        </x:scenario>
+        <x:scenario label="two maps, same fields">
+            <x:call>
+                <x:param select="map{'foo' : 'fooval'}, map{'foo' : 'default'}"/>
+            </x:call>
+            <x:expect label="return map" select="map{'foo' : 'fooval'}"/>
+        </x:scenario>
+        <x:scenario label="three maps">
+            <x:call>
+                <x:param select="map{'foo' : 'fooval'}, map{'foo' : 'def-level2', 'bar' : 'def-level2'}, map{'bar' : 'def-level3', 'baz' : 'def-level3'}"/>
+            </x:call>
+            <x:expect label="return map" select="map{'foo' : 'fooval', 'bar' : 'def-level2', 'baz' : 'def-level3'}"/>
+        </x:scenario>
+        
+        <x:scenario label="two maps, sub maps">
+            <x:call>
+                <x:param select="map{'foo' : map{'bar' : 'value'}}, map{'foo' : map{'bar': 'default', 'baz' : 'default'}}"/>
+            </x:call>
+            <x:expect label="return map" select="map{'foo' : map{'bar' : 'value', 'baz' : 'default'}}"/>
+        </x:scenario>
+        
+        <x:scenario label="one map, one empty">
+            <x:call>
+                <x:param select="map{'foo' : map{'bar' : 'value'}}, map{'foo' : map{'bar': 'default', 'baz' : 'default'}}"/>
+            </x:call>
+            <x:expect label="return map" select="map{'foo' : map{'bar' : 'value', 'baz' : 'default'}}"/>
+        </x:scenario>
+        
+    </x:scenario>
+</x:description>
