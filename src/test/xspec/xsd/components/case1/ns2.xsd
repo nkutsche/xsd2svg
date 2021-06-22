@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="ns2.com" xmlns:ns2="ns2.com">
+    
+    <xs:simpleType name="simpleType">
+        <xs:restriction base="xs:string">
+            <xs:length value="10"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:attribute name="attr" type="ns2:simpleType"/>
+    
+    <xs:attributeGroup name="attrGroup">
+        <xs:attribute name="attr" type="ns2:simpleType"/>
+    </xs:attributeGroup>
+    
+</xs:schema>

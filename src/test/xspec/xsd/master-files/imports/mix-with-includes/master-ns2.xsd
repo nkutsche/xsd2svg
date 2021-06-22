@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="ns2.com">
+    <xs:import schemaLocation="master-ns1.xsd" namespace="ns1.com"/>
+    <xs:include schemaLocation="slave-ns2.xsd"/>
+</xs:schema>

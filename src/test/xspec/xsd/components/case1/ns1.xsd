@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="ns1.com" xmlns:ns1="ns1.com" xmlns:ns2="ns2.com">
+    <xs:import schemaLocation="ns2.xsd" namespace="ns2.com"/>
+    
+    <xs:element name="foo" type="ns1:fooType"/>
+    
+    <xs:complexType name="fooType">
+        <xs:sequence>
+            <xs:element name="local" type="ns2:simpleType"/>
+            <xs:group ref="ns1:group"/>
+        </xs:sequence>
+        <xs:attribute ref="ns2:attr"/>
+        <xs:attributeGroup ref="ns2:attrGroup"/>
+    </xs:complexType>
+    
+    <xs:group name="group">
+        <xs:sequence>
+            <xs:element ref="ns1:foo" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+    
+    
+</xs:schema>

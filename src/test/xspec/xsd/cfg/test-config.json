@@ -1,0 +1,51 @@
+{
+    "component-grouping": [
+        "namespace",
+        "type",
+        "scope"
+    ],
+    "styling": {
+        "colors": {
+            "#default": {
+                "main": "#007",
+                "secondary": "#88f",
+                "text": "white"
+            },
+            "element": {
+                "main": "#007",
+                "secondary": "#88f",
+                "text": "white"
+            },
+            "attribute": {
+                "main": "#770",
+                "secondary": "#ee8",
+                "text": "black"
+            },
+            "simpleType": {
+                "main": "#070",
+                "secondary": "#8f8",
+                "text": "black"
+            },
+            "complexType": {
+                "main": "#077",
+                "secondary": "#8ee",
+                "text": "black"
+            },
+            "group": {
+                "main": "#707",
+                "secondary": "#e8e",
+                "text": "black"
+            },
+            "attributeGroup": {
+                "main": "#700",
+                "secondary": "#f88",
+                "text": "white"
+            },
+            "any": {
+                "main": "#777",
+                "secondary": "#fff",
+                "text": "black"
+            }
+        }
+    }
+}
