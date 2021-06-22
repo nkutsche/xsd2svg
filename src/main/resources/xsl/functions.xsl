@@ -105,7 +105,7 @@
         <xsl:param name="qname" as="xs:QName"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
 
-        <xsl:variable name="prefix-map" select="$schemaSetConfig?prefix-map"/>
+        <xsl:variable name="prefix-map" select="($schemaSetConfig?prefix-map, map{})[1]"/>
 
         <xsl:variable name="namespace" select="namespace-uri-from-QName($qname)"/>
         <xsl:variable name="local-name" select="local-name-from-QName($qname)"/>
