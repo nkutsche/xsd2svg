@@ -30,7 +30,7 @@
     -->
     
     
-    <xsl:variable name="effConfig" select="es:mergeMaps($config, map:put(json-doc('../cfg/default-config.json'), 'link-provider', $link-provider-function))" as="map(*)"/>
+    <xsl:variable name="effConfig" select="($config, map:put(json-doc('../cfg/default-config.json'), 'link-provider', $link-provider-function)) => es:mergeMaps()" as="map(*)"/>
     
     
 <!--    
