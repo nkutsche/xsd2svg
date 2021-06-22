@@ -83,19 +83,19 @@
 
         <xsl:variable name="schema" select="$schema-context($head), $schema-context?*"/>
 
-        <xsl:variable name="possiblePrefixes" select="$schema ! .//namespace::*[. = $head]/name()"/>
+        <xsl:variable name="possiblePrefixes" select="$schema ! .//namespace::*[. = $head]/name()[. != '']"/>
 
         <xsl:variable name="unusedPrefixes" select="$possiblePrefixes[not(. = $others?*)]"/>
 
         <xsl:variable name="suffixedPrefix" select="
                 if (empty($unusedPrefixes)) then
-                    let $p := ($possiblePrefixes[. != ''][1] || '_', 'ns')[1]
+                    let $p := ($possiblePrefixes[1] ! (. || '_'), 'ns')[1]
                     return
-                        (1 to count($others?*)) ! ($p || .)[not(. = $others?*)]
+                        ((1 to count($others?*) + 1) ! ($p || .)[not(. = $others?*)], 'ns1')
                 else
-                    ($unusedPrefixes)"/>
+                    ($unusedPrefixes)" as="xs:string*"/>
 
-        <xsl:variable name="suffixedPrefix" select="$suffixedPrefix[1]"/>
+        <xsl:variable name="suffixedPrefix" select="$suffixedPrefix[1]" as="xs:string"/>
 
         <xsl:sequence select="map:put($others, $head, $suffixedPrefix)"/>
 
