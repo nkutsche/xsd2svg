@@ -260,7 +260,7 @@
                         if ($namespace = $XSDNS) then
                             ()
                         else
-                            es:getReferenceByQName($qnameRef, $schema-context, $element)"/>
+                            es:getReferenceByQName($qnameRef, $schemaSetConfig, $element)"/>
             </xsl:otherwise>
         </xsl:choose>
 
@@ -1570,7 +1570,7 @@
 
         <xsl:variable name="containedLocals" select="$containedLocals except $ignores"/>
 
-        <xsl:variable name="typeRef" select="$component/(self::xs:element | self::xs:attribute)/@type/es:getReference(., $schema-context)"/>
+        <xsl:variable name="typeRef" select="$component/(self::xs:element | self::xs:attribute)/@type/es:getReference(., $schemaSetConfig)"/>
 
         <xsl:variable name="children" select="$component//xs:* except $ignores"/>
         <xsl:variable name="refs" select="$children/(@ref | @base | @itemType)/es:getReference(., $schemaSetConfig)"/>
