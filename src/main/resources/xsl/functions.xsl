@@ -1600,7 +1600,7 @@
                 $children/@memberTypes/(
                 for $mt in tokenize(., '\s')
                 return
-                    es:getReferenceByQName(es:getQName($mt, ..), $schemaSetConfig, 'simpleType')
+                    es:getReferenceByQName(es:getQName($mt, ..), $schemaSetConfig, 'simpleType', false())
                 )
                 "/>
 
