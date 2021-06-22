@@ -574,7 +574,7 @@
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="paddingLR" select="5"/>
 
-        <xsl:variable name="symbol" select="$refType ! es:getSymbol(.)"/>
+        <xsl:variable name="symbol" select="$refType ! es:getSymbol(., $schemaSetConfig)"/>
 
         <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
 
@@ -1207,7 +1207,7 @@
         <xsl:variable name="colors" select="es:getColors($type, $schemaSetConfig)"/>
 
 
-        <xsl:variable name="symbol" select="es:getSymbol($type)"/>
+        <xsl:variable name="symbol" select="es:getSymbol($type, $schemaSetConfig)"/>
 
         <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
 

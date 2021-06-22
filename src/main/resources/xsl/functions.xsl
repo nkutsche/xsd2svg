@@ -863,36 +863,57 @@
 
     <xsl:function name="es:getSymbol" as="element(svg:svg)?">
         <xsl:param name="type"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:choose>
             <xsl:when test="$type = 'attribute'">
-                <xsl:call-template name="attributeSymbol"/>
+                <xsl:call-template name="attributeSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'simpleType'">
-                <xsl:call-template name="simpleTypeSymbol"/>
+                <xsl:call-template name="simpleTypeSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'complexType'">
-                <xsl:call-template name="complexTypeSymbol"/>
+                <xsl:call-template name="complexTypeSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'extension'">
-                <xsl:call-template name="extensionSymbol"/>
+                <xsl:call-template name="extensionSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'restriction'">
-                <xsl:call-template name="restrictionSymbol"/>
+                <xsl:call-template name="restrictionSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = ('any', 'schema')">
-                <xsl:call-template name="anySymbol"/>
+                <xsl:call-template name="anySymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'choice'">
-                <xsl:call-template name="choiceSymbol"/>
+                <xsl:call-template name="choiceSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'sequence'">
-                <xsl:call-template name="sequenceSymbol"/>
+                <xsl:call-template name="sequenceSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'list'">
-                <xsl:call-template name="st_listSymbol"/>
+                <xsl:call-template name="st_listSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = 'union'">
-                <xsl:call-template name="st_unionSymbol"/>
+                <xsl:call-template name="st_unionSymbol">
+                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
+                </xsl:call-template>
             </xsl:when>
             <xsl:when test="$type = ('element', 'schema')"/>
             <xsl:otherwise>
