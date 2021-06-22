@@ -70,7 +70,7 @@
         <xsl:param name="url" as="xs:anyURI"/>
         <xsl:param name="config" as="map(*)"/>
         
-        <xsl:variable name="schemaSetCfg" select="xsd2svg:createSchemaSetConfig(doc($url))"/>
+        <xsl:variable name="schemaSetCfg" select="xsd2svg:createSchemaSetConfig(doc($url), $config)"/>
         
         <xsl:variable name="component-infos" select="es:getComponentInfos($schemaSetCfg)"/>
         
@@ -126,6 +126,12 @@
     
     <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)">
         <xsl:param name="schema" as="document-node(element(xs:schema))"/>
+        <xsl:sequence select="xsd2svg:createSchemaSetConfig($schema, $effConfig)"/>
+    </xsl:function>
+    
+    <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)">
+        <xsl:param name="schema" as="document-node(element(xs:schema))"/>
+        <xsl:param name="config" as="map(*)"/>
         
         
         <xsl:variable name="schema-namespace-map" select="es:getReferencedSchemas($schema)"/>
@@ -135,7 +141,7 @@
         <xsl:variable name="schemaSetCfg" select="map{
             'schema-map' : $schema-namespace-map,
             'prefix-map' : $prefix-map,
-            'config' : $effConfig
+            'config' : $config
             }"/>
         
         <xsl:sequence select="$schemaSetCfg"/>
