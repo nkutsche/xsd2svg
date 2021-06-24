@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo.com" xmlns:foo="foo.com">
+        <xs:element name="foo">
+                <xs:annotation>
+                        <xs:documentation>Documentation for element foo.</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                        <xs:choice>
+                                <xs:element name="bar" type="foo:barType">
+                                        <xs:annotation>
+                                                <xs:documentation>Documentation for LOCAL element bar.</xs:documentation>
+                                        </xs:annotation>
+                                </xs:element>
+                                <xs:element name="foo" type="foo:fooType">
+                                        <xs:annotation>
+                                                <xs:documentation>Documentation for LOCAL element foo.</xs:documentation>
+                                        </xs:annotation>
+                                </xs:element>
+                        </xs:choice>
+                </xs:complexType>
+        </xs:element>
+        <xs:element name="bar" type="foo:fooType">
+                <xs:annotation>
+                        <xs:documentation>Documentation for element bar.</xs:documentation>
+                </xs:annotation>
+        </xs:element>
+        
+        <xs:complexType name="fooType">
+                <xs:annotation>
+                        <xs:documentation>Documentation for complex Type fooType.</xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                        <xs:element ref="foo:foo"/>
+                </xs:sequence>
+        </xs:complexType>
+        
+        <xs:complexType name="barType">
+                <xs:annotation>
+                        <xs:documentation>Documentation for complex Type barType.</xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                        <xs:element ref="foo:foo" maxOccurs="unbounded"/>
+                        <xs:element ref="foo:bar" minOccurs="0"/>
+                </xs:sequence>
+                <xs:attribute name="baz" type="xs:string" use="optional"/>
+        </xs:complexType>
+        
+</xs:schema>

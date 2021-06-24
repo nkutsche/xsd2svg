@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo.com" xmlns:foo="foo.com">
+        <xs:annotation>
+                <xs:documentation>Documentation for schema in namespace foo.com</xs:documentation>
+        </xs:annotation>
+        <xs:element name="foo">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element "foo".</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                        <xs:sequence>
+                                <xs:any namespace="foo.com"/>
+                        </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+        <xs:element name="bar">
+                <xs:annotation>
+                        <xs:documentation>Documentation of bar "foo".</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                        <xs:sequence>
+                                <xs:any/>
+                        </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+        <xs:element name="baz">
+                <xs:annotation>
+                        <xs:documentation>Documentation of bar "foo".</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                        <xs:sequence>
+                                <xs:choice>
+                                        <xs:any namespace="##targetNamespace"/>
+                                        <xs:any namespace="##local"/>
+                                        <xs:any namespace="##other"/>
+                                </xs:choice>
+                                <xs:any namespace="##any"/>
+                        </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+
+
+</xs:schema>

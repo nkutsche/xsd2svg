@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo.com" xmlns:foo="foo.com">
+
+    <xs:element name="bar">
+        <xs:annotation>
+            <xs:documentation>Documentation of element bar</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+
+    <xs:element name="foo">
+        <xs:annotation>
+            <xs:documentation>Documentation of element foo</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>Documentation of annonymous complexType</xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element ref="foo:bar"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
