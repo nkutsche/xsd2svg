@@ -78,13 +78,24 @@
             es:group-components($component-infos, $config?component-grouping?*)
             "/>
         
-        <xsl:sequence select="map{
+        <xsl:variable name="tempSchemaSet" select="map{
             'schema-namespace-map' : $schemaSetCfg?schema-map,
             'grouped-components' : $grouped-components,
             'namespaces' : $component-infos?namespace => distinct-values(),
             'types' : $component-infos?type => distinct-values(),
             'qnames' : $component-infos?qname => distinct-values()
             }"/>
+        <xsl:sequence select="
+            map{
+                'schema-namespace-map' : $schemaSetCfg?schema-map,
+                'grouped-components' : $grouped-components,
+                'namespaces' : $component-infos?namespace => distinct-values(),
+                'types' : $component-infos?type => distinct-values(),
+                'qnames' : $component-infos?qname => distinct-values(),
+                'print-qname' : function($qname){es:printQName($qname, $schemaSetCfg)},
+                'components-by-id' : ($component-infos ! map{.?id : .} ) => map:merge()
+            }
+            "/>
     </xsl:function>
     
 <!--    
