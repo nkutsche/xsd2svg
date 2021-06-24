@@ -1713,18 +1713,36 @@
 
         <xsl:variable name="nested" select="$comp//xs:*[@name]"/>
         <xsl:variable name="nested" select="$nested except $nested//*"/>
+        <xsl:variable name="nested-by" select="$comp/ancestor::*[@name][1]"/>
+
+        <xsl:variable name="coreInfo" select="es:getComponentCoreInfo($comp)"/>
+
+        <xsl:variable name="detailInfo" select="
+            map{
+            'used-by' : $comp/es:getParents(., $schemaSetConfig) ! es:getComponentCoreInfo(.),
+            'uses' : $comp/es:getUses(., $schemaSetConfig) ! es:getComponentCoreInfo(.),
+            'nested' : $nested/es:getComponentCoreInfo(.),
+            'nested-by' : $nested-by/es:getComponentCoreInfo(.),
+            'svg-model' : es:svg-model($comp, $schemaSetConfig)
+            }
+            "/>
+
+        <xsl:sequence select="
+                ($coreInfo, $detailInfo) => map:merge()
+                "/>
+
+    </xsl:function>
+    <xsl:function name="es:getComponentCoreInfo" as="map(xs:string, item()*)">
+        <xsl:param name="comp" as="element()"/>
 
         <xsl:sequence select="
             map{
-            'component' : $comp,
-            'type' : $comp/local-name(),
-            'namespace' : ($comp/root(.)/xs:schema/@targetNamespace/string(.), '')[1],
-            'scope' : if ($comp/parent::xs:schema) then ('global') else ('local'),
-            'used-by' : $comp/es:getParents(., $schemaSetConfig),
-            'uses' : $comp/es:getUses(., $schemaSetConfig),
-            'qname' : es:getQName($comp/@name),
-            'nested-compontents' : $nested/es:getComponentInfo(., $schemaSetConfig),
-            'svg-model' : es:svg-model($comp, $schemaSetConfig)
+                'id' : $comp/generate-id(),
+                'component' : $comp,
+                'type' : $comp/local-name(),
+                'namespace' : ($comp/root(.)/xs:schema/@targetNamespace/string(.), '')[1],
+                'scope' : if ($comp/parent::xs:schema) then ('global') else ('local'),
+                'qname' : es:getName($comp)
             }"/>
 
     </xsl:function>
