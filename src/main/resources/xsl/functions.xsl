@@ -117,7 +117,7 @@
                     ()"/>
 
         <xsl:variable name="prefix" select="
-                if ($prefix = '') then
+                if ($prefix = '' or $namespace = '') then
                     ''
                 else
                     if ($prefix) then
