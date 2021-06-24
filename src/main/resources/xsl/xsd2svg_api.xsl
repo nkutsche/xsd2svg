@@ -135,6 +135,8 @@
         
     </xsl:function>
     
+    
+    
     <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)">
         <xsl:param name="schema" as="document-node(element(xs:schema))"/>
         <xsl:sequence select="xsd2svg:createSchemaSetConfig($schema, $effConfig)"/>

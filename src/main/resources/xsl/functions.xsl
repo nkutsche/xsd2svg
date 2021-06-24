@@ -271,7 +271,7 @@
         <xsl:param name="qname" as="xs:QName"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="refKind" as="xs:string*"/>
-        
+
         <xsl:sequence select="es:getReferenceByQName($qname, $schemaSetConfig, $refKind, true())"/>
     </xsl:function>
 
@@ -280,7 +280,7 @@
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="refKind" as="xs:string*"/>
         <xsl:param name="exactlyOneRef" as="xs:boolean"/>
-        
+
         <xsl:variable name="schema-context" select="$schemaSetConfig?schema-map" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
 
@@ -1543,8 +1543,8 @@
     <xsl:function name="es:getParents" as="element()*">
         <xsl:param name="this" as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
-        
-        
+
+
         <xsl:variable name="schema-context" select="$schemaSetConfig?schema-map" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
 
@@ -1583,8 +1583,8 @@
     <xsl:function name="es:getUses" as="element()*">
         <xsl:param name="component"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
-        
-        
+
+
         <xsl:variable name="containedLocals" select="$component//(xs:element | xs:attribute)[@name]"/>
 
         <xsl:variable name="ignores" select="$containedLocals//*"/>
