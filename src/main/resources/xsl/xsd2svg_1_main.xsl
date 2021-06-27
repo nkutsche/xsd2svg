@@ -361,7 +361,16 @@
                 <xsl:copy-of select="$rect"/>
                 <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" stroke="{$color}" stroke-width="1"/>
                 <xsl:variable name="headerWithBorder">
-                    <xsl:copy-of select="$header"/>
+                    <xsl:choose>
+                        <xsl:when test="$isRoot">
+                            <xsl:sequence select="$header"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:call-template name="createLink">
+                                <xsl:with-param name="content" select="$header"/>
+                            </xsl:call-template>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <path d="M 2.5 {$header/@height} L {$width} {$header/@height}" fill="none" stroke="{$color}" stroke-width="0.25"/>
                 </xsl:variable>
 
@@ -460,9 +469,14 @@
                         <g transform="translate(0.5, 0.5)">
                             <rect width="{$width}" height="{$elementHeight div 2}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}" ry="10" rx="10"/>
                             <rect width="{$width}" height="{$elementHeight div 2 - 10}" x="0" y="{$elementHeight div 2}" fill="{$type-bg}"/>
-                            <text x="{$paddingLR}" y="32" fill="{$type-text-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                                <xsl:value-of select="$typeLabel"/>
-                            </text>
+                            <xsl:call-template name="createLink">
+                                <xsl:with-param name="content">
+                                    <text x="{$paddingLR}" y="32" fill="{$type-text-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                        <xsl:value-of select="$typeLabel"/>
+                                    </text>
+                                </xsl:with-param>
+                                <xsl:with-param name="linkTarget" select="es:getReference(@type, $schemaSetConfig)"/>
+                            </xsl:call-template>
                         </g>
                         <xsl:sequence select="$type-target/es:createDoku(., $schemaSetConfig)"/>
                     </svg>
@@ -484,10 +498,13 @@
                         <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
                             <xsl:sequence select="$symbol"/>
                         </g>
-
-                        <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                            <xsl:value-of select="$label"/>
-                        </text>
+                        <xsl:call-template name="createLink">
+                            <xsl:with-param name="content">
+                                <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                    <xsl:value-of select="$label"/>
+                                </text>
+                            </xsl:with-param>
+                        </xsl:call-template>
                     </g>
                     <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
                 </svg>
@@ -622,22 +639,15 @@
                             <xsl:sequence select="$symbol"/>
                         </g>
 
-                        <xsl:choose>
-                            <xsl:when test="false()">
-                                <!--                       TODO <xsl:when test="$isDoku">-->
-                                <a xlink:href="#{es:convertId($elementName)}" target="_top">
-                                    <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
-                                        <set attributeName="fill" to="#fff" begin="{$hoverId}.mouseover" end="{$hoverId}.mouseout"/>
-                                        <xsl:value-of select="$label"/>
-                                    </text>
-                                </a>
-                            </xsl:when>
-                            <xsl:otherwise>
+                        <xsl:call-template name="createLink">
+                            <xsl:with-param name="content">
                                 <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}">
                                     <xsl:value-of select="$label"/>
                                 </text>
-                            </xsl:otherwise>
-                        </xsl:choose>
+                            </xsl:with-param>
+                            <xsl:with-param name="linkTarget" select="$refTarget"/>
+                        </xsl:call-template>
+                        
                     </g>
                     <xsl:sequence select="$refTarget/es:createDoku(., $schemaSetConfig)"/>
                 </svg>
@@ -732,6 +742,7 @@
                 <xsl:with-param name="colors" select="$colors => map:put('secondary', 'none') => map:put('text', 'black')"/>
                 <xsl:with-param name="title" select="$boxTitle"/>
                 <xsl:with-param name="titleSymbol" select="$elementSymbol//*[@class = 'core'][1]" as="node()"/>
+                <xsl:with-param name="titleLinkTarget" select="$ref"/>
             </xsl:call-template>
 
             <xsl:choose>
@@ -1225,22 +1236,27 @@
         <svg width="{$width}" height="30" es:cY="15">
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
                 <!-- TODO               <a xlink:href="#{es:convertId($parentName)}" target="_top">-->
-                <svg width="{$width + 1}" height="26">
-                    <g transform="translate(0.5, 0.5)">
-                        <g>
-                            <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white"/>
-                        </g>
 
-                        <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
-                            <xsl:sequence select="$symbol"/>
-                        </g>
+                <xsl:call-template name="createLink">
+                    <xsl:with-param name="content">
+                        <svg width="{$width + 1}" height="26">
+                            <g transform="translate(0.5, 0.5)">
+                                <g>
+                                    <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$stroke}" stoke-width="1" fill="white"/>
+                                </g>
 
-                        <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                            <xsl:value-of select="$label"/>
-                        </text>
-                    </g>
-                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
-                </svg>
+                                <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
+                                    <xsl:sequence select="$symbol"/>
+                                </g>
+
+                                <text x="{$paddingLR + $symbolWidth}" y="16" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                    <xsl:value-of select="$label"/>
+                                </text>
+                            </g>
+                            <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                        </svg>
+                    </xsl:with-param>
+                </xsl:call-template>
                 <!--</a>-->
             </g>
         </svg>
@@ -1271,19 +1287,23 @@
         <svg width="{$width}" height="{$height + 5}" es:cY="{($height div 2) + 2.5}" es:stroke="{$color}">
             <g transform="translate(1,1)" id="{$hoverId}">
                 <!--    TODO            <a xlink:href="#{es:convertId($groupName)}" target="_top">-->
-                <path stroke="{$color}" stoke-width="1" fill="white">
-                    <xsl:attribute name="d" select="
-                            'M', 0, $height + 3,
-                            'L', 0, 10,
-                            'Q', 0, 0, 10, 0,
-                            'L', $width - 12, 0,
-                            'Q', $width - 2, 0, $width - 2, 10,
-                            'L', $width - 2, $height + 3"/>
-                </path>
-                <path d="M 2.5 {$height + 2} L {$width - 4.5} {$height + 2}" fill="none" stroke="{$color}" stroke-width="0.25"/>
-                <g transform="translate(0, 2.5)">
-                    <xsl:copy-of select="$header"/>
-                </g>
+                <xsl:call-template name="createLink">
+                    <xsl:with-param name="content">
+                        <path stroke="{$color}" stoke-width="1" fill="white">
+                            <xsl:attribute name="d" select="
+                                    'M', 0, $height + 3,
+                                    'L', 0, 10,
+                                    'Q', 0, 0, 10, 0,
+                                    'L', $width - 12, 0,
+                                    'Q', $width - 2, 0, $width - 2, 10,
+                                    'L', $width - 2, $height + 3"/>
+                        </path>
+                        <path d="M 2.5 {$height + 2} L {$width - 4.5} {$height + 2}" fill="none" stroke="{$color}" stroke-width="0.25"/>
+                        <g transform="translate(0, 2.5)">
+                            <xsl:copy-of select="$header"/>
+                        </g>
+                    </xsl:with-param>
+                </xsl:call-template>
                 <!--</a>-->
             </g>
             <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
@@ -1307,6 +1327,7 @@
         <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="title" select="()" as="xs:string?"/>
         <xsl:param name="titleSymbol" as="node()?"/>
+        <xsl:param name="titleLinkTarget" select="()" as="node()?"/>
 
         <xsl:variable name="strokeColor" select="$colors?main"/>
         <xsl:variable name="titleBgColor" select="$colors?secondary"/>
@@ -1319,9 +1340,11 @@
                     <xsl:with-param name="title" select="$title"/>
                     <xsl:with-param name="font-color" select="$titleColor"/>
                     <xsl:with-param name="symbol" select="$titleSymbol"/>
+                    <xsl:with-param name="linkTarget" select="$titleLinkTarget"/>
                 </xsl:call-template>
             </xsl:if>
         </xsl:variable>
+
 
         <xsl:variable name="titleHeight" select="
                 ($titleSvg/svg:svg/(@height), 0) => max()"/>

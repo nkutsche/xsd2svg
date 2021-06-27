@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" exclude-result-prefixes="xs" version="3.0" xmlns:math="http://www.w3.org/2005/xpath-functions/math">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="xs" version="3.0" xmlns:math="http://www.w3.org/2005/xpath-functions/math">
 
     <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
@@ -222,6 +222,24 @@
         <xsl:variable name="nameRef" select="$node/@*[name() = $attrName]"/>
         <xsl:variable name="localName" select="replace($nameRef, '^sqf:|^sch:', '')"/>
         <xsl:value-of select="$localName"/>
+    </xsl:function>
+
+    <xsl:function name="es:getReferences" as="node()*">
+        <xsl:param name="attr" as="attribute()"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+
+        <xsl:choose>
+            <xsl:when test="$attr/self::attribute(memberTypes)">
+                <xsl:variable name="element" select="$attr/parent::*"/>
+                <xsl:sequence select="
+                        $attr/tokenize(., '\s') !
+                        es:getReferenceByQName(es:getQName(., $element), $schemaSetConfig, 'simpleType', false())
+                        "/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="es:getReference($attr, $schemaSetConfig)"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
     <xsl:function name="es:getReference" as="node()?">
@@ -951,6 +969,7 @@
         <xsl:param name="font-color" select="'black'"/>
         <xsl:param name="symbol" as="node()?"/>
         <xsl:param name="bold" select="false()" as="xs:boolean" tunnel="yes"/>
+        <xsl:param name="linkTarget" select="()" as="node()?"/>
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="weight" select="
                 if ($bold) then
@@ -967,9 +986,14 @@
                 <g transform="translate({$space}, {$space div 2})">
                     <xsl:sequence select="$symbol"/>
                 </g>
-                <text x="{$symbolWidth + 2 * $space}" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
-                    <xsl:value-of select="$title"/>
-                </text>
+                <xsl:call-template name="createLink">
+                    <xsl:with-param name="content">
+                        <text x="{$symbolWidth + 2 * $space}" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
+                            <xsl:value-of select="$title"/>
+                        </text>
+                    </xsl:with-param>
+                    <xsl:with-param name="linkTarget" select="$linkTarget"/>
+                </xsl:call-template>
             </g>
         </svg>
     </xsl:template>
@@ -1269,6 +1293,36 @@
             </xsl:otherwise>
         </xsl:choose>
 
+
+
+    </xsl:template>
+
+    <xsl:template name="createLink">
+        <xsl:param name="content" required="yes" as="node()*"/>
+        <xsl:param name="linkTarget" select="." as="node()?"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+
+        <xsl:variable name="link-provider" select="
+                (
+                    $schemaSetConfig?config?link-provider,
+                    function ($comp) {}
+                )[1]"/>
+        <xsl:variable name="link" select="
+                if ($linkTarget) then
+                    $link-provider(es:getComponentCoreInfo($linkTarget))
+                else
+                    ()
+                "/>
+        <xsl:choose>
+            <xsl:when test="string($link) != ''">
+                <a xlink:href="{$link}" target="_top">
+                    <xsl:sequence select="$content"/>
+                </a>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="$content"/>
+            </xsl:otherwise>
+        </xsl:choose>
 
 
     </xsl:template>

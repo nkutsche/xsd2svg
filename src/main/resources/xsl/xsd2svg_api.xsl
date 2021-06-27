@@ -23,7 +23,7 @@
     -->
     
     <xsl:param name="config" select="()" as="map(*)?"/>
-    <xsl:param name="link-provider-function" select="function($component){}" as="function(element()) as xs:string?"/>
+    <xsl:param name="link-provider-function" select="function($component){}" as="function(map(xs:string, item()*)) as xs:string?"/>
         
 <!--    
     Global variables:
