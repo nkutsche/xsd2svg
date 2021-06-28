@@ -1792,6 +1792,23 @@
 
     </xsl:function>
 
+    <xsl:function name="es:getPrimitiveTypeCoreInfo" as="map(xs:string, item()*)">
+        <xsl:param name="primitiveTypeName" as="xs:QName"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <xsl:variable name="namespace" select="namespace-uri-from-QName($primitiveTypeName)"/>
+        <xsl:variable name="local-name" select="local-name-from-QName($primitiveTypeName)"/>
+        <xsl:sequence select="
+            map{
+            'id' : 'primtype_' || $schemaSetConfig?prefix-map($namespace) || '_' || $local-name,
+            'component' : (),
+            'type' : 'simpleType',
+            'namespace' : $namespace,
+                'scope' : 'global',
+                'qname' : $primitiveTypeName
+            }"/>
+
+    </xsl:function>
+
     <xsl:function name="es:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
@@ -1840,6 +1857,35 @@
         Returns all urls, which are not included by any other url.
         -->
         <xsl:sequence select="$collection-urls[count($schema-include-reverse-map(.)) = 1]"/>
+    </xsl:function>
+
+    <xsl:function name="es:getReferencInfo">
+        <xsl:param name="attribute"/>
+        <xsl:param name="schemaSetCfg" as="map(xs:string, item()*)"/>
+        <xsl:variable name="parent" select="$attribute/parent::*"/>
+        <xsl:variable name="qnames" select="
+                if ($attribute/self::attribute(memberTypes)) then
+                    (
+                    $attribute/tokenize(., '\s') ! es:getQName(., $parent)
+                    )
+                else
+                    es:getQName($attribute)
+                "/>
+
+        <xsl:variable name="referencedComp" select="
+                if (count($qnames) gt 1) then
+                    $qnames ! es:getReferenceByQName(., $schemaSetCfg, 'simpleType', false())
+                else
+                    es:getReference($attribute, $schemaSetCfg)
+                "/>
+
+        <xsl:variable name="xsdSimpleTypes" select="$qnames[namespace-uri-from-QName(.) = $XSDNS]"/>
+
+
+        <xsl:sequence select="$referencedComp ! es:getComponentCoreInfo(.)"/>
+
+        <xsl:sequence select="$xsdSimpleTypes ! es:getPrimitiveTypeCoreInfo(., $schemaSetCfg)"/>
+
     </xsl:function>
 
 </xsl:stylesheet>

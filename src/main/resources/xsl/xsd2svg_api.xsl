@@ -93,7 +93,8 @@
                 'types' : $component-infos?type => distinct-values(),
                 'qnames' : $component-infos?qname => distinct-values(),
                 'print-qname' : function($qname){es:printQName($qname, $schemaSetCfg)},
-                'components-by-id' : ($component-infos ! map{.?id : .} ) => map:merge()
+                'components-by-id' : ($component-infos ! map{.?id : .} ) => map:merge(),
+                'find-reference' : function($attribute){es:getReferencInfo($attribute, $schemaSetCfg)}
             }
             "/>
     </xsl:function>
