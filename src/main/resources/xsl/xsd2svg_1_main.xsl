@@ -1289,7 +1289,7 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
+        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
         <xsl:variable name="color" select="$colors?main"/>
 
@@ -1299,7 +1299,8 @@
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
                 <xsl:with-param name="title" select="es:printQName($groupName, $schemaSetConfig)"/>
-                <xsl:with-param name="color" select="$color"/>
+                <xsl:with-param name="colors" select="$colors"/>
+                <xsl:with-param name="font-color" select="'black'"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="header" select="$header/svg:svg"/>
