@@ -1786,8 +1786,8 @@
                 'component' : $comp,
                 'type' : $comp/local-name(),
                 'namespace' : ($comp/root(.)/xs:schema/@targetNamespace/string(.), '')[1],
-                'scope' : if ($comp/parent::xs:schema) then ('global') else ('local'),
-                'qname' : es:getName($comp)
+                'scope' : if ($comp/(parent::xs:schema|self::xs:schema)) then ('global') else ('local'),
+                'qname' : if ($comp/self::xs:schema) then () else es:getName($comp)
             }"/>
 
     </xsl:function>
