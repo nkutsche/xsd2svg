@@ -1768,7 +1768,7 @@
             'uses' : $comp/es:getUses(., $schemaSetConfig) ! es:getComponentCoreInfo(.),
             'nested' : $nested/es:getComponentCoreInfo(.),
             'nested-by' : $nested-by/es:getComponentCoreInfo(.),
-            'svg-model' : es:svg-model($comp, $schemaSetConfig)
+            'get-svg-model' : function(){es:svg-model($comp, $schemaSetConfig)}
             }
             "/>
 
