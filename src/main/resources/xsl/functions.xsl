@@ -1648,18 +1648,9 @@
         <xsl:variable name="typeRef" select="$component/(self::xs:element | self::xs:attribute)/@type/es:getReference(., $schemaSetConfig)"/>
 
         <xsl:variable name="children" select="$component//xs:* except $ignores"/>
-        <xsl:variable name="refs" select="$children/(@ref | @base | @itemType)/es:getReference(., $schemaSetConfig)"/>
+        <xsl:variable name="refs" select="$children/(@ref | @base | @itemType | @memberTypes)/es:getReferences(., $schemaSetConfig)"/>
 
-        <xsl:variable name="memberTypes" select="
-                $children/@memberTypes/(
-                for $mt in tokenize(., '\s')
-                return
-                    es:getReferenceByQName(es:getQName($mt, ..), $schemaSetConfig, 'simpleType', false())
-                )
-                "/>
-
-
-        <xsl:sequence select="$containedLocals | $typeRef | $refs | $memberTypes"/>
+        <xsl:sequence select="$containedLocals | $typeRef | $refs"/>
 
     </xsl:function>
 
