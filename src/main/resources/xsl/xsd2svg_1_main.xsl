@@ -72,6 +72,8 @@
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
+
+
             <xsl:variable name="fontSize" select="11"/>
             <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), 'Arial', 'bold', $fontSize)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
@@ -447,7 +449,7 @@
         <xsl:variable name="label" select="es:printQName($attributName, $schemaSetConfig)"/>
         <xsl:variable name="typeLabel" select="
                 if (@type) then
-                'Type: ' || es:printQName(es:getQName(@type), $schemaSetConfig)
+                    'Type: ' || es:printQName(es:getQName(@type), $schemaSetConfig)
                 else
                     ''"/>
 
@@ -647,7 +649,7 @@
                             </xsl:with-param>
                             <xsl:with-param name="linkTarget" select="$refTarget"/>
                         </xsl:call-template>
-                        
+
                     </g>
                     <xsl:sequence select="$refTarget/es:createDoku(., $schemaSetConfig)"/>
                 </svg>
@@ -1064,6 +1066,7 @@
             'tooltip' : $tooltip
             }[exists($content)]"/>
     </xsl:function>
+
     <xsl:function name="es:create-table">
         <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
@@ -1148,6 +1151,7 @@
 
                         <xsl:variable name="x" select="sum($colWidths[position() lt $colnr])"/>
 
+
                         <text x="{$x + $cell-padding}" y="0" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                             <xsl:if test="?tooltip">
                                 <title>
@@ -1156,7 +1160,6 @@
                             </xsl:if>
                             <xsl:value-of select="?content"/>
                         </text>
-
                         <xsl:if test="position() gt 1">
                             <g>
                                 <line x1="{$x}" x2="{$x}" y1="{$cell-padding}" y2="{$lineheight * -1}">
@@ -1164,6 +1167,9 @@
                                 </line>
                             </g>
                         </xsl:if>
+
+
+
                     </xsl:for-each>
 
                 </g>
