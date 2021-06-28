@@ -999,12 +999,16 @@
                 }
                 "/>
 
-        <xsl:variable name="enumValues" select="xs:enumeration/@value => es:cut-join(' | ', '...', 100.0, $textStyle)"/>
+        <xsl:variable name="enumValuesCut" select="xs:enumeration/@value => es:cut-join(' | ', '...', 100.0, $textStyle)"/>
+        <xsl:variable name="enumValues" select="xs:enumeration/@value => string-join(' | ')"/>
+        <xsl:variable name="enumCell" select="
+                es:tcell($enumValuesCut, $enumValues)
+                "/>
 
-        <xsl:variable name="table" as="array(xs:string)*">
-            <xsl:sequence select="(['Values:', $enumValues])[exists(.?2)]"/>
+        <xsl:variable name="table" as="array(map(xs:string, item()?))*">
+            <xsl:sequence select="([es:tcell('Values:'), $enumCell])[exists(.?2)]"/>
             <xsl:for-each select="* except xs:enumeration">
-                <xsl:sequence select="[$labels(local-name()), @value/string()]"/>
+                <xsl:sequence select="[es:tcell($labels(local-name())), es:tcell(@value)]"/>
             </xsl:for-each>
         </xsl:variable>
 
@@ -1048,15 +1052,27 @@
         </xsl:call-template>
     </xsl:template>
 
+    <xsl:function name="es:tcell" as="map(xs:string, item()?)?">
+        <xsl:param name="content" as="xs:string?"/>
+        <xsl:sequence select="es:tcell($content, ())"/>
+    </xsl:function>
+    <xsl:function name="es:tcell" as="map(xs:string, item()?)?">
+        <xsl:param name="content" as="xs:string?"/>
+        <xsl:param name="tooltip" as="xs:string?"/>
+        <xsl:sequence select="map{
+            'content' : $content,
+            'tooltip' : $tooltip
+            }[exists($content)]"/>
+    </xsl:function>
     <xsl:function name="es:create-table">
-        <xsl:param name="cells" as="array(array(xs:string?))"/>
+        <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
         <xsl:param name="colors" as="map(xs:string, xs:string)"/>
         <xsl:sequence select="es:create-table($cells, $cell-padding, $colors, ())"/>
     </xsl:function>
 
     <xsl:function name="es:create-table">
-        <xsl:param name="cells" as="array(array(xs:string?))"/>
+        <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
         <xsl:param name="colors" as="map(xs:string, xs:string)"/>
         <xsl:param name="title" as="xs:string?"/>
@@ -1073,7 +1089,8 @@
             <xsl:attribute name="stroke" select="$stroke-color"/>
         </xsl:variable>
 
-        <xsl:variable name="text-lengths" select="array {$cells?* ! array {.?* ! es:renderedTextLength(., 'Arial', 'plain', $fontSize)}}"/>
+
+        <xsl:variable name="text-lengths" select="array {$cells?* ! array {.?* ! es:renderedTextLength(?content, 'Arial', 'plain', $fontSize)}}"/>
         <xsl:variable name="cols" select="$cells?* ! array:size(.) => max()"/>
 
         <xsl:variable name="cell-padding2" select="$cell-padding * 2"/>
@@ -1132,7 +1149,12 @@
                         <xsl:variable name="x" select="sum($colWidths[position() lt $colnr])"/>
 
                         <text x="{$x + $cell-padding}" y="0" fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                            <xsl:value-of select="."/>
+                            <xsl:if test="?tooltip">
+                                <title>
+                                    <xsl:value-of select="?tooltip"/>
+                                </title>
+                            </xsl:if>
+                            <xsl:value-of select="?content"/>
                         </text>
 
                         <xsl:if test="position() gt 1">
