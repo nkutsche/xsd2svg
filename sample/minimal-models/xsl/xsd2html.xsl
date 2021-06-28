@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:math="http://www.w3.org/2005/xpath-functions/math" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" exclude-result-prefixes="xs math" version="3.0" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:array="http://www.w3.org/2005/xpath-functions/array" xmlns:xsd2svg="http://www.xsd2svg.schematron-quickfix.com/">
 
-    <xsl:use-package name="http://www.escali.schematron-quickfix.com/xsd2svg" package-version="*"/>
+    <xsl:use-package name="http://www.escali.schematron-quickfix.com/xsd2svg" package-version="*">
+        <xsl:override>
+            <xsl:param name="link-provider-function" select="function($comp){'#card_' || $comp?id}" as="function(map(xs:string, item()*)) as xs:string?"/>
+        </xsl:override>
+    </xsl:use-package>
+    
+    
 
     <xsl:output method="html" html-version="5.0" indent="yes"/>
 
@@ -99,14 +105,14 @@
         <xsl:param name="comp" as="map(*)"/>
         <xsl:param name="schemaInfo" as="map(*)" tunnel="yes"/>
 
-        <div class="card" id="{$comp?id}">
+        <div class="card" id="card_{$comp?id}">
             <div class="card-header">
                 <xsl:value-of select="es:createCompTitle($comp, $schemaInfo)"/>
             </div>
 
             <div class="card-body">
                 <div>
-                    <xsl:sequence select="$comp?svg-model"/>
+                    <xsl:sequence select="$comp?get-svg-model()"/>
                 </div>
 
                 <xsl:apply-templates select="$comp?component/xs:annotation"/>
