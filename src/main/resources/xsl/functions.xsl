@@ -378,6 +378,56 @@
                 'Z')"/>
         <xsl:value-of select="$seq" separator=" "/>
     </xsl:function>
+    
+    <xsl:function name="es:createHalfRoundBox" as="xs:string">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:param name="edgesRel" as="xs:double"/>
+        <xsl:param name="edgesAbs" as="xs:boolean"/>
+        <xsl:sequence select="es:createHalfRoundBox($width, $height, $edgesRel, $edgesAbs, true())"/>
+    </xsl:function>
+    <xsl:function name="es:createHalfRoundBox" as="xs:string">
+        <xsl:param name="width" as="xs:double"/>
+        <xsl:param name="height" as="xs:double"/>
+        <xsl:param name="edgesRel" as="xs:double"/>
+        <xsl:param name="edgesAbs" as="xs:boolean"/>
+        <xsl:param name="bowl" as="xs:boolean"/>
+        
+        <xsl:variable name="edgesHeight" select="
+                (if (not($edgesAbs)) then
+                    (min(($height, $width)) * $edgesRel)
+                else
+                    ($edgesRel))"/>
+        <xsl:variable name="edgesWidth" select="
+                (if (not($edgesAbs)) then
+                    (min(($height, $width)) * $edgesRel)
+                else
+                    ($edgesRel))"/>
+        
+        <xsl:variable name="dirFactor" select=" if ($bowl) then 1 else -1"/>
+        
+        <xsl:variable name="height" select="$height * $dirFactor"/>
+        <xsl:variable name="edgesHeight" select="$edgesHeight * $dirFactor"/>
+        
+        <xsl:variable name="point1" select="0, 0"/>
+        <xsl:variable name="point2" select="0, $height - $edgesHeight"/>
+        <xsl:variable name="qPoint23" select="0, $height"/>
+        <xsl:variable name="point3" select="$edgesWidth, $height"/>
+        <xsl:variable name="point4" select="$width - $edgesWidth, $height"/>
+        <xsl:variable name="qPoint45" select="$width, $height"/>
+        <xsl:variable name="point5" select="$width, $height - $edgesHeight"/>
+        <xsl:variable name="point6" select="$width, 0"/>
+        
+        <xsl:variable name="seq" select="
+                ('M', $point1,
+                'L', $point2,
+                'Q', $qPoint23, $point3,
+                'L', $point4,
+                'Q', $qPoint45, $point5,
+                'L', $point6,
+                'Z')"/>
+        <xsl:sequence select="$seq => string-join(' ')"/>
+    </xsl:function>
 
 
 
