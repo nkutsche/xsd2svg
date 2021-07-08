@@ -456,16 +456,14 @@
     </xsl:function>
 
     <xsl:template name="sequenceSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:sequence</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
-        <xsl:variable name="colorStroke" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
-
+        <xsl:variable name="class" select="'symbol sequence cs_' || $color-scheme"/>
+        
         <svg width="20" height="20" es:cY="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="23.5"/>
@@ -473,7 +471,7 @@
             <xsl:sequence select="$title"/>
             <g>
                 <xsl:variable name="circle">
-                    <circle r="9.5" stroke="{$colorStroke}" stroke-width="1" cx="10" cy="10" fill="white">
+                    <circle r="9.5" stroke-width="1" cx="10" cy="10" class="{$class} bordered opaque">
                         <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
                             <xsl:attribute name="stroke-dashoffset" select="2"/>
                             <xsl:attribute name="stroke-dasharray" select="2"/>
@@ -500,28 +498,29 @@
                         M 8.5 10
                         L 11.5 10
                         M 17 10
-                        L 20 10" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                        L 20 10" fill="none" stroke-width="0.75" class="{$class} bordered"/>
                     <g transform="translate(3, 8)">
-                        <rect width="5.5" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                        <rect width="5.5" height="4" stroke-width="1" class="{$class} filled"/>
+                        <rect width="5.5" height="4" stroke-width="1" class="{$class} bordered"/>
                     </g>
                     <g transform="translate(11.5, 8)">
-                        <rect width="5.5" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                        <rect width="5.5" height="4" stroke-width="1" class="{$class} filled"/>
+                        <rect width="5.5" height="4" stroke-width="1" class="{$class} bordered"/>
                     </g>
                 </g>
             </g>
         </svg>
     </xsl:template>
+    
     <xsl:template name="choiceSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:choice</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
-        <xsl:variable name="colorStroke" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
+        <xsl:variable name="class" select="'symbol choice cs_' || $color-scheme"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
@@ -531,7 +530,8 @@
             <xsl:sequence select="$title"/>
             <g>
                 <xsl:variable name="circle">
-                    <circle r="9.5" stroke="{$colorStroke}" stroke-width="1" cx="10" cy="10" fill="white">
+                    <circle r="9.5" stroke-width="1" cx="10" cy="10"
+                        class="{$class} bordered opaque">
                         <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
                             <xsl:attribute name="stroke-dashoffset" select="2"/>
                             <xsl:attribute name="stroke-dasharray" select="2"/>
@@ -558,12 +558,23 @@
                         L 6 6
                         M 3 10
                         L 3 14
-                        L 6 14" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                        L 6 14" stroke-width="0.75" class="{$class} bordered"
+                    />
                     <g transform="translate(6, 4)">
-                        <rect width="8" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                        <rect width="8" height="4" stroke-width="1"
+                            class="{$class} filled"
+                        />
+                        <rect width="8" height="4" stroke-width="1"
+                            class="{$class} bordered"
+                        />
                     </g>
                     <g transform="translate(6, 12)">
-                        <rect width="8" height="4" fill="{$colorFill}" stroke-width="1" stroke="{$colorStroke}"/>
+                        <rect width="8" height="4" stroke-width="1"
+                            class="{$class} filled"
+                        />
+                        <rect width="8" height="4" stroke-width="1"
+                            class="{$class} bordered"
+                        />
                     </g>
                     <xsl:if test="$connectCount = (1, 3)">
                         <path d="M 20 10 
@@ -572,127 +583,142 @@
                                 L 14 6
                                 M 17 10
                                 L 17 14
-                                L 14 14" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                                L 14 14" fill="none" stroke-width="0.75"
+                                class="{$class} bordered"
+                        />
                     </xsl:if>
                     <xsl:if test="$connectCount gt 1">
                         <path d="M 10 0
-                                 L 10 4" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                                 L 10 4" fill="none" stroke-width="0.75"
+                                 class="{$class} bordered"
+                        />
                         <path d="M 10 16
-                                 L 10 20" stroke="{$colorStroke}" fill="none" stroke-width="0.75"/>
+                                 L 10 20" fill="none" stroke-width="0.75"
+                                 class="{$class} bordered"
+                        />
                     </xsl:if>
 
                 </g>
             </g>
         </svg>
     </xsl:template>
+    
     <xsl:template name="st_unionSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:union</title>
         </xsl:param>
-
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
+        <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
+        
+        <xsl:variable name="class" select="'symbol union cs_' || $color-scheme"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1"
+                    class="symbol union cs_{$color-scheme} bordered opaque"
+                />
                 <g>
                     <svg width="20" height="20" class="core">
                         <xsl:sequence select="$title"/>
                         <g transform="rotate(45, 10, 10)">
-                            <circle r="6" stroke="{$color}" stroke-width="1" cx="10" cy="10" fill="white"/>
-                            <circle r="2" fill="{$color}" cx="10" cy="4"/>
-                            <circle r="2" fill="{$color}" cx="15.2" cy="13"/>
-                            <circle r="2" fill="{$color}" cx="4.8" cy="13"/>
+                            <circle r="6" stroke-width="1" cx="10" cy="10"
+                                class="{$class} bordered opaque"
+                            />
+                            <circle r="2" cx="10" cy="4" class="{$class} massive filled"
+                            />
+                            <circle r="2" cx="15.2" cy="13" class="{$class} massive filled"
+                            />
+                            <circle r="2" cx="4.8" cy="13" class="{$class} massive filled"
+                            />
                         </g>
                     </svg>
                 </g>
             </g>
         </svg>
     </xsl:template>
+    
     <xsl:template name="st_listSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:list</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
 
+        <xsl:variable name="class" select="'symbol list cs_' || $color-scheme"/>
+        
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="{$class} opaque bordered"/>
                 <g transform="translate(4, 4)">
                     <svg width="13" height="13" class="core">
                         <g>
-                            <rect width="2" height="2" x="1" y="2" fill="{$color}"/>
-                            <rect width="2" height="2" x="1" y="5" fill="{$color}"/>
-                            <rect width="2" height="2" x="1" y="8" fill="{$color}"/>
-                            <rect width="6" height="2" x="4" y="2" fill="{$color}"/>
-                            <rect width="6" height="2" x="4" y="5" fill="{$color}"/>
-                            <rect width="6" height="2" x="4" y="8" fill="{$color}"/>
+                            <rect width="2" height="2" x="1" y="2" class="{$class} massive filled"/>
+                            <rect width="2" height="2" x="1" y="5" class="{$class} massive filled"/>
+                            <rect width="2" height="2" x="1" y="8" class="{$class} massive filled"/>
+                            <rect width="6" height="2" x="4" y="2" class="{$class} massive filled"/>
+                            <rect width="6" height="2" x="4" y="5" class="{$class} massive filled"/>
+                            <rect width="6" height="2" x="4" y="8" class="{$class} massive filled"/>
                         </g>
                     </svg>
                 </g>
             </g>
         </svg>
     </xsl:template>
+    
     <xsl:template name="extensionSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:extension</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
+        
+        <xsl:variable name="class" select="'symbol extension cs_' || $color-scheme"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1"
+                    class="{$class} opaque bordered"
+                />
                 <g transform="translate(4.5, 2.5)">
                     <svg width="13" height="13" class="core">
                         <xsl:sequence select="$title"/>
                         <g>
-                            <rect width="4" height="4" x="1" y="3" fill="{$color}"/>
-                            <rect width="4" height="4" x="1" y="8" fill="{$color}"/>
-                            <rect width="4" height="4" x="6" y="8" fill="{$color}"/>
-                            <rect width="4" height="4" x="7" y="2" fill="{$color}" transform="rotate(45, 9, 4)"/>
+                            <rect width="4" height="4" x="1" y="3" class="{$class} massive filled"/>
+                            <rect width="4" height="4" x="1" y="8" class="{$class} massive filled"/>
+                            <rect width="4" height="4" x="6" y="8" class="{$class} massive filled"/>
+                            <rect width="4" height="4" x="7" y="2" class="{$class} massive filled" transform="rotate(45, 9, 4)"/>
                         </g>
                     </svg>
                 </g>
             </g>
         </svg>
     </xsl:template>
+    
     <xsl:template name="restrictionSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:restriction</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
-
+        <xsl:variable name="class" select="'symbol restriction cs_' || $color-scheme"/>
+        
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" fill="white" stroke="{$color}" stroke-width="1"/>
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1"
+                    class="{$class} opaque bordered"
+                />
                 <g transform="translate(4,4)">
                     <xsl:sequence select="$title"/>
                     <svg class="core" width="12" height="12">
                         <g>
-                            <rect width="10" height="2" x="1" y="1.5" fill="{$color}"/>
-                            <path d="M1 4 L 11 4 L 8 8 L 4 8z" fill="{$color}"/>
-                            <rect width="4" height="2" x="4" y="8.5" fill="{$color}"/>
+                            <rect width="10" height="2" x="1" y="1.5" class="{$class} massive filled"/>
+                            <path d="M1 4 L 11 4 L 8 8 L 4 8z" class="{$class} massive filled"/>
+                            <rect width="4" height="2" x="4" y="8.5" class="{$class} massive filled"/>
                         </g>
                     </svg>
                 </g>
@@ -701,102 +727,104 @@
     </xsl:template>
 
     <xsl:template name="anySymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('any', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:any</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'any'" as="xs:string"/>
+        
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
-
+        <xsl:variable name="class" select="'symbol any cs_' || $color-scheme"/>
 
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g transform="translate(5, 9)">
-                <rect width="10" height="2" fill="{$color}"/>
+                <rect width="10" height="2" class="{$class} massive filled"/>
                 <g transform="rotate(90, 5, 1)">
-                    <rect width="10" height="2" fill="{$color}"/>
+                    <rect width="10" height="2" class="{$class} massive filled"/>
                 </g>
                 <g transform="rotate(45, 5, 1)">
-                    <rect width="10" height="2" fill="{$color}"/>
+                    <rect width="10" height="2" class="{$class} massive filled"/>
                 </g>
                 <g transform="rotate(135, 5, 1)">
-                    <rect width="10" height="2" fill="{$color}"/>
+                    <rect width="10" height="2" class="{$class} massive filled"/>
                 </g>
             </g>
         </svg>
     </xsl:template>
 
     <xsl:template name="complexTypeSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('complexType', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:complexType</title>
         </xsl:param>
+        <xsl:param name="bold" select="false()" as="xs:boolean"/>
+        <xsl:param name="color-scheme" select="'complexType'" as="xs:string"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
-
+        <xsl:variable name="class" select="es:addBoldClass('symbol complexType cs_' || $color-scheme, $bold)"/>
 
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
 
             <g>
-                <rect x="8" y="4" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
+                <rect x="8" y="4" width="4" height="4" class="{$class} filled" stroke-width="0.5"/>
+                <rect x="8" y="4" width="4" height="4" class="{$class} bordered" stroke-width="0.5"/>
 
-                <rect x="8" y="12" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
-                <rect x="2" y="12" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
-                <rect x="14" y="12" width="4" height="4" fill="{$colorFill}" stroke="{$color}" stroke-width="0.5"/>
+                <rect x="8" y="12" width="4" height="4" class="{$class} filled" stroke-width="0.5"/>
+                <rect x="8" y="12" width="4" height="4" class="{$class} bordered" stroke-width="0.5"/>
+                <rect x="2" y="12" width="4" height="4" class="{$class} filled" stroke-width="0.5"/>
+                <rect x="2" y="12" width="4" height="4" class="{$class} bordered" stroke-width="0.5"/>
+                <rect x="14" y="12" width="4" height="4" class="{$class} filled" stroke-width="0.5"/>
+                <rect x="14" y="12" width="4" height="4" class="{$class} bordered" stroke-width="0.5"/>
 
-                <path d="M 10 8 L 10 12" stroke="{$color}" stroke-width="1"/>
-                <path d="M 6 14 L 8 14" stroke="{$color}" stroke-width="1"/>
-                <path d="M 12 14 L 14 14" stroke="{$color}" stroke-width="1"/>
+                <path d="M 10 8 L 10 12" class="{$class} bordered" stroke-width="1"/>
+                <path d="M 6 14 L 8 14" class="{$class} bordered" stroke-width="1"/>
+                <path d="M 12 14 L 14 14" class="{$class} bordered" stroke-width="1"/>
 
             </g>
 
         </svg>
     </xsl:template>
+    
     <xsl:template name="simpleTypeSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)"/>
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:simpleType</title>
         </xsl:param>
+        <xsl:param name="bold" select="false()" as="xs:boolean"/>
+        <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
+        <xsl:variable name="class" select="es:addBoldClass('symbol simpleType cs_' || $color-scheme, $bold)"/>
+        
+
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
 
             <g>
-                <path d="M 2 10 L 10 5 L 18 10 L 10 15Z" stroke="{$color}" fill="{$colorFill}" stroke-width="0.5"/>
+                <path d="M 2 10 L 10 5 L 18 10 L 10 15Z" class="{$class} filled" stroke-width="0.5"/>
+                <path d="M 2 10 L 10 5 L 18 10 L 10 15Z" class="{$class} bordered" stroke-width="0.5"/>
             </g>
 
         </svg>
     </xsl:template>
 
     <xsl:template name="attributeSymbol">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('attribute', $schemaSetConfig)"/>
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:attribute</title>
         </xsl:param>
+        <xsl:param name="color-scheme" select="'attribute'" as="xs:string"/>
+        <xsl:param name="bold" select="false()" as="xs:boolean"/>
+        <xsl:variable name="class" select="es:addBoldClass('symbol attribute cs_' || $color-scheme, $bold)"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="colorFill" select="$colors?secondary"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
 
             <g transform="translate(-19.5, -4)">
-                <path stroke="{$color}" stroke-width="0.5" fill="{$colorFill}" d="
+                <xsl:variable name="d">
                     M26 18.966 
                     c -0.859 -0.472 -1.533 -1.136 -2.021 -1.992 
                     s -0.732 -1.832 -0.732 -2.928 
@@ -873,65 +901,72 @@
                     
                     s 0.536 0.39 0.937 0.39
                     C 28.519 16.23 28.94 16.068 29.313 15.744z
-                    "/>
+                </xsl:variable>
+                <path stroke-width="0.5" class="{$class} filled" d="{$d}"/>
+                <path stroke-width="0.5" class="{$class} bordered" d="{$d}"/>
             </g>
 
         </svg>
     </xsl:template>
+    
+    <xsl:template name="groupSymbol">
+        <xsl:param name="title" select="'group'" as="xs:string"/>
+        <xsl:param name="color-scheme" select="'attribute'" as="xs:string"/>
+        <xsl:param name="bold" select="false()" as="xs:boolean"/>
+        <xsl:variable name="class" select="es:addBoldClass('symbol group cs_' || $color-scheme, $bold)"/>
+        <svg width="15" height="15">
+            <title xsl:expand-text="yes">{$title}</title>
+            <rect width="5" height="5" x="1" y="1" fill="none" class="{$class} filled" stroke-width="0.75" opacity="1"/>
+            <rect width="5" height="5" x="1" y="1" fill="none" class="{$class} bordered" stroke-width="0.75" opacity="1"/>
+            <rect width="5" height="5" x="1" y="9" fill="none" class="{$class} filled" stroke-width="0.75" opacity="1"/>
+            <rect width="5" height="5" x="1" y="9" fill="none" class="{$class} bordered" stroke-width="0.75" opacity="1"/>
+            <rect width="5" height="5" x="9" y="9" fill="none" class="{$class} filled" stroke-width="0.75" opacity="1"/>
+            <rect width="5" height="5" x="9" y="9" fill="none" class="{$class} bordered" stroke-width="0.75" opacity="1"/>
+        </svg>
+    </xsl:template>
+    
+    <xsl:function name="es:addBoldClass" as="xs:string">
+        <xsl:param name="class" as="xs:string"/>
+        <xsl:param name="bold" as="xs:boolean"/>
+        <xsl:sequence select="($class, 'massive'[$bold]) => string-join(' ')"/>
+    </xsl:function>
 
     <xsl:function name="es:getSymbol" as="element(svg:svg)?">
         <xsl:param name="type"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:choose>
             <xsl:when test="$type = 'attribute'">
-                <xsl:call-template name="attributeSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="attributeSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'simpleType'">
-                <xsl:call-template name="simpleTypeSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="simpleTypeSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'complexType'">
-                <xsl:call-template name="complexTypeSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="complexTypeSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'extension'">
-                <xsl:call-template name="extensionSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="extensionSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'restriction'">
-                <xsl:call-template name="restrictionSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="restrictionSymbol"/>
             </xsl:when>
             <xsl:when test="$type = ('any', 'schema')">
-                <xsl:call-template name="anySymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="anySymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'choice'">
-                <xsl:call-template name="choiceSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="choiceSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'sequence'">
-                <xsl:call-template name="sequenceSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="sequenceSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'list'">
-                <xsl:call-template name="st_listSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="st_listSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'union'">
-                <xsl:call-template name="st_unionSymbol">
-                    <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
-                </xsl:call-template>
+                <xsl:call-template name="st_unionSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = ('group', 'attributeGroup')">
+                <xsl:call-template name="groupSymbol"/>
             </xsl:when>
             <xsl:when test="$type = ('element', 'schema')"/>
             <xsl:otherwise>
