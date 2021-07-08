@@ -978,22 +978,20 @@
     <xsl:template name="groupTitle">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="title" as="xs:string"/>
-        <xsl:param name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
-        <xsl:param name="color" select="$colors?main"/>
-        <xsl:param name="font-color" select="$colors?text"/>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
+        <xsl:param name="bold" select="false()" tunnel="yes" as="xs:boolean"/>
+        <xsl:param name="backgrounded" select="false()" tunnel="yes" as="xs:boolean"/>
+        <xsl:param name="symbol-title" as="xs:string" select="local-name()"/>
 
         <xsl:call-template name="boxTitle">
             <xsl:with-param name="title" select="$title"/>
-            <xsl:with-param name="font-color" select="$font-color"/>
+            <xsl:with-param name="class" select="'cs_' || $color-scheme,  'backgrounded'[$backgrounded]"/>
             <xsl:with-param name="symbol">
-                <svg width="15" height="15">
-                    <rect width="5" height="5" x="1" y="1" fill="{$color}" opacity="0.5"/>
-                    <rect width="5" height="5" x="1" y="9" fill="{$color}" opacity="0.5"/>
-                    <rect width="5" height="5" x="9" y="9" fill="{$color}" opacity="0.5"/>
-                    <rect width="5" height="5" x="1" y="1" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
-                    <rect width="5" height="5" x="1" y="9" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
-                    <rect width="5" height="5" x="9" y="9" fill="none" stroke="{$color}" stroke-width="0.75" opacity="1"/>
-                </svg>
+                <xsl:call-template name="groupSymbol">
+                    <xsl:with-param name="color-scheme" select="$color-scheme"/>
+                    <xsl:with-param name="bold" select="$bold"/>
+                    <xsl:with-param name="title" select="$symbol-title"/>
+                </xsl:call-template>
             </xsl:with-param>
         </xsl:call-template>
 
@@ -1001,10 +999,13 @@
 
     <xsl:template name="boxTitle">
         <xsl:param name="title" as="xs:string"/>
-        <xsl:param name="font-color" select="'black'"/>
         <xsl:param name="symbol" as="node()?"/>
         <xsl:param name="bold" select="false()" as="xs:boolean" tunnel="yes"/>
         <xsl:param name="linkTarget" select="()" as="node()?"/>
+        <xsl:param name="class" select="()" as="xs:string*"/>
+        
+        <xsl:variable name="class" select="'boxtitle', $class"/>
+        
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="weight" select="
                 if ($bold) then
@@ -1023,7 +1024,7 @@
                 </g>
                 <xsl:call-template name="createLink">
                     <xsl:with-param name="content">
-                        <text x="{$symbolWidth + 2 * $space}" y="13" fill="{$font-color}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
+                        <text x="{$symbolWidth + 2 * $space}" y="13" class="{$class}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
                             <xsl:value-of select="$title"/>
                         </text>
                     </xsl:with-param>
@@ -1044,6 +1045,8 @@
         <xsl:param name="minX1" select="15"/>
         <xsl:param name="curve" select="7"/>
         <xsl:param name="rightPathPosition" select="false()" as="xs:boolean"/>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
+        <xsl:variable name="class" select="'path cs_' || $color-scheme"/>
 
         <xsl:variable name="contentHeight" select="sum($content/@height)"/>
         <xsl:variable name="contentWidth" select="
@@ -1127,14 +1130,14 @@
                             (5)
                         else
                             (3)"/>
-                <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                <path class="{$class} bordered" stroke-width="1" fill="none">
                     <xsl:attribute name="d" select="'M', $x0, $cY - $gap, 'L', $x1ForOne, $cY - $gap" separator=" "/>
                     <xsl:if test="not($contentReq)">
                         <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
                     </xsl:if>
                 </path>
                 <xsl:if test="$contentMore">
-                    <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                    <path class="{$class} bordered" stroke-width="1" fill="none">
                         <xsl:attribute name="d" select="'M', $x0, $cY + $gap, 'L', $x1ForOne, $cY + $gap" separator=" "/>
                         <xsl:if test="not($contentReq)">
                             <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
@@ -1143,6 +1146,9 @@
                 </xsl:if>
                 <xsl:variable name="dash" select="5"/>
                 <xsl:for-each select="reverse($content)">
+                    
+                    <xsl:variable name="classForContent" select="'path cs_' || (@es:color-scheme, $color-scheme)[1]"/>
+                    
                     <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height)"/>
                     <xsl:variable name="thisWidth" select="@width"/>
                     <xsl:variable name="y" select="$precHeight + @es:cY"/>
@@ -1185,7 +1191,8 @@
                                         (1.5)
                                     else
                                         (0)" as="xs:double"/>
-                            <path stroke="{if (@es:stroke) then (@es:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                            
+                            <path class="{$classForContent} bordered" stroke-width="1" fill="none">
                                 <xsl:attribute name="d" select="
                                         'M', $x1, $y - $gap,
                                         'L', $x2, $y - $gap" separator=" "/>
@@ -1194,7 +1201,7 @@
                                 </xsl:if>
                             </path>
                             <xsl:if test="$gap gt 0">
-                                <path stroke="{if (@es:stroke) then (@es:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                <path class="{$classForContent} bordered" stroke-width="1" fill="none">
                                     <xsl:attribute name="d" select="
                                             'M', $x1, $y + $gap,
                                             'L', $x2, $y + $gap" separator=" "/>
@@ -1209,7 +1216,7 @@
                                         (1.5)
                                     else
                                         (0)" as="xs:double"/>
-                            <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                            <path class="{$class} bordered" stroke-width="1" fill="none">
                                 <xsl:attribute name="d" select="
                                         'M', $x1 - $gap, $y,
                                         'L', $x1 - $gap, $pathToY"/>
@@ -1218,7 +1225,7 @@
                                 </xsl:if>
                             </path>
                             <xsl:if test="$gap gt 0">
-                                <path stroke="{$strokeColor}" stroke-width="1" fill="none">
+                                <path class="{$class} bordered" stroke-width="1" fill="none">
                                     <xsl:attribute name="d" select="
                                             'M', $x1 + $gap, $y,
                                             'L', $x1 + $gap, $pathToY"/>
@@ -1245,7 +1252,7 @@
                                         (1.5)
                                     else
                                         (0)" as="xs:double"/>
-                            <path stroke="{if (@es:stroke) then (@es:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                            <path class="{$classForContent} bordered" stroke-width="1" fill="none">
                                 <xsl:attribute name="d" select="
                                         'M', $x2, $y - $gap,
                                         'L', $xCurve, $y - $gap,
@@ -1256,7 +1263,7 @@
                                 </xsl:if>
                             </path>
                             <xsl:if test="matches(@es:multiValue, 'More')">
-                                <path stroke="{if (@es:stroke) then (@es:stroke) else ($strokeColor)}" stroke-width="1" fill="none">
+                                <path class="{$classForContent} bordered" stroke-width="1" fill="none">
                                     <xsl:attribute name="d" select="
                                             'M', $x2, $y + $gap,
                                             'L', $xCurve, $y + $gap,
