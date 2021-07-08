@@ -13,9 +13,9 @@
         <xsl:variable name="rectH" select="@height"/>
         
         <xsl:variable name="cY" select="(svg:foreignObject/@es:cY, 15)[1]"/>
-        <xsl:variable name="docs-colors" select="(svg:foreignObject/@es:color-scheme[. != 'null']/parse-json(.), es:getColors('#default', $schemaSetConfig))[1]"/>
+        <xsl:variable name="color-scheme" select="(svg:foreignObject/@es:color-scheme[. != ''], 'default')[1]"/>
         
-        <xsl:variable name="docs" select="es:create-docs-tooltips($annotation, $docs-id, $docs-colors, $cY)"/>
+        <xsl:variable name="docs" select="es:create-docs-tooltips($annotation, $docs-id, $color-scheme, $cY)"/>
         
         <xsl:variable name="docs-y" select="($rectH div 2 - $cY, 0) => max()"/>
         
@@ -32,16 +32,18 @@
     <xsl:function name="es:create-docs-tooltips" as="element(svg:svg)?">
         <xsl:param name="annotation" as="element(xs:annotation)+"/>
         <xsl:param name="hover_id" as="xs:string"/>
-        <xsl:param name="color" as="map(*)"/>
+        <xsl:param name="color-scheme" as="xs:string"/>
         <xsl:param name="cY" as="xs:double"/>
-        <xsl:sequence select="es:create-docs-tooltips($annotation, $hover_id, $color, $cY, ())"/>
+        <xsl:sequence select="es:create-docs-tooltips($annotation, $hover_id, $color-scheme, $cY, ())"/>
     </xsl:function>
     <xsl:function name="es:create-docs-tooltips" as="element(svg:svg)?">
         <xsl:param name="annotation" as="element(xs:annotation)+"/>
         <xsl:param name="hover_id" as="xs:string"/>
-        <xsl:param name="color" as="map(*)"/>
+        <xsl:param name="color-scheme" as="xs:string"/>
         <xsl:param name="cY" as="xs:double"/>
         <xsl:param name="invisible_ids" as="xs:string*"/>
+        
+        <xsl:variable name="class" select="'docs cs_' || $color-scheme"/>
         
         <xsl:variable name="textContent" select="string-join($annotation/xs:documentation, '')"/>
         <xsl:variable name="textLength" select="es:renderedTextLength($textContent, 'Arial', 'plain', 11)"/>
@@ -67,9 +69,9 @@
                 </xsl:for-each>
                 <g transform="translate(1,1)">
                     <xsl:variable name="curve" select="min((10, $cY - 5))"/>
-                    <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" fill="white" opacity="1" stroke="{$color?main}" stroke-width="1"/>
-                    <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" fill="{$color?main}" opacity="0.1" stroke="{$color?main}" stroke-width="1"/>
-                    <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" fill="none" opacity="1" stroke="{$color?main}" stroke-width="1"/>
+                    <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" class="{$class} opaque" opacity="1"/>
+                    <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" class="{$class} filled shaded"/>
+                    <path d="{es:createBalloon($contentWidth + 20, $contentHeight + 10, $curve, $curve, $cY, 10)}" class="{$class} bordered" fill="none" opacity="1" stroke-width="1"/>
                     <xsl:for-each select="$content">
                         <xsl:variable name="precHeight" select="sum(preceding-sibling::*/@height)"/>
                         <g transform="translate(20,{$precHeight + 5})">
@@ -103,6 +105,7 @@
                     <xsl:with-param name="width" select="$text-width"/>
                     <xsl:with-param name="style" select="'bold'"/>
                     <xsl:with-param name="spaceAfter" select="2"/>
+                    <xsl:with-param name="class" select="'shaded', 'backgrounded'"/>
                 </xsl:call-template>
             </xsl:variable>
             <xsl:sequence select="$title"/>
@@ -114,6 +117,7 @@
                 <xsl:with-param name="fontSize" select="$fontSize"/>
                 <xsl:with-param name="font" select="'Arial'"/>
                 <xsl:with-param name="width" select="$text-width"/>
+                <xsl:with-param name="class" select="'shaded', 'backgrounded'"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:sequence select="$wrap"/>

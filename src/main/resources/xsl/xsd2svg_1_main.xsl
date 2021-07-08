@@ -86,7 +86,7 @@
                             <xsl:value-of select="$elementName"/>
                         </text>
                     </g>
-                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -165,7 +165,7 @@
                     <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$elementName"/>
                     </text>
-                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -253,7 +253,7 @@
                     <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$label"/>
                     </text>
-                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
             </g>
 
@@ -388,7 +388,7 @@
 
                     <xsl:copy-of select="$headerWithBorder"/>
 
-                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
 
                 <g transform="translate(0, {$header/@height + 2.5})">
@@ -473,7 +473,7 @@
                                 <xsl:with-param name="linkTarget" select="es:getReference(@type, $schemaSetConfig)"/>
                             </xsl:call-template>
                         </g>
-                        <xsl:sequence select="$type-target/es:createDoku(., $schemaSetConfig)"/>
+                        <xsl:sequence select="$type-target/es:createDoku(.)"/>
                     </svg>
                 </xsl:if>
 
@@ -501,7 +501,7 @@
                             </xsl:with-param>
                         </xsl:call-template>
                     </g>
-                    <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                    <xsl:sequence select="es:createDoku(.)"/>
                 </svg>
 
             </g>
@@ -643,7 +643,7 @@
                         </xsl:call-template>
 
                     </g>
-                    <xsl:sequence select="$refTarget/es:createDoku(., $schemaSetConfig)"/>
+                    <xsl:sequence select="$refTarget/es:createDoku(.)"/>
                 </svg>
             </g>
         </svg>
@@ -888,7 +888,6 @@
                                         <xsl:with-param name="elementName" select="$qname"/>
                                         <xsl:with-param name="refTarget" select="es:getReferenceByQName($qname, $schemaSetConfig, 'simpleType')"/>
                                         <xsl:with-param name="multiValue" select="'one'"/>
-                                        <!--                                        <xsl:with-param name="colors" select="$colors"/>-->
                                     </xsl:call-template>
                                 </xsl:otherwise>
                             </xsl:choose>
@@ -1265,7 +1264,7 @@
                                     <xsl:value-of select="$label"/>
                                 </text>
                             </g>
-                            <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+                            <xsl:sequence select="es:createDoku(.)"/>
                         </svg>
                     </xsl:with-param>
                 </xsl:call-template>
@@ -1317,7 +1316,7 @@
                 </xsl:call-template>
                 <!--</a>-->
             </g>
-            <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
+            <xsl:sequence select="es:createDoku(.)"/>
         </svg>
     </xsl:template>
 
@@ -1586,7 +1585,7 @@
                             </text>
                         </g>
 
-                        <xsl:sequence select="es:createDoku($buildInTypeDocs, 'simpleType', $schemaSetConfig)"/>
+                        <xsl:sequence select="es:createDoku($buildInTypeDocs, 'simpleType')"/>
 
                     </svg>
 

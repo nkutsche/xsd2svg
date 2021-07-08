@@ -1474,15 +1474,13 @@
 
     <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
         <xsl:param name="element" as="element()"/>
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
-        <xsl:sequence select="es:createDoku($element/xs:annotation, $element/local-name(), $schemaSetConfig)"/>
+        <xsl:sequence select="es:createDoku($element/xs:annotation, $element/local-name())"/>
     </xsl:function>
 
     <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
         <xsl:param name="annotation" as="element(xs:annotation)*"/>
         <xsl:param name="color-scheme" as="xs:string"/>
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
-        <foreignObject es:color-scheme="{es:getColors($color-scheme, $schemaSetConfig) => serialize(map{'method' : 'json'})}">
+        <foreignObject es:color-scheme="{$color-scheme}">
             <xsl:sequence select="$annotation"/>
         </foreignObject>
     </xsl:function>
@@ -1494,6 +1492,7 @@
         <xsl:param name="lineHeight" select="16" as="xs:double"/>
         <xsl:param name="spaceAfter" select="8" as="xs:double"/>
         <xsl:param name="style" select="'plain'" as="xs:string"/>
+        <xsl:param name="class" select="()" as="xs:string*"/>
         <xsl:param name="width"/>
         <xsl:variable name="subwoerter">
             <xsl:analyze-string select="$text" regex="[^\s-]+([\s-]+|$)">
@@ -1527,9 +1526,12 @@
             </xsl:call-template>
         </xsl:variable>
         <svg width="{$width}" height="{(count($lines/es:line) * $lineHeight) + $spaceAfter}" class="text_box">
-            <text fill="black" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+            <text font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                 <xsl:if test="$style = 'bold'">
                     <xsl:attribute name="font-weight">bold</xsl:attribute>
+                </xsl:if>
+                <xsl:if test="exists($class)">
+                    <xsl:attribute name="class" select="$class" separator=" "/>
                 </xsl:if>
                 <xsl:copy-of select="$lines/es:line/*"/>
             </text>
