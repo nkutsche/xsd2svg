@@ -20,10 +20,9 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:param name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
-
-        <xsl:variable name="color" select="$colors?main"/>
-        <xsl:variable name="fill" select="$colors?secondary"/>
+        <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
+        
+        <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
@@ -39,12 +38,7 @@
         <xsl:variable name="symbol">
             <xsl:if test="self::xs:attribute">
                 <xsl:call-template name="attributeSymbol">
-                    <xsl:with-param name="colors" select="
-                        map{
-                            'main' : $colors?main,
-                            'secondary' : $colors?main
-                        }
-                        "/>
+                    <xsl:with-param name="bold" select="true()"/>
                 </xsl:call-template>
             </xsl:if>
         </xsl:variable>
@@ -82,12 +76,13 @@
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
                     <g transform="translate(0.5, 0.5)">
-                        <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$color}" stroke-width="1" fill="{$fill}"> </rect>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stroke-width="1"/> 
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stroke-width="1"/> 
                         <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
                             <xsl:sequence select="$symbol"/>
                         </g>
 
-                        <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                        <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                             <xsl:value-of select="$elementName"/>
                         </text>
                     </g>
@@ -113,8 +108,9 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="content-line" select="exists(self::xs:complexType)" as="xs:boolean"/>
-
-        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
+        <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
+        
+        <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
@@ -127,10 +123,7 @@
 
         <xsl:variable name="symbol">
             <xsl:call-template name="complexTypeSymbol">
-                <xsl:with-param name="colors" select="map{
-                    'main' : $colors?main,
-                    'secondary' : $colors?main
-                    }"/>
+                <xsl:with-param name="bold" select="true()"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
@@ -163,12 +156,13 @@
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
                     <g transform="translate(0.5, 0.5)">
-                        <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stoke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stoke-width="1"/>
                     </g>
                     <g transform="translate({$paddingLR}, {$paddingLR div 2})">
                         <xsl:sequence select="$symbol"/>
                     </g>
-                    <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                    <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$elementName"/>
                     </text>
                     <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
@@ -192,8 +186,9 @@
         <xsl:param name="typeName" select="es:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-
-        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
+        <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
+        
+        <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
         <xsl:variable name="cY" select="12.5"/>
@@ -208,17 +203,14 @@
                         <xsl:with-param name="cY" select="$cY"/>
                     </xsl:apply-templates>
                 </xsl:with-param>
-                <xsl:with-param name="strokeColor" select="$colors?main"/>
+                <xsl:with-param name="color-scheme" select="$color-scheme"/>
             </xsl:call-template>
         </xsl:variable>
 
 
         <xsl:variable name="symbol">
             <xsl:call-template name="simpleTypeSymbol">
-                <xsl:with-param name="colors" select="map{
-                    'main' : $colors?main,
-                    'secondary' : $colors?main
-                    }"/>
+                <xsl:with-param name="bold" select="true()"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
@@ -252,12 +244,13 @@
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
                     <g transform="translate(0.5, 0.5)">
-                        <rect width="{$width}" height="25" rx="10" ry="10" stroke="{$colors?main}" stoke-width="1" fill="{$colors?secondary}"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stoke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stoke-width="1"/>
                     </g>
                     <g transform="translate({$paddingLR}, {$paddingLR div 2})">
                         <xsl:sequence select="$symbol"/>
                     </g>
-                    <text x="{$paddingLR + $symbolWidth}" y="16" fill="{$colors?text}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                    <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
                         <xsl:value-of select="$label"/>
                     </text>
                     <xsl:sequence select="es:createDoku(., $schemaSetConfig)"/>
@@ -284,10 +277,11 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="isRoot" select="true()" as="xs:boolean"/>
+        <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
+        
+        <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
-        <xsl:variable name="colors" select="es:getColors(local-name(), $schemaSetConfig)"/>
 
-        <xsl:variable name="color" select="$colors?main"/>
         <xsl:variable name="groupName" select="es:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_group_', $id)"/>
         <xsl:variable name="content">
@@ -296,7 +290,7 @@
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" select="$content/svg:svg"/>
-                <xsl:with-param name="strokeColor" select="$color"/>
+                <xsl:with-param name="color-scheme" select="$color-scheme"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="content" select="$content/svg:svg"/>
@@ -314,9 +308,9 @@
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
                 <xsl:with-param name="title" select="es:printQName($groupName, $schemaSetConfig)"/>
-                <xsl:with-param name="color" select="$color"/>
-                <xsl:with-param name="font-color" select="'black'"/>
                 <xsl:with-param name="bold" select="$isRoot" tunnel="yes"/>
+                <xsl:with-param name="backgrounded" select="$isRoot" tunnel="yes"/>
+                <xsl:with-param name="color-scheme" select="$color-scheme"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="header" select="$header/svg:svg"/>
@@ -341,7 +335,7 @@
             <g transform="translate({$parentsWidth + 0.5}, {$groupPosY + 5})" id="{$hoverId}">
 
                 <xsl:variable name="rect">
-                    <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" stroke="{$color}" stroke-width="1">
+                    <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" class="{$class} bordered" stroke-width="1">
                         <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
                             <xsl:attribute name="stroke-dashoffset" select="2"/>
                             <xsl:attribute name="stroke-dasharray" select="2"/>
@@ -361,7 +355,7 @@
                     </rect>
                 </xsl:if>
                 <xsl:copy-of select="$rect"/>
-                <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" stroke="{$color}" stroke-width="1"/>
+                <rect width="{$width + 2.5}" height="{$groupHeight + 5}" rx="7" ry="7" fill="white" class="{$class} bordered" stroke-width="1"/>
                 <xsl:variable name="headerWithBorder">
                     <xsl:choose>
                         <xsl:when test="$isRoot">
@@ -373,16 +367,16 @@
                             </xsl:call-template>
                         </xsl:otherwise>
                     </xsl:choose>
-                    <path d="M 2.5 {$header/@height} L {$width} {$header/@height}" fill="none" stroke="{$color}" stroke-width="0.25"/>
+                    <path d="M 2.5 {$header/@height} L {$width} {$header/@height}" fill="none" class="{$class} bordered" stroke-width="0.25"/>
                 </xsl:variable>
 
                 <svg height="{$header/@height}" width="{$width + 2.5}">
-                    <xsl:variable name="bg" select="
+                    <xsl:variable name="bg-class" select="
                             if ($isRoot) then
-                                ($color)
+                                ($class || ' filled')
                             else
-                                ('white')"/>
-                    <path fill="{$bg}" opacity="0.1">
+                                ($class || ' opaque')"/>
+                    <path class="{$bg-class}">
                         <xsl:attribute name="d" select="
                                 'M', 0, $header/@height,
                                 'L', 0, 7,
