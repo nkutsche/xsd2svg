@@ -21,7 +21,7 @@
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
@@ -76,8 +76,8 @@
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
                     <g transform="translate(0.5, 0.5)">
-                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stroke-width="1"/> 
-                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stroke-width="1"/> 
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stroke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stroke-width="1"/>
                         <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
                             <xsl:sequence select="$symbol"/>
                         </g>
@@ -109,7 +109,7 @@
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="content-line" select="exists(self::xs:complexType)" as="xs:boolean"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
@@ -187,7 +187,7 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
@@ -278,7 +278,7 @@
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="isRoot" select="true()" as="xs:boolean"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
 
@@ -415,7 +415,7 @@
         <xsl:param name="multiValue" select="es:getMultiValue(.)" as="xs:string"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
 
         <xsl:variable name="attributName" select="es:getName(.)"/>
@@ -578,9 +578,9 @@
                     'font': 'Arial',
                     'style': 'plain',
                     'size': 11
-                    }"/>
+                }"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
 
         <xsl:variable name="refType" select="
@@ -694,13 +694,13 @@
 
     <xsl:template match="xs:complexContent/xs:extension | xs:simpleContent/xs:extension | xs:simpleContent/xs:restriction | xs:simpleType/xs:restriction" mode="es:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="color-scheme" select=" 
-            if (parent::xs:complexContent) then
-            'complexType'
-            else
-            'simpleType'
-            " as="xs:string"/>
-        
+        <xsl:param name="color-scheme" select="
+                if (parent::xs:complexContent) then
+                    'complexType'
+                else
+                    'simpleType'
+                " as="xs:string"/>
+
         <xsl:variable name="baseName" select="es:getQName(@base)"/>
         <xsl:variable name="baseNs" select="namespace-uri-from-QName($baseName)"/>
 
@@ -1087,9 +1087,9 @@
         <xsl:param name="cell-padding" as="xs:double"/>
         <xsl:param name="color-scheme" as="xs:string"/>
         <xsl:param name="title" as="xs:string?"/>
-        
+
         <xsl:variable name="class" select="'table content cs_' || $color-scheme"/>
-        
+
         <xsl:variable name="lineheight" select="14"/>
         <xsl:variable name="fontSize" select="10"/>
         <xsl:variable name="stroke-width" select="0.5"/>
@@ -1237,7 +1237,7 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object parent cs_' || $color-scheme"/>
 
 
@@ -1288,7 +1288,7 @@
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()"/>
-        
+
         <xsl:variable name="class" select="'object parent cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
@@ -1405,7 +1405,7 @@
             <xsl:apply-templates select="$this/xs:*" mode="#current"/>
         </xsl:param>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'path cs_' || $color-scheme"/>
 
         <xsl:variable name="content" select="$content/svg:svg"/>
@@ -1449,7 +1449,7 @@
                         if ($contentCount gt 3) then
                             (30)
                         else
-                        (15)"/>
+                            (15)"/>
                 <xsl:with-param name="color-scheme" select="$color-scheme"/>
             </xsl:call-template>
             <xsl:call-template name="drawObjectPaths">
@@ -1460,7 +1460,7 @@
                         if ($contentCount gt 3) then
                             (30)
                         else
-                        (15)"/>
+                            (15)"/>
                 <xsl:with-param name="color-scheme" select="$color-scheme"/>
             </xsl:call-template>
         </xsl:variable>
@@ -1554,7 +1554,7 @@
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)" as="map(xs:string, xs:string)"/>
         <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
