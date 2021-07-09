@@ -67,7 +67,7 @@
                                             <xsl:if test="exists($globalComponents)">
                                                 <h3>
                                                     <xsl:value-of select="
-                                                        map{'element' : 'Elements', 'attribute' : 'Attributes', 'complexType' : 'Complex Types', 'simpleType' : 'Simple Types'} ! .($type)"/>
+                                                        map{'element' : 'Elements', 'attribute' : 'Attributes', 'complexType' : 'Complex Types', 'simpleType' : 'Simple Types', 'attributeGroup' : 'Attribute Groups', 'group' : 'Element Groups'} ! .($type)"/>
                                                 </h3>
 
 
