@@ -745,9 +745,9 @@
                     <xsl:call-template name="boxTitle">
                         <xsl:with-param name="title" select="$boxTitle"/>
                         <xsl:with-param name="symbol" select="$elementSymbol//*[@class = 'core'][1]"/>
-                        <xsl:with-param name="linkTarget" select="$ref"/>
                     </xsl:call-template>
                 </xsl:with-param>
+                <xsl:with-param name="title-link-target" select="$ref"/>
             </xsl:call-template>
 
             <xsl:choose>
@@ -1335,7 +1335,8 @@
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'default'"/>
         <xsl:param name="title" as="node()*"/>
-        
+        <xsl:param name="title-link-target" select="()" as="node()?"/>
+
         <xsl:variable name="class" select="'box cs_' || $color-scheme"/>
 
 
@@ -1364,15 +1365,17 @@
                 <g transform="translate(0.5, 2.5)">
 
                     <xsl:if test="$titleSvg">
-                        <g>
-                            <rect height="{$titleHeight}" width="{$svgWidth}" rx="10" ry="10" class="{$class} opaque"/>
-                            <rect y="{$titleHeight div 2}" height="{$titleHeight div 2}" width="{$svgWidth}" class="{$class} opaque"/>
-                            <xsl:sequence select="$titleSvg"/>
-                            <path d="M 2.5 {$titleHeight} L {$svgWidth - 4.5} {$titleHeight}" fill="none" class="{$class} bordered" stroke-width="0.25"/>
-                            <!--<text y="{$titleHeight - 5}" x="5" font-family="Arial" font-size="9" fill="{$titleColor}">
-                            <xsl:value-of select="$title"/>
-                        </text>-->
-                        </g>
+                        <xsl:call-template name="createLink">
+                            <xsl:with-param name="content">
+                                <g>
+                                    <rect height="{$titleHeight}" width="{$svgWidth}" rx="10" ry="10" class="{$class} opaque link-background"/>
+                                    <rect y="{$titleHeight div 2}" height="{$titleHeight div 2}" width="{$svgWidth}" class="{$class} opaque link-background"/>
+                                    <xsl:sequence select="$titleSvg"/>
+                                    <path d="M 2.5 {$titleHeight} L {$svgWidth - 4.5} {$titleHeight}" fill="none" class="{$class} bordered" stroke-width="0.25"/>
+                                </g>
+                            </xsl:with-param>
+                            <xsl:with-param name="linkTarget" select="$title-link-target"/>
+                        </xsl:call-template>
                     </xsl:if>
 
                     <rect height="{$contentHeight + 5}" width="{$svgWidth}" rx="10" ry="10" class="{$class} bordered" stoke-width="1" fill="none"/>

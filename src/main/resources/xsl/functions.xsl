@@ -1051,7 +1051,6 @@
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="symbol" as="node()?"/>
         <xsl:param name="bold" select="false()" as="xs:boolean" tunnel="yes"/>
-        <xsl:param name="linkTarget" select="()" as="node()?"/>
         <xsl:param name="class" select="()" as="xs:string*"/>
         
         <xsl:variable name="class" select="'boxtitle', $class"/>
@@ -1072,14 +1071,9 @@
                 <g transform="translate({$space}, {$space div 2})">
                     <xsl:sequence select="$symbol"/>
                 </g>
-                <xsl:call-template name="createLink">
-                    <xsl:with-param name="content">
-                        <text x="{$symbolWidth + 2 * $space}" y="13" class="{$class}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
-                            <xsl:value-of select="$title"/>
-                        </text>
-                    </xsl:with-param>
-                    <xsl:with-param name="linkTarget" select="$linkTarget"/>
-                </xsl:call-template>
+                <text x="{$symbolWidth + 2 * $space}" y="13" class="{$class}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
+                    <xsl:value-of select="$title"/>
+                </text>
             </g>
         </svg>
     </xsl:template>
