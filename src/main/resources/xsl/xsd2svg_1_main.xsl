@@ -897,6 +897,7 @@
                                         <xsl:with-param name="elementName" select="$qname"/>
                                         <xsl:with-param name="refTarget" select="es:getReferenceByQName($qname, $schemaSetConfig, 'simpleType')"/>
                                         <xsl:with-param name="multiValue" select="'one'"/>
+                                        <xsl:with-param name="color-scheme" select="'simpleType'"/>
                                     </xsl:call-template>
                                 </xsl:otherwise>
                             </xsl:choose>
