@@ -70,10 +70,34 @@
         <xsl:variable name="handle-zindex">
             <xsl:apply-templates select="$handle-transform" mode="es:xsd2svg-zindex"/>
         </xsl:variable>
-        
-        <xsl:apply-templates select="$handle-zindex" mode="es:xsd2svg-cleanup"/>
+
+        <xsl:apply-templates select="$handle-zindex" mode="es:xsd2svg-cleanup">
+            <xsl:with-param name="css" select="$config?config?css" tunnel="yes"/>
+        </xsl:apply-templates>
     </xsl:function>
-    
+
+
+    <xsl:template match="svg:svg[not(ancestor::svg:svg)]" mode="es:xsd2svg-cleanup">
+        <xsl:param name="css" select="()" as="xs:string?" tunnel="yes"/>
+        <xsl:variable name="next-match" as="element(svg:svg)">
+            <xsl:next-match/>
+        </xsl:variable>
+
+        <xsl:for-each select="$next-match">
+            <xsl:copy>
+                <xsl:sequence select="@*"/>
+                <xsl:if test="$css">
+                    <style type="text/css">
+                    <xsl:value-of select="$css"/>
+                </style>
+                </xsl:if>
+                <xsl:sequence select="node()"/>
+            </xsl:copy>
+
+        </xsl:for-each>
+
+    </xsl:template>
+
     <xsl:template match="@es:*" mode="es:xsd2svg-cleanup"/>
     
     

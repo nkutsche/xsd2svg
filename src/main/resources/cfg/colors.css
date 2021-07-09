@@ -1,0 +1,183 @@
+/*
+ * General
+ */
+text {
+    fill:black;
+}
+.bordered {
+    fill:none;
+}
+
+.opaque {
+    fill:white;
+}
+
+.massive.filled {
+    opacity: 1;
+} 
+
+.shaded.filled {
+    opacity: 0.1;
+} 
+
+.filled {
+    opacity: 0.3;
+} 
+
+text.backgrounded {
+    fill:black;
+}
+text.backgrounded.shaded {
+    fill:black;
+}
+
+
+/*
+ * Defaults, fallbacks
+ */
+
+.filled,
+.cs_default.filled,
+.cs_element.filled
+{
+    fill:#007;
+}
+
+.bordered,
+.cs_default.bordered,
+.cs_element.bordered 
+{
+    stroke:#007;
+}
+
+text.backgrounded,
+text.cs_default.backgrounded,
+text.cs_element.backgrounded
+{
+    fill:#007;
+}
+
+/*
+ * 
+ * Attributes
+ */
+
+.cs_attribute.filled,
+.cs_attributeGroup.filled
+{
+    fill:#770;
+}
+
+.cs_attribute.bordered, 
+.cs_attributeGroup.bordered 
+{
+    stroke:#770;
+}
+text.cs_attribute.backgrounded,
+text.cs_attributeGroup.backgrounded
+{
+    fill:#770;
+}
+
+/*
+ * 
+ * SimpleTypes
+ */
+
+.cs_simpleType.filled
+{
+    fill:#070;
+}
+
+.cs_simpleType.bordered 
+{
+    stroke:#070;
+}
+text.cs_simpleType.backgrounded {
+    fill:#070;
+}
+
+/*
+ * 
+ * ComplexTypes
+ */
+
+.cs_complexType.filled
+{
+    fill:#077;
+}
+
+.cs_complexType.bordered 
+{
+    stroke:#077;
+}
+
+text.cs_complexType.backgrounded {
+    fill:#077;
+}
+
+/*
+ * 
+ * Groups
+ */
+
+.cs_group.filled
+{
+    fill:#707;
+}
+
+.cs_group.bordered 
+{
+    stroke:#707;
+}
+
+text.cs_group.backgrounded {
+    fill:#707;
+}
+
+/*
+ * 
+ * Any
+ */
+
+.cs_any.filled
+{
+    fill:#700;
+}
+
+.cs_any.bordered 
+{
+    stroke:#700;
+}
+
+text.cs_any.backgrounded {
+    fill:#700;
+}
+
+a:hover text.cs_default,
+a:hover text.cs_element
+{
+    fill:white;
+}
+
+a:hover .link-background {
+    fill:#88f;
+    opacity:1;
+}
+a:hover .cs_attribute.link-background,
+a:hover .cs_attributeGroup.link-background
+{
+    fill:#ee8;
+}
+a:hover .cs_simpleType.link-background {
+    fill:#8f8;
+}
+a:hover .cs_complexType.link-background {
+    fill:#8ee;
+}
+a:hover .cs_group.link-background {
+    fill:#e8e;
+}
+a:hover .cs_any.link-background {
+    fill:#f88;
+}
