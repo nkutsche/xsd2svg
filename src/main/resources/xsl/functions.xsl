@@ -405,18 +405,19 @@
                     ($edgesRel))"/>
         
         <xsl:variable name="dirFactor" select=" if ($bowl) then 1 else -1"/>
+        <xsl:variable name="startHeight" select=" if ($bowl) then (0) else ($height)"/>
         
         <xsl:variable name="height" select="$height * $dirFactor"/>
         <xsl:variable name="edgesHeight" select="$edgesHeight * $dirFactor"/>
         
-        <xsl:variable name="point1" select="0, 0"/>
-        <xsl:variable name="point2" select="0, $height - $edgesHeight"/>
-        <xsl:variable name="qPoint23" select="0, $height"/>
-        <xsl:variable name="point3" select="$edgesWidth, $height"/>
-        <xsl:variable name="point4" select="$width - $edgesWidth, $height"/>
-        <xsl:variable name="qPoint45" select="$width, $height"/>
-        <xsl:variable name="point5" select="$width, $height - $edgesHeight"/>
-        <xsl:variable name="point6" select="$width, 0"/>
+        <xsl:variable name="point1" select="0, $startHeight"/>
+        <xsl:variable name="point2" select="0, $height - $edgesHeight + $startHeight"/>
+        <xsl:variable name="qPoint23" select="0, $height + $startHeight"/>
+        <xsl:variable name="point3" select="$edgesWidth, $height + $startHeight"/>
+        <xsl:variable name="point4" select="$width - $edgesWidth, $height + $startHeight"/>
+        <xsl:variable name="qPoint45" select="$width, $height + $startHeight"/>
+        <xsl:variable name="point5" select="$width, $height - $edgesHeight + $startHeight"/>
+        <xsl:variable name="point6" select="$width,  $startHeight"/>
         
         <xsl:variable name="seq" select="
                 ('M', $point1,

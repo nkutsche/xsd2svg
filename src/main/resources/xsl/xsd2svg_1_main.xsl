@@ -467,7 +467,14 @@
                     <g transform="translate(0.5, 0.5)">
                         <xsl:call-template name="createLink">
                             <xsl:with-param name="content">
-                                <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" x="0" y="0" class="{$class} opaque link-background"/>
+                                <xsl:choose>
+                                    <xsl:when test="@type">
+                                        <path d="{es:createHalfRoundBox($width, $elementHeight div 2, 10, true(), false())}" class="{$class} opaque link-background"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" x="0" y="0" class="{$class} opaque link-background"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                                 
                                 <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
                                     <xsl:sequence select="$symbol"/>
@@ -1123,9 +1130,9 @@
         <xsl:variable name="title-svg" as="element(svg:g)?">
             <xsl:if test="$title">
                 <g>
-                    <g transform="translate(0, {$titleHeight})">
-                        <path d="{es:createHalfRoundBox($tableWidth, $titleHeight, 7.5, true(), false())}" class="{$class} shaded filled"/>
-                    </g>
+                    
+                    <path d="{es:createHalfRoundBox($tableWidth, $titleHeight, 7.5, true(), false())}" class="{$class} shaded filled"/>
+                    
                     <text x="{$cell-padding}" y="{$titleHeight - 7.5}" class="{$class} shaded backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
                         <xsl:value-of select="$title"/>
                     </text>
