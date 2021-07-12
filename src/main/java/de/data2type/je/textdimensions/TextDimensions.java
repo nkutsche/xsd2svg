@@ -10,8 +10,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static de.data2type.je.textdimensions.TextDimensions.TDCfgF.*;
+
 
 public class TextDimensions {
+
+
 
     private final TextDimensionConfig config;
 
@@ -19,7 +23,13 @@ public class TextDimensions {
         private HashMap<TDCfgF, String> values = new HashMap<>();
 
         public TextDimensionConfig with(String field, String value){
-            values.put(TDCfgF.valueOf(field), value);
+            if(validField(field)){
+                TDCfgF tdCfgF = TDCfgF.valueOf(field);
+                values.put(tdCfgF, value);
+                if(tdCfgF == fontFile){
+                    values.put(fontType, "truetype");
+                }
+            }
             return this;
         }
         public String get(TDCfgF type){
@@ -53,6 +63,16 @@ public class TextDimensions {
             }
             return false;
         }
+    }
+
+    public static boolean validField(String test) {
+
+        for (TDCfgF c : TDCfgF.values()) {
+            if (c.name().equals(test)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public enum TDCfgF {font, fontType, fontFile, size, style, unit}
