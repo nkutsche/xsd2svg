@@ -38,6 +38,9 @@
     <xsl:function name="es:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="config" as="map(xs:string, map(*))"/>
+        <xsl:param name="standalone" as="xs:boolean"/>
+        
+        <xsl:variable name="css" select="$config?config?styles ! es:create-css(.)[$standalone]" as="xs:string?"/>
 
         <xsl:variable name="modelid" select="generate-id($xsdnode)"/>
         <xsl:variable name="raw-model">
@@ -62,7 +65,7 @@
         </xsl:variable>
 
         <xsl:apply-templates select="$handle-zindex" mode="es:xsd2svg-cleanup">
-            <xsl:with-param name="css" select="$config?config?css" tunnel="yes"/>
+            <xsl:with-param name="css" select="$css" tunnel="yes"/>
         </xsl:apply-templates>
     </xsl:function>
 
@@ -89,6 +92,21 @@
     </xsl:template>
 
     <xsl:template match="@es:*" mode="es:xsd2svg-cleanup"/>
+
+    <xsl:function name="es:create-css" as="xs:string?">
+        <xsl:param name="styles" as="map(*)"/>
+        <xsl:variable name="cssText" select="$styles?css?href ! unparsed-text(.) ! replace(., '\r\n', '&#xA;') ! replace(., '\r', '&#xA;')"/>
+
+        <xsl:variable name="fontEmph" select="$styles?fonts?emphasis[?type = 'truetype'] ! es:font-face(?href, (?name, 'xsd2svg emphasis')[1], ?type)"/>
+        <xsl:variable name="fontMain" select="$styles?fonts?main[?type = 'truetype'] ! es:font-face(?href, (?name, 'xsd2svg main')[1], ?type)"/>
+        
+        
+        <xsl:sequence select="($fontMain, $fontEmph, $cssText) => string-join('&#xA;')"/>
+
+
+    </xsl:function>
+
+    
 
 
 </xsl:stylesheet>

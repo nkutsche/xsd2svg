@@ -1575,6 +1575,50 @@
 
     </xsl:template>
 
+
+
+    <xsl:function name="es:font-face">
+        <xsl:param name="href" as="xs:string"/>
+        <xsl:param name="name" as="xs:string"/>
+        <xsl:param name="type" as="xs:string"/>
+
+        <xsl:variable name="data-url" select="es:font-data-url($href, $type)"/>
+
+        <xsl:variable name="font-face" as="xs:string*">
+            <xsl:text>@font-face {</xsl:text>
+            <xsl:text expand-text="yes">font-family: "{$name}";src: url("{$data-url}");</xsl:text>
+            <xsl:text>}</xsl:text>
+        </xsl:variable>
+        <xsl:sequence select="$font-face => string-join()"/>
+    </xsl:function>
+
+    <xsl:function name="es:font-data-url" as="xs:string">
+        <xsl:param name="href" as="xs:string"/>
+        <xsl:param name="type" as="xs:string"/>
+
+        <xsl:variable name="result" select="''"/>
+
+        <xsl:variable name="result" select="es:font-as-data-url($href, $type)" use-when="function-available('es:font-as-data-url')"/>
+
+        <xsl:variable name="result" use-when="function-available('ioutils:toByteArray')" xmlns:url="java.net.URL" xmlns:istrem="java.io.InputStream" xmlns:ioutils="org.apache.commons.io.IOUtils" xmlns:enc="java.util.Base64$Encoder" xmlns:b64="java.util.Base64">
+            <!--        
+            InputStream inputStream = fontUrl.openStream();
+            byte[] dataBytes = IOUtils.toByteArray(inputStream);
+            String data = Base64.getEncoder().encodeToString(dataBytes);
+    
+    
+            return "data:application/font-" + type + ";charset=utf-8;base64," + data;
+            -->
+            <xsl:variable name="inputStream" select="url:openStream(xs:anyURI($href))"/>
+            <xsl:variable name="dataBytes" select="ioutils:toByteArray($inputStream)"/>
+            <xsl:variable name="data" select="enc:encodeToString(b64:getEncoder(), $dataBytes)"/>
+            <xsl:sequence select="'data:application/font-' || $type || ';charset=utf-8;base64,' || $data"/>
+        </xsl:variable>
+
+        <xsl:sequence select="$result"/>
+
+    </xsl:function>
+
     <xsl:function name="es:renderedTextLength" as="xs:double">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="fontStyle" as="map(*)"/>
@@ -1857,7 +1901,7 @@
             'uses' : $comp/es:getUses(., $schemaSetConfig) ! es:getComponentCoreInfo(.),
             'nested' : $nested/es:getComponentCoreInfo(.),
             'nested-by' : $nested-by/es:getComponentCoreInfo(.),
-            'get-svg-model' : function(){es:svg-model($comp, $schemaSetConfig)}
+            'get-svg-model' : function($standalone as xs:boolean){es:svg-model($comp, $schemaSetConfig, $standalone)}
             }
             "/>
 
@@ -1901,6 +1945,7 @@
     <xsl:function name="es:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
+        <xsl:param name="standalone" as="xs:boolean"/>
         <!--    
                 Dummy implementation! 
                 will be overwritten in  xsd2svg_model-pipe.xsl

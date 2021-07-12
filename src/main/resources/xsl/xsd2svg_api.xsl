@@ -48,15 +48,17 @@
     -->
     <xsl:function name="xsd2svg:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
+        <xsl:param name="standalone" as="xs:boolean"/>
         <xsl:variable name="rootDoc" select="root($xsdnode) treat as document-node()"/>
-        <xsl:sequence select="xsd2svg:svg-model($xsdnode, xsd2svg:createSchemaSetConfig($rootDoc))"/>
+        <xsl:sequence select="xsd2svg:svg-model($xsdnode, xsd2svg:createSchemaSetConfig($rootDoc), $standalone)"/>
     </xsl:function>
     
     <xsl:function name="xsd2svg:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="config" as="map(xs:string, map(*))"/>
+        <xsl:param name="standalone" as="xs:boolean"/>
 
-        <xsl:sequence select="es:svg-model($xsdnode, $config)"/>
+        <xsl:sequence select="es:svg-model($xsdnode, $config, $standalone)"/>
 
     </xsl:function>
     
@@ -94,6 +96,7 @@
             map{
                 'schema-namespace-map' : $schemaSetCfg?schema-map,
                 'grouped-components' : $grouped-components,
+                'create-css' : function(){es:create-css($config?styles)},
                 'namespaces' : $component-infos?namespace => distinct-values(),
                 'types' : $component-infos?type => distinct-values(),
                 'qnames' : $component-infos?qname => distinct-values(),
