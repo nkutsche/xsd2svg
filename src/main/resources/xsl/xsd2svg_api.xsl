@@ -80,15 +80,11 @@
         <xsl:variable name="schemaSetCfg" select="xsd2svg:createSchemaSetConfig(doc($url), $config)"/>
         
         <xsl:variable name="component-infos" select="es:getComponentInfos($schemaSetCfg)"/>
-        
-        <xsl:variable name="grouped-components" select="
-            es:group-components($component-infos, $config?component-grouping?*)
-            "/>
         <xsl:sequence select="
             map{
                 'schema-namespace-map' : $schemaSetCfg?schema-map,
-                'grouped-components' : $grouped-components,
                 'create-css' : function(){es:create-css($config?styles)},
+                'get-grouped-components' : function($grouping as xs:string*){ es:group-components($component-infos, $grouping)},
                 'namespaces' : $component-infos?namespace => distinct-values(),
                 'types' : $component-infos?type => distinct-values(),
                 'qnames' : $component-infos?qname => distinct-values(),
