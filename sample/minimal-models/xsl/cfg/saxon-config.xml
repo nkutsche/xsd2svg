@@ -17,5 +17,6 @@
     </xsltPackages>
     <resources>
         <extensionFunction>de.data2type.je.textdimensions.TextDimensionExtensionFunction</extensionFunction>
+        <extensionFunction>de.data2type.je.textdimensions.Base64UrlFontExtensionFunction</extensionFunction>
     </resources>
 </configuration>

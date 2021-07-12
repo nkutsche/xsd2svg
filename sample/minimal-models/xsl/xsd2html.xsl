@@ -27,6 +27,7 @@
                 <xsl:variable name="schemaInfo" select="xsd2svg:getSchemaInfo(.)"/>
                 <xsl:variable name="namespaces" select="$schemaInfo?namespaces"/>
                 <xsl:variable name="types" select="$schemaInfo?types"/>
+                <xsl:variable name="grouped-components" select="$schemaInfo?get-grouped-components(('namespace', 'type', 'scope'))"/>
 
                 <html>
                     <head>
@@ -37,6 +38,8 @@
                             h4, h5, h6 {margin-top: .5em;}
                             
                             .row {margin-top: 2em;}
+                            
+                            <xsl:sequence select="$schemaInfo?create-css()"/>
                         </style>
                     </head>
                     <body>
@@ -62,7 +65,8 @@
                                         <xsl:for-each select="$types">
                                             <xsl:variable name="type" select="."/>
                                             
-                                            <xsl:variable name="globalComponents" select="$schemaInfo?grouped-components($namespace) ! .($type) ! .('global')"/>
+                                            
+                                            <xsl:variable name="globalComponents" select="$grouped-components($namespace) ! .($type) ! .('global')"/>
 
                                             <xsl:if test="exists($globalComponents)">
                                                 <h3>
@@ -112,7 +116,7 @@
 
             <div class="card-body">
                 <div>
-                    <xsl:sequence select="$comp?get-svg-model()"/>
+                    <xsl:sequence select="$comp?get-svg-model(false())"/>
                 </div>
 
                 <xsl:apply-templates select="$comp?component/xs:annotation"/>
