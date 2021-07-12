@@ -206,4 +206,34 @@
         </x:scenario>
         
     </x:scenario>
+    <x:scenario label="Scneario for testing function es:config-as-map">
+        <x:call function="es:config-as-map"/>
+        
+        <x:scenario label="trivial config">
+            <x:call>
+                <x:param select="/">
+                    <config xml:base="http://www.escali.schematron-quickfix.com/">
+                        <styles>
+                            <css href="css/colors.css"/>
+                            <fonts>
+                                <emphasis href="font/Oswald-Bold.ttf" type="truetype"/>
+                                <main href="font/Oswald-Regular.ttf" type="truetype"/>
+                            </fonts>
+                        </styles>
+                    </config>
+                </x:param>
+            </x:call>
+            <x:expect label="result css map entry" test="$x:result?styles?css" select="map{'href' : 'http://www.escali.schematron-quickfix.com/css/colors.css'}"/>
+            <x:expect label="result fonts map entry" test="$x:result?styles?fonts" select="map {
+                        'emphasis' : map{
+                            'href' : 'http://www.escali.schematron-quickfix.com/font/Oswald-Bold.ttf',
+                            'type' : 'truetype'
+                        },
+                        'main' : map{
+                            'href' : 'http://www.escali.schematron-quickfix.com/font/Oswald-Regular.ttf',
+                            'type' : 'truetype'
+                        }
+                    }"/>
+        </x:scenario>
+    </x:scenario>
 </x:description>
