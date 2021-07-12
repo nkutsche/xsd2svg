@@ -81,8 +81,8 @@
                 <xsl:sequence select="@*"/>
                 <xsl:if test="$css">
                     <style type="text/css">
-                    <xsl:value-of select="$css"/>
-                </style>
+                        <xsl:value-of select="$css"/>
+                    </style>
                 </xsl:if>
                 <xsl:sequence select="node()"/>
             </xsl:copy>

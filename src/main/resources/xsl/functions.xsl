@@ -378,7 +378,7 @@
                 'Z')"/>
         <xsl:value-of select="$seq" separator=" "/>
     </xsl:function>
-    
+
     <xsl:function name="es:createHalfRoundBox" as="xs:string">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
@@ -392,7 +392,7 @@
         <xsl:param name="edgesRel" as="xs:double"/>
         <xsl:param name="edgesAbs" as="xs:boolean"/>
         <xsl:param name="bowl" as="xs:boolean"/>
-        
+
         <xsl:variable name="edgesHeight" select="
                 (if (not($edgesAbs)) then
                     (min(($height, $width)) * $edgesRel)
@@ -403,13 +403,21 @@
                     (min(($height, $width)) * $edgesRel)
                 else
                     ($edgesRel))"/>
-        
-        <xsl:variable name="dirFactor" select=" if ($bowl) then 1 else -1"/>
-        <xsl:variable name="startHeight" select=" if ($bowl) then (0) else ($height)"/>
-        
+
+        <xsl:variable name="dirFactor" select="
+                if ($bowl) then
+                    1
+                else
+                    -1"/>
+        <xsl:variable name="startHeight" select="
+                if ($bowl) then
+                    (0)
+                else
+                    ($height)"/>
+
         <xsl:variable name="height" select="$height * $dirFactor"/>
         <xsl:variable name="edgesHeight" select="$edgesHeight * $dirFactor"/>
-        
+
         <xsl:variable name="point1" select="0, $startHeight"/>
         <xsl:variable name="point2" select="0, $height - $edgesHeight + $startHeight"/>
         <xsl:variable name="qPoint23" select="0, $height + $startHeight"/>
@@ -417,8 +425,8 @@
         <xsl:variable name="point4" select="$width - $edgesWidth, $height + $startHeight"/>
         <xsl:variable name="qPoint45" select="$width, $height + $startHeight"/>
         <xsl:variable name="point5" select="$width, $height - $edgesHeight + $startHeight"/>
-        <xsl:variable name="point6" select="$width,  $startHeight"/>
-        
+        <xsl:variable name="point6" select="$width, $startHeight"/>
+
         <xsl:variable name="seq" select="
                 ('M', $point1,
                 'L', $point2,
@@ -514,7 +522,7 @@
         <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
         <xsl:variable name="class" select="'symbol sequence cs_' || $color-scheme"/>
-        
+
         <svg width="20" height="20" es:cY="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="23.5"/>
@@ -562,7 +570,7 @@
             </g>
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="choiceSymbol">
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
         <xsl:param name="connectCount" select="3"/>
@@ -581,8 +589,7 @@
             <xsl:sequence select="$title"/>
             <g>
                 <xsl:variable name="circle">
-                    <circle r="9.5" stroke-width="1" cx="10" cy="10"
-                        class="{$class} bordered opaque">
+                    <circle r="9.5" stroke-width="1" cx="10" cy="10" class="{$class} bordered opaque">
                         <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
                             <xsl:attribute name="stroke-dashoffset" select="2"/>
                             <xsl:attribute name="stroke-dasharray" select="2"/>
@@ -609,23 +616,14 @@
                         L 6 6
                         M 3 10
                         L 3 14
-                        L 6 14" stroke-width="0.75" class="{$class} bordered"
-                    />
+                        L 6 14" stroke-width="0.75" class="{$class} bordered"/>
                     <g transform="translate(6, 4)">
-                        <rect width="8" height="4" stroke-width="1"
-                            class="{$class} filled"
-                        />
-                        <rect width="8" height="4" stroke-width="1"
-                            class="{$class} bordered"
-                        />
+                        <rect width="8" height="4" stroke-width="1" class="{$class} filled"/>
+                        <rect width="8" height="4" stroke-width="1" class="{$class} bordered"/>
                     </g>
                     <g transform="translate(6, 12)">
-                        <rect width="8" height="4" stroke-width="1"
-                            class="{$class} filled"
-                        />
-                        <rect width="8" height="4" stroke-width="1"
-                            class="{$class} bordered"
-                        />
+                        <rect width="8" height="4" stroke-width="1" class="{$class} filled"/>
+                        <rect width="8" height="4" stroke-width="1" class="{$class} bordered"/>
                     </g>
                     <xsl:if test="$connectCount = (1, 3)">
                         <path d="M 20 10 
@@ -634,60 +632,47 @@
                                 L 14 6
                                 M 17 10
                                 L 17 14
-                                L 14 14" fill="none" stroke-width="0.75"
-                                class="{$class} bordered"
-                        />
+                                L 14 14" fill="none" stroke-width="0.75" class="{$class} bordered"/>
                     </xsl:if>
                     <xsl:if test="$connectCount gt 1">
                         <path d="M 10 0
-                                 L 10 4" fill="none" stroke-width="0.75"
-                                 class="{$class} bordered"
-                        />
+                                 L 10 4" fill="none" stroke-width="0.75" class="{$class} bordered"/>
                         <path d="M 10 16
-                                 L 10 20" fill="none" stroke-width="0.75"
-                                 class="{$class} bordered"
-                        />
+                                 L 10 20" fill="none" stroke-width="0.75" class="{$class} bordered"/>
                     </xsl:if>
 
                 </g>
             </g>
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="st_unionSymbol">
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:union</title>
         </xsl:param>
         <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
-        
+
         <xsl:variable name="class" select="'symbol union cs_' || $color-scheme"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1"
-                    class="symbol union cs_{$color-scheme} bordered opaque"
-                />
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="symbol union cs_{$color-scheme} bordered opaque"/>
                 <g>
                     <svg width="20" height="20" class="core">
                         <xsl:sequence select="$title"/>
                         <g transform="rotate(45, 10, 10)">
-                            <circle r="6" stroke-width="1" cx="10" cy="10"
-                                class="{$class} bordered opaque"
-                            />
-                            <circle r="2" cx="10" cy="4" class="{$class} massive filled"
-                            />
-                            <circle r="2" cx="15.2" cy="13" class="{$class} massive filled"
-                            />
-                            <circle r="2" cx="4.8" cy="13" class="{$class} massive filled"
-                            />
+                            <circle r="6" stroke-width="1" cx="10" cy="10" class="{$class} bordered opaque"/>
+                            <circle r="2" cx="10" cy="4" class="{$class} massive filled"/>
+                            <circle r="2" cx="15.2" cy="13" class="{$class} massive filled"/>
+                            <circle r="2" cx="4.8" cy="13" class="{$class} massive filled"/>
                         </g>
                     </svg>
                 </g>
             </g>
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="st_listSymbol">
         <xsl:param name="title" as="element(svg:title)">
             <title>xs:list</title>
@@ -696,7 +681,7 @@
 
 
         <xsl:variable name="class" select="'symbol list cs_' || $color-scheme"/>
-        
+
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
@@ -716,7 +701,7 @@
             </g>
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="extensionSymbol">
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
@@ -724,15 +709,13 @@
         </xsl:param>
         <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
-        
+
         <xsl:variable name="class" select="'symbol extension cs_' || $color-scheme"/>
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1"
-                    class="{$class} opaque bordered"
-                />
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="{$class} opaque bordered"/>
                 <g transform="translate(4.5, 2.5)">
                     <svg width="13" height="13" class="core">
                         <xsl:sequence select="$title"/>
@@ -747,7 +730,7 @@
             </g>
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="restrictionSymbol">
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
@@ -756,13 +739,11 @@
         <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
 
         <xsl:variable name="class" select="'symbol restriction cs_' || $color-scheme"/>
-        
+
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
-                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1"
-                    class="{$class} opaque bordered"
-                />
+                <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="{$class} opaque bordered"/>
                 <g transform="translate(4,4)">
                     <xsl:sequence select="$title"/>
                     <svg class="core" width="12" height="12">
@@ -783,7 +764,7 @@
             <title>xs:any</title>
         </xsl:param>
         <xsl:param name="color-scheme" select="'any'" as="xs:string"/>
-        
+
 
         <xsl:variable name="class" select="'symbol any cs_' || $color-scheme"/>
 
@@ -838,7 +819,7 @@
 
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="simpleTypeSymbol">
         <xsl:param name="connectCount" select="3"/>
         <xsl:param name="title" as="element(svg:title)">
@@ -848,7 +829,7 @@
         <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
 
         <xsl:variable name="class" select="es:addBoldClass('symbol simpleType cs_' || $color-scheme, $bold)"/>
-        
+
 
 
         <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
@@ -875,91 +856,14 @@
             <xsl:sequence select="$title"/>
 
             <g transform="translate(-19.5, -4)">
-                <xsl:variable name="d">
-                    M26 18.966 
-                    c -0.859 -0.472 -1.533 -1.136 -2.021 -1.992 
-                    s -0.732 -1.832 -0.732 -2.928 
-                    c 0 -1.112 0.246 -2.12 0.738 -3.024
-                    c 0.492 -0.904 1.176 -1.614 2.052 -2.13
-                    c 0.876 -0.516 1.874 -0.774 2.994-0.774
-                    c 1.072 0 2.038 0.244 2.898 0.732
-                    c 0.859 0.488 1.531 1.164 2.016 2.028 
-                    c 0.484 0.864 0.727 1.84 0.727 2.928  
-                    c 0 0.76 -0.12 1.448 -0.36 2.064
-                    c -0.24 0.616 -0.588 1.104 -1.044 1.464 
-                    c -0.456 0.36 -0.988 0.54 -1.596 0.54 
-                    c -0.48 0 -0.851 -0.146 -1.11 -0.438
-                    c -0.26 -0.292 -0.426 -0.762 -0.498 -1.41 
-                    c -0.008 -0.056 -0.024 -0.088 -0.048 -0.096 
-                    c -0.024 -0.008 -0.048 0.012 -0.072 0.06
-                    c -0.232 0.392 -0.504 0.68 -0.815 0.864 
-                    c -0.313 0.184 -0.673 0.276 -1.08 0.276 
-                    c -0.648 0 -1.173 -0.22 -1.572 -0.66
-                    c -0.4 -0.44 -0.601 -1.052 -0.601 -1.836 
-                    c 0 -0.672 0.143 -1.324 0.427 -1.956 
-                    c 0.283 -0.632 0.682 -1.148 1.193 -1.548
-                    
-                    c 0.513 -0.4 1.088 -0.6 1.729 -0.6 
-                    c 0.344 0 0.636 0.068 0.876 0.204
-                    s 0.456 0.364 0.647 0.684 
-                    c 0.024 0.048 0.053 0.072 0.084 0.072
-                    
-                    c 0.04 0 0.064 -0.028 0.072 -0.084
-                    l 0.084 -0.432 
-                    c 0.016 -0.072 0.061 -0.108 0.132 -0.108
-                    h 0.648 
-                    c 0.088 0 0.124 0.044 0.107 0.132
-                    
-                    c -0.304 1.424 -0.527 2.512 -0.672 3.264 
-                    c -0.144 0.752 -0.216 1.328 -0.216 1.728 
-                    c 0 0.336 0.068 0.59 0.204 0.762
-                    
-                    c 0.136 0.172 0.336 0.258 0.6 0.258 
-                    c 0.393 0 0.738 -0.14 1.038 -0.42 
-                    c 0.301 -0.28 0.532 -0.662 0.696 -1.146
-                    s 0.246 -1.022 0.246 -1.614
-                    
-                    c 0 -0.936 -0.2 -1.768 -0.6 -2.496 
-                    c -0.4 -0.728 -0.959 -1.294 -1.675 -1.698
-                    C 30.78 9.232 29.967 9.03 29.055 9.03
-                    
-                    c -0.952 0 -1.803 0.218 -2.55 0.654 
-                    c -0.748 0.437 -1.328 1.034 -1.74 1.794 
-                    c -0.412 0.76 -0.618 1.616 -0.618 2.568
-                    
-                    c 0 0.936 0.202 1.762 0.606 2.478 
-                    c 0.403 0.716 0.966 1.268 1.686 1.656
-                    s 1.544 0.582 2.472 0.582 
-                    c 0.521 0 1.021 -0.076 1.5 -0.228
-                    
-                    l 0.048 -0.012 
-                    c 0.057 0 0.085 0.036 0.085 0.108v0.696 
-                    c 0 0.072 -0.036 0.12 -0.108 0.144 
-                    c -0.448 0.136 -0.96 0.204 -1.536 0.204
-                    
-                    C 27.826 19.674 26.86 19.438 26 18.966z 
-                    
-                    M29.313 15.744 
-                    c 0.372 -0.324 0.662 -0.74 0.87 -1.248 
-                    c 0.208 -0.508 0.312 -1.018 0.312 -1.53
-                    
-                    c 0 -0.52 -0.109 -0.904 -0.33 -1.152 
-                    c -0.22 -0.248 -0.525 -0.372 -0.918 -0.372 
-                    c -0.479 0 -0.907 0.156 -1.283 0.468
-                    c -0.377 0.312 -0.669 0.716 -0.876 1.212 
-                    c -0.209 0.496 -0.313 1.004 -0.313 1.524 
-                    c 0 0.536 0.112 0.934 0.336 1.194
-                    
-                    s 0.536 0.39 0.937 0.39
-                    C 28.519 16.23 28.94 16.068 29.313 15.744z
-                </xsl:variable>
+                <xsl:variable name="d"> M26 18.966 c -0.859 -0.472 -1.533 -1.136 -2.021 -1.992 s -0.732 -1.832 -0.732 -2.928 c 0 -1.112 0.246 -2.12 0.738 -3.024 c 0.492 -0.904 1.176 -1.614 2.052 -2.13 c 0.876 -0.516 1.874 -0.774 2.994-0.774 c 1.072 0 2.038 0.244 2.898 0.732 c 0.859 0.488 1.531 1.164 2.016 2.028 c 0.484 0.864 0.727 1.84 0.727 2.928 c 0 0.76 -0.12 1.448 -0.36 2.064 c -0.24 0.616 -0.588 1.104 -1.044 1.464 c -0.456 0.36 -0.988 0.54 -1.596 0.54 c -0.48 0 -0.851 -0.146 -1.11 -0.438 c -0.26 -0.292 -0.426 -0.762 -0.498 -1.41 c -0.008 -0.056 -0.024 -0.088 -0.048 -0.096 c -0.024 -0.008 -0.048 0.012 -0.072 0.06 c -0.232 0.392 -0.504 0.68 -0.815 0.864 c -0.313 0.184 -0.673 0.276 -1.08 0.276 c -0.648 0 -1.173 -0.22 -1.572 -0.66 c -0.4 -0.44 -0.601 -1.052 -0.601 -1.836 c 0 -0.672 0.143 -1.324 0.427 -1.956 c 0.283 -0.632 0.682 -1.148 1.193 -1.548 c 0.513 -0.4 1.088 -0.6 1.729 -0.6 c 0.344 0 0.636 0.068 0.876 0.204 s 0.456 0.364 0.647 0.684 c 0.024 0.048 0.053 0.072 0.084 0.072 c 0.04 0 0.064 -0.028 0.072 -0.084 l 0.084 -0.432 c 0.016 -0.072 0.061 -0.108 0.132 -0.108 h 0.648 c 0.088 0 0.124 0.044 0.107 0.132 c -0.304 1.424 -0.527 2.512 -0.672 3.264 c -0.144 0.752 -0.216 1.328 -0.216 1.728 c 0 0.336 0.068 0.59 0.204 0.762 c 0.136 0.172 0.336 0.258 0.6 0.258 c 0.393 0 0.738 -0.14 1.038 -0.42 c 0.301 -0.28 0.532 -0.662 0.696 -1.146 s 0.246 -1.022 0.246 -1.614 c 0 -0.936 -0.2 -1.768 -0.6 -2.496 c -0.4 -0.728 -0.959 -1.294 -1.675 -1.698 C 30.78 9.232 29.967 9.03 29.055 9.03 c -0.952 0 -1.803 0.218 -2.55 0.654 c -0.748 0.437 -1.328 1.034 -1.74 1.794 c -0.412 0.76 -0.618 1.616 -0.618 2.568 c 0 0.936 0.202 1.762 0.606 2.478 c 0.403 0.716 0.966 1.268 1.686 1.656 s 1.544 0.582 2.472 0.582 c 0.521 0 1.021 -0.076 1.5 -0.228 l 0.048 -0.012 c 0.057 0 0.085 0.036 0.085 0.108v0.696 c 0 0.072 -0.036 0.12 -0.108 0.144 c -0.448 0.136 -0.96 0.204 -1.536 0.204 C 27.826 19.674 26.86 19.438 26 18.966z M29.313 15.744 c 0.372 -0.324 0.662 -0.74 0.87 -1.248 c 0.208 -0.508 0.312 -1.018 0.312 -1.53 c 0 -0.52 -0.109 -0.904 -0.33 -1.152 c -0.22 -0.248 -0.525 -0.372 -0.918 -0.372 c -0.479 0 -0.907 0.156 -1.283 0.468 c -0.377 0.312 -0.669 0.716 -0.876 1.212 c -0.209 0.496 -0.313 1.004 -0.313 1.524 c 0 0.536 0.112 0.934 0.336 1.194 s 0.536 0.39 0.937 0.39 C 28.519 16.23 28.94 16.068 29.313 15.744z </xsl:variable>
                 <path stroke-width="0.5" class="{$class} filled" d="{$d}"/>
                 <path stroke-width="0.5" class="{$class} bordered" d="{$d}"/>
             </g>
 
         </svg>
     </xsl:template>
-    
+
     <xsl:template name="groupSymbol">
         <xsl:param name="title" select="'group'" as="xs:string"/>
         <xsl:param name="color-scheme" select="'attribute'" as="xs:string"/>
@@ -975,7 +879,7 @@
             <rect width="5" height="5" x="9" y="9" fill="none" class="{$class} bordered" stroke-width="0.75" opacity="1"/>
         </svg>
     </xsl:template>
-    
+
     <xsl:function name="es:addBoldClass" as="xs:string">
         <xsl:param name="class" as="xs:string"/>
         <xsl:param name="bold" as="xs:boolean"/>
@@ -1036,7 +940,7 @@
 
         <xsl:call-template name="boxTitle">
             <xsl:with-param name="title" select="$title"/>
-            <xsl:with-param name="class" select="'cs_' || $color-scheme,  'backgrounded'[$backgrounded]"/>
+            <xsl:with-param name="class" select="'cs_' || $color-scheme, 'backgrounded'[$backgrounded]"/>
             <xsl:with-param name="symbol">
                 <xsl:call-template name="groupSymbol">
                     <xsl:with-param name="color-scheme" select="$color-scheme"/>
@@ -1192,9 +1096,9 @@
                 </xsl:if>
                 <xsl:variable name="dash" select="5"/>
                 <xsl:for-each select="reverse($content)">
-                    
+
                     <xsl:variable name="classForContent" select="'path cs_' || (@es:color-scheme, $color-scheme)[1]"/>
-                    
+
                     <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height)"/>
                     <xsl:variable name="thisWidth" select="@width"/>
                     <xsl:variable name="y" select="$precHeight + @es:cY"/>
@@ -1237,7 +1141,7 @@
                                         (1.5)
                                     else
                                         (0)" as="xs:double"/>
-                            
+
                             <path class="{$classForContent} bordered" stroke-width="1" fill="none">
                                 <xsl:attribute name="d" select="
                                         'M', $x1, $y - $gap,
@@ -1392,8 +1296,10 @@
 
         <xsl:variable name="link-provider" select="
                 (
-                    $schemaSetConfig?config?link-provider,
-                    function ($comp) {}
+                $schemaSetConfig?config?link-provider,
+                function ($comp) {
+                    
+                }
                 )[1]"/>
         <xsl:variable name="link" select="
                 if ($linkTarget) then
