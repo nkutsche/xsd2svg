@@ -16,6 +16,8 @@ import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.SequenceType;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
 
 import static de.data2type.je.textdimensions.TextDimensions.*;
@@ -54,11 +56,17 @@ public class TextDimensionExtensionFunction extends ExtensionFunctionDefinition 
 
                 String text = args[0].head().getStringValue();
                 TextDimensionConfig config = createConfig((HashTrieMap) args[1]);
+                try {
 
-                HashMap<String, Double> map = new TextDimensions(config).getTextDimensions(text);
+                    HashMap<String, Double> map = new TextDimensions(config).getTextDimensions(text);
+    
+                    outputter.write(XdmMap.makeMap(map).getUnderlyingValue());
+                    return outputter.getSequence();
 
-                outputter.write(XdmMap.makeMap(map).getUnderlyingValue());
-                return outputter.getSequence();
+                } catch (FontFormatException | IOException e){
+                    throw new XPathException(e);
+            }
+
             }
         };
     }

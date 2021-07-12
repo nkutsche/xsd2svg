@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -26,11 +28,21 @@ public class TextDimensions {
         public boolean has(TDCfgF type){
             return values.containsKey(type);
         }
-        private Font createFont(){
-            String ff = get(TDCfgF.font);
+
+
+        private Font createFont() throws IOException, FontFormatException {
+
             double sz = Double.parseDouble(get(TDCfgF.size));
             int st = getType(get(TDCfgF.style));
-            Font font = new Font(ff, st, (int) sz);
+            Font font;
+            if("truetype".equals(get(fontType))){
+                URL ff = new URL(get(fontFile));
+                font = Font.createFont(Font.TRUETYPE_FONT, ff.openStream());
+            } else {
+                String ff = get(TDCfgF.font);
+                font = new Font(ff, st, (int) sz);
+            }
+
             font = font.deriveFont((float) sz);
             return font;
         }
@@ -43,13 +55,13 @@ public class TextDimensions {
         }
     }
 
-    public enum TDCfgF {font, size, style, unit}
+    public enum TDCfgF {font, fontType, fontFile, size, style, unit}
 
     public TextDimensions(TextDimensionConfig config){
         this.config = config;
     }
 
-    public HashMap<String, Double> getTextDimensions(String text){
+    public HashMap<String, Double> getTextDimensions(String text) throws IOException, FontFormatException {
         return getTextDimensions(text, config.createFont());
 
     }
