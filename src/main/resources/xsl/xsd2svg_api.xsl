@@ -22,25 +22,21 @@
     Parameter:
     -->
     
-    <xsl:param name="config" select="()" as="map(*)?"/>
+    <xsl:param name="config" select="()" as="document-node()?"/>
     <xsl:param name="link-provider-function" select="function($component){}" as="function(map(xs:string, item()*)) as xs:string?"/>
-    <xsl:param name="css" select="resolve-uri('../cfg/colors.css', static-base-uri())" as="xs:anyURI"/>
         
 <!--    
     Global variables:
     -->
     
     
-    <xsl:variable name="effConfig" select="($config, es:default-config()) => es:mergeMaps()" as="map(*)"/>
+    <xsl:variable name="effConfig" select="($config, doc('../cfg/default-config.xml')) => es:config-as-map()" as="map(*)"/>
     
     
-    <xsl:function name="es:default-config" as="map(*)">
-        <xsl:sequence select="
-            json-doc('../cfg/default-config.json')
-            => map:put('link-provider', $link-provider-function)
-            => map:put('css', unparsed-text($css))
-            "/>
-    </xsl:function>
+    
+    
+    
+    
     
 <!--    
     Functions:
@@ -168,6 +164,11 @@
             }"/>
         
         <xsl:sequence select="$schemaSetCfg"/>
+    </xsl:function>
+    
+    <xsl:function name="es:config-as-map" as="map(*)">
+        <xsl:param name="configs" as="document-node()*"/>
+        <xsl:sequence select="es:config-as-map($configs, map{'link-provider' : $link-provider-function})"/>
     </xsl:function>
     
     

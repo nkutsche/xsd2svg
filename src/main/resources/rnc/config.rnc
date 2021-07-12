@@ -1,0 +1,31 @@
+datatypes xs = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = config
+
+config = element config { styles? }
+
+styles = element styles {css?, fonts?}
+
+css = element css {href}
+
+fonts = element fonts {emphasis, main}
+
+emphasis = element emphasis {fontAttr}
+main = element main {fontAttr}
+
+
+fontAttr = (installedFont | fileFont)
+
+installedFont = (
+    attribute name {xs:string},
+    attribute style {"bold" | "regular" | "italic"}
+)
+
+fileFont = (
+    href,
+    attribute name {xs:string}
+    attribute type {"truetype" | "woff"}
+)
+
+href = attribute href {xs:anyURI}
+

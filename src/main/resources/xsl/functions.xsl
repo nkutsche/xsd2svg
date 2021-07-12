@@ -1977,4 +1977,45 @@
 
     </xsl:function>
 
+    <xsl:function name="es:config-as-map" as="map(*)">
+        <xsl:param name="configs" as="document-node()*"/>
+        <xsl:sequence select="es:config-as-map($configs, map{})"/>
+    </xsl:function>
+
+    <xsl:function name="es:config-as-map" as="map(*)">
+        <xsl:param name="configs" as="document-node()*"/>
+        <xsl:param name="additional-parameter" as="map(*)"/>
+
+        <xsl:variable name="as-maps" as="map(*)*">
+            <xsl:apply-templates select="$configs/*" mode="es:config-as-map"/>
+        </xsl:variable>
+
+        <xsl:sequence select="($as-maps, $additional-parameter) => es:mergeMaps()"/>
+
+    </xsl:function>
+
+    <xsl:mode name="es:config-as-map" on-no-match="fail"/>
+
+    <xsl:template match="/config" mode="es:config-as-map">
+        <xsl:map>
+            <xsl:apply-templates select="*" mode="#current"/>
+        </xsl:map>
+    </xsl:template>
+
+    <xsl:template match="styles | css | fonts | fonts/*" mode="es:config-as-map">
+        <xsl:map-entry key="local-name()">
+            <xsl:map>
+                <xsl:apply-templates select="@* | *" mode="#current"/>
+            </xsl:map>
+        </xsl:map-entry>
+    </xsl:template>
+
+    <xsl:template match="@href" mode="es:config-as-map">
+        <xsl:map-entry key="local-name()" select="resolve-uri(., base-uri(..))"/>
+    </xsl:template>
+
+    <xsl:template match="@*" mode="es:config-as-map">
+        <xsl:map-entry key="local-name()" select="string(.)"/>
+    </xsl:template>
+
 </xsl:stylesheet>

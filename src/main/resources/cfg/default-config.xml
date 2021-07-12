@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../rnc/config.rnc" type="application/relax-ng-compact-syntax"?>
+<config>
+    <styles>
+        <css href="colors.css"/>
+        <fonts>
+            <emphasis href="font/Roboto-Bold.ttf" name="Roboto Bold" type="truetype"/>
+            <main href="font/Roboto-Regular.ttf" name="Roboto" type="truetype"/>
+        </fonts>
+    </styles>
+    
+</config>
