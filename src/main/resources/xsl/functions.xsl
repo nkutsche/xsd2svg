@@ -1049,30 +1049,32 @@
     </xsl:template>
 
     <xsl:template name="boxTitle">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="title" as="xs:string"/>
         <xsl:param name="symbol" as="node()?"/>
         <xsl:param name="bold" select="false()" as="xs:boolean" tunnel="yes"/>
         <xsl:param name="class" select="()" as="xs:string*"/>
-        
+
         <xsl:variable name="class" select="'boxtitle', $class"/>
-        
+
         <xsl:variable name="fontSize" select="11"/>
-        <xsl:variable name="weight" select="
-                if ($bold) then
-                    ('bold')
-                else
-                    ('normal')"/>
         <xsl:variable name="symbol" select="$symbol/(self::svg:svg, svg:svg)[1]"/>
         <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
         <xsl:variable name="space" select="6"/>
-        <xsl:variable name="width" select="es:renderedTextLength($title, 'Arial', $weight, $fontSize) + $symbolWidth + 4 * $space + 3"/>
+
+
+
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, $bold)"/>
+        <xsl:variable name="textWidth" select="es:renderedTextLength($title, $fontInfo)"/>
+        <xsl:variable name="width" select="$textWidth + $symbolWidth + 4 * $space + 3"/>
 
         <svg width="{max(($width, 0))}" height="25">
             <g transform="translate(3,3)">
                 <g transform="translate({$space}, {$space div 2})">
                     <xsl:sequence select="$symbol"/>
                 </g>
-                <text x="{$symbolWidth + 2 * $space}" y="13" class="{$class}" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="{$weight}">
+                <text x="{$symbolWidth + 2 * $space}" y="13" class="{$class}">
+                    <xsl:sequence select="$fontInfo?svg-attributes"/>
                     <xsl:value-of select="$title"/>
                 </text>
             </g>
@@ -1481,14 +1483,15 @@
     </xsl:function>
 
     <xsl:template name="wrap">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="text" as="xs:string"/>
-        <xsl:param name="font" select="'Arial'"/>
         <xsl:param name="fontSize" select="11" as="xs:double"/>
         <xsl:param name="lineHeight" select="16" as="xs:double"/>
         <xsl:param name="spaceAfter" select="8" as="xs:double"/>
         <xsl:param name="style" select="'plain'" as="xs:string"/>
         <xsl:param name="class" select="()" as="xs:string*"/>
         <xsl:param name="width"/>
+        <xsl:param name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, $style = 'bold')" tunnel="yes"/>
         <xsl:variable name="subwoerter">
             <xsl:analyze-string select="$text" regex="[^\s-]+([\s-]+|$)">
                 <xsl:matching-substring>
@@ -1500,11 +1503,9 @@
         </xsl:variable>
         <xsl:variable name="tspans">
             <xsl:for-each select="$subwoerter/svg:tspan">
-                <xsl:variable name="length" select="
-                        es:renderedTextLength(.,
-                        $font,
-                        $style,
-                        $fontSize)"/>
+                
+                <xsl:variable name="length" select="es:renderedTextLength(., $fontInfo)"/>
+                
                 <tspan>
                     <xsl:attribute name="es:length" select="$length"/>
                     <xsl:value-of select="."/>
@@ -1521,10 +1522,8 @@
             </xsl:call-template>
         </xsl:variable>
         <svg width="{$width}" height="{(count($lines/es:line) * $lineHeight) + $spaceAfter}" class="text_box">
-            <text font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
-                <xsl:if test="$style = 'bold'">
-                    <xsl:attribute name="font-weight">bold</xsl:attribute>
-                </xsl:if>
+            <text>
+                <xsl:sequence select="$fontInfo?svg-attributes"/>
                 <xsl:if test="exists($class)">
                     <xsl:attribute name="class" select="$class" separator=" "/>
                 </xsl:if>
@@ -1643,26 +1642,47 @@
 
     </xsl:function>
 
-    <xsl:function name="es:renderedTextLength" as="xs:double">
-        <xsl:param name="text" as="xs:string"/>
-        <xsl:param name="font" as="xs:string"/>
-        <xsl:param name="style" as="xs:string"/>
-        <xsl:param name="font-size" as="xs:double"/>
+    <xsl:function name="es:create-font-info" as="map(*)">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
+        <xsl:param name="size" as="xs:double"/>
+        <xsl:param name="emphasis" as="xs:boolean"/>
 
-        <xsl:variable name="style" select="
-                if ($style ! lower-case(.) ! normalize-space(.) = 'normal') then
-                    ('plain')
-                else
-                    $style"/>
+        <xsl:variable name="fonts" select="$schemaSetConfig?config?styles?fonts"/>
 
-        <xsl:variable name="fontinfo" select="
-                map {
-                    'font': $font,
-                    'style': $style,
-                    'size': $font-size
-                }"/>
+        <xsl:variable name="variant" select="if ($emphasis) then
+            ('emphasis')
+            else
+            ('main')"/>
+        <xsl:variable name="font" select="
+            $fonts($variant)"/>
+        <xsl:variable name="style" select="($font?style, 'normal')[1]"/>
+        <xsl:variable name="name" select="($font?name, 'xsd2svg ' || $variant)[1]"/>
+        
+        <xsl:variable name="svg-attributes" as="attribute()*">
+            <xsl:attribute name="font-family" select="$name"/>
+            <xsl:attribute name="font-size" select="$size"/>
+            <xsl:if test="$style = 'bold'">
+                <xsl:attribute name="font-weight" select="'bold'"/>
+            </xsl:if>
+            <xsl:if test="$style = 'italic'">
+                <xsl:attribute name="font-style" select="'italic'"/>
+            </xsl:if>
+        </xsl:variable>
 
-        <xsl:sequence select="es:renderedTextLength($text, $fontinfo)"/>
+        <xsl:variable name="font-info" select="
+            if (exists($font?href)) then (map{
+                'fontFile' : $font?href,
+                'fontType' : $font?type,
+                'font' : $name,
+                'size' : $size,
+                'style' : 'normal'
+                }) else map{
+                'font' : $name,
+                'style' : $style,
+                'size' : $size
+                }
+            "/>
+        <xsl:sequence select="map:put($font-info, 'svg-attributes', $svg-attributes)"/>
 
     </xsl:function>
 

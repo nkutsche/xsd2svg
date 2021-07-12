@@ -15,7 +15,7 @@
         <xsl:variable name="cY" select="(svg:foreignObject/@es:cY, 15)[1]"/>
         <xsl:variable name="color-scheme" select="(svg:foreignObject/@es:color-scheme[. != ''], 'default')[1]"/>
         
-        <xsl:variable name="docs" select="es:create-docs-tooltips($annotation, $docs-id, $color-scheme, $cY)"/>
+        <xsl:variable name="docs" select="es:create-docs-tooltips($annotation, $schemaSetConfig, $docs-id, $color-scheme, $cY)"/>
         
         <xsl:variable name="docs-y" select="($rectH div 2 - $cY, 0) => max()"/>
         
@@ -31,25 +31,30 @@
     
     <xsl:function name="es:create-docs-tooltips" as="element(svg:svg)?">
         <xsl:param name="annotation" as="element(xs:annotation)+"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="hover_id" as="xs:string"/>
         <xsl:param name="color-scheme" as="xs:string"/>
         <xsl:param name="cY" as="xs:double"/>
-        <xsl:sequence select="es:create-docs-tooltips($annotation, $hover_id, $color-scheme, $cY, ())"/>
+        <xsl:sequence select="es:create-docs-tooltips($annotation, $schemaSetConfig, $hover_id, $color-scheme, $cY, ())"/>
     </xsl:function>
     <xsl:function name="es:create-docs-tooltips" as="element(svg:svg)?">
         <xsl:param name="annotation" as="element(xs:annotation)+"/>
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="hover_id" as="xs:string"/>
         <xsl:param name="color-scheme" as="xs:string"/>
         <xsl:param name="cY" as="xs:double"/>
         <xsl:param name="invisible_ids" as="xs:string*"/>
+
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, 11, false())" as="map(*)"/>
         
         <xsl:variable name="class" select="'docs cs_' || $color-scheme"/>
         
         <xsl:variable name="textContent" select="string-join($annotation/xs:documentation, '')"/>
-        <xsl:variable name="textLength" select="es:renderedTextLength($textContent, 'Arial', 'plain', 11)"/>
+        <xsl:variable name="textLength" select="es:renderedTextLength($textContent, $fontInfo)"/>
         
         <xsl:variable name="content">
             <xsl:apply-templates select="$annotation/xs:documentation" mode="es:create-docs-tooltips">
+                <xsl:with-param name="schemaSetConfig" select="$schemaSetConfig" tunnel="yes"/>
                 <xsl:with-param name="text-width" select="
                     if ($textLength lt 2000) then
                     (300)
@@ -101,7 +106,6 @@
                         else
                         ('Documentation')"/>
                     <xsl:with-param name="fontSize" select="$fontSize"/>
-                    <xsl:with-param name="font" select="'Arial'"/>
                     <xsl:with-param name="width" select="$text-width"/>
                     <xsl:with-param name="style" select="'bold'"/>
                     <xsl:with-param name="spaceAfter" select="2"/>
@@ -115,7 +119,6 @@
             <xsl:call-template name="wrap">
                 <xsl:with-param name="text" select="."/>
                 <xsl:with-param name="fontSize" select="$fontSize"/>
-                <xsl:with-param name="font" select="'Arial'"/>
                 <xsl:with-param name="width" select="$text-width"/>
                 <xsl:with-param name="class" select="'shaded', 'backgrounded'"/>
             </xsl:call-template>

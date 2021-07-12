@@ -69,7 +69,9 @@
 
 
             <xsl:variable name="fontSize" select="11"/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), 'Arial', 'bold', $fontSize)"/>
+            
+            <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, true())"/>
+            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), $fontInfo)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
@@ -82,7 +84,8 @@
                             <xsl:sequence select="$symbol"/>
                         </g>
 
-                        <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                        <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded">
+                            <xsl:sequence select="$fontInfo?svg-attributes"/>
                             <xsl:value-of select="$elementName"/>
                         </text>
                     </g>
@@ -149,7 +152,8 @@
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, true())"/>
+            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), $fontInfo)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
@@ -162,7 +166,8 @@
                     <g transform="translate({$paddingLR}, {$paddingLR div 2})">
                         <xsl:sequence select="$symbol"/>
                     </g>
-                    <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                    <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded">
+                        <xsl:sequence select="$fontInfo?svg-attributes"/>
                         <xsl:value-of select="$elementName"/>
                     </text>
                     <xsl:sequence select="es:createDoku(.)"/>
@@ -237,7 +242,8 @@
         <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}">
             <desc/>
             <xsl:variable name="label" select="es:printQName($typeName, $schemaSetConfig)"/>
-            <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'bold', $fontSize)"/>
+            <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, true())"/>
+            <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
             <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
 
@@ -250,7 +256,8 @@
                     <g transform="translate({$paddingLR}, {$paddingLR div 2})">
                         <xsl:sequence select="$symbol"/>
                     </g>
-                    <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" font-weight="bold">
+                    <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} backgrounded">
+                        <xsl:sequence select="$fontInfo?svg-attributes"/>
                         <xsl:value-of select="$label"/>
                     </text>
                     <xsl:sequence select="es:createDoku(.)"/>
@@ -451,10 +458,10 @@
                 else
                     ''"/>
 
-
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
         <xsl:variable name="widths" select="
-                es:renderedTextLength($label, 'Arial', 'plain', $fontSize) + $symbolWidth,
-                es:renderedTextLength($typeLabel, 'Arial', 'plain', $fontSize)
+                es:renderedTextLength($label, $fontInfo) + $symbolWidth,
+                es:renderedTextLength($typeLabel, $fontInfo)
                 "/>
 
 
@@ -480,7 +487,8 @@
                                     <xsl:sequence select="$symbol"/>
                                 </g>
                                 
-                                <text x="{$paddingLR + $symbolWidth}" y="16" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" class="{$class} link-text">
+                                <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} link-text">
+                                    <xsl:sequence select="$fontInfo?svg-attributes"/>
                                     <xsl:value-of select="$label"/>
                                 </text>
                             </xsl:with-param>
@@ -497,7 +505,8 @@
                                     <g transform="translate(0,{$elementHeight div 2})">
                                         <path d="{es:createHalfRoundBox($width, $elementHeight div 2, 10, true())}" class="{$type-class} shaded filled link-background"/>
                                     </g>
-                                    <text x="{$paddingLR}" y="32" class="{$type-class} shaded backgrounded link-text" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                                    <text x="{$paddingLR}" y="32" class="{$type-class} shaded backgrounded link-text">
+                                        <xsl:sequence select="$fontInfo?svg-attributes"/>
                                         <xsl:value-of select="$typeLabel"/>
                                     </text>
                                 </xsl:with-param>
@@ -580,12 +589,8 @@
         <xsl:param name="refAttribute" select="@ref" as="attribute()?"/>
         <xsl:param name="refTarget" select="$refAttribute/es:getReference(., $schemaSetConfig)" as="node()?"/>
         <xsl:param name="label" select="es:printQName($elementName, $schemaSetConfig)"/>
-        <xsl:param name="text-style" as="map(*)" select="
-                map {
-                    'font': 'Arial',
-                    'style': 'plain',
-                    'size': 11
-                }"/>
+        <xsl:param name="bold" select="false()" as="xs:boolean"/>
+        <xsl:param name="fontInfo" as="map(*)" select="es:create-font-info($schemaSetConfig, 11, false())"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
 
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
@@ -605,10 +610,10 @@
 
         <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
 
-        <xsl:variable name="fontSize" select="$text-style?size"/>
-        <xsl:variable name="fontStyle" select="($text-style?style, 'normal')[. != 'plain'][1]"/>
+        <xsl:variable name="fontSize" select="$fontInfo?size"/>
+        <xsl:variable name="fontStyle" select="($fontInfo?style, 'normal')[. != 'plain'][1]"/>
 
-        <xsl:variable name="width" select="es:renderedTextLength($label, $text-style)"/>
+        <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
 
@@ -651,7 +656,8 @@
                                 <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
                                     <xsl:sequence select="$symbol"/>
                                 </g>
-                                <text x="{$paddingLR + $symbolWidth}" y="16" font-family="{$text-style?font}, helvetica, sans-serif" font-size="{$fontSize}" font-style="{$fontStyle}" class="{$class} link-text">
+                                <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} link-text">
+                                    <xsl:sequence select="$fontInfo?svg-attributes"/>
                                     <xsl:value-of select="$label"/>
                                 </text>
                             </xsl:with-param>
@@ -1009,15 +1015,9 @@
                     'minInclusive': 'Minimal Value (Inclusive)',
                     'minExclusive': 'Minimal Value (Exclusive)'
                 }"/>
-        <xsl:variable name="textStyle" select="
-                map {
-                    'font': 'Arial',
-                    'style': 'plain',
-                    'size': 10
-                }
-                "/>
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, 10, false())"/>
 
-        <xsl:variable name="enumValuesCut" select="xs:enumeration/@value => es:cut-join(' | ', '...', 100.0, $textStyle)"/>
+        <xsl:variable name="enumValuesCut" select="xs:enumeration/@value => es:cut-join(' | ', '...', 100.0, $fontInfo)"/>
         <xsl:variable name="enumValues" select="xs:enumeration/@value => string-join(' | ')"/>
         <xsl:variable name="enumCell" select="
                 es:tcell($enumValuesCut, $enumValues)
@@ -1030,7 +1030,7 @@
             </xsl:for-each>
         </xsl:variable>
 
-        <xsl:sequence select="es:create-table(array {$table}, 10, $color-scheme, $st-table-title)"/>
+        <xsl:sequence select="es:create-table($schemaSetConfig, array {$table}, 10, $color-scheme, $st-table-title)"/>
     </xsl:template>
 
     <xsl:template match="xs:any" mode="es:xsd2svg-content">
@@ -1053,18 +1053,17 @@
                     ($labels($ns))
                 else
                     ('Any of Q{' || @namespace || '}*')"/>
+<!--        
+            TODO: this should be italic, not supported yet.
+        -->
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, 11, false())"/>
 
         <xsl:call-template name="elementRef">
             <xsl:with-param name="elementName" select="QName($XSDNS, 'any')"/>
             <xsl:with-param name="label" select="$label"/>
             <xsl:with-param name="model-id" select="$model-id" tunnel="yes"/>
             <xsl:with-param name="refAttribute" select="@namespace"/>
-            <xsl:with-param name="text-style" as="map(*)" select="
-                    map {
-                        'font': 'Arial',
-                        'style': 'italic',
-                        'size': 11
-                    }"/>
+            <xsl:with-param name="fontInfo" as="map(*)" select="$fontInfo"/>
             <xsl:with-param name="color-scheme" select="$color-scheme"/>
         </xsl:call-template>
     </xsl:template>
@@ -1083,13 +1082,15 @@
     </xsl:function>
 
     <xsl:function name="es:create-table">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
         <xsl:param name="color-scheme" as="xs:string"/>
-        <xsl:sequence select="es:create-table($cells, $cell-padding, $color-scheme, ())"/>
+        <xsl:sequence select="es:create-table($schemaSetConfig, $cells, $cell-padding, $color-scheme, ())"/>
     </xsl:function>
 
     <xsl:function name="es:create-table">
+        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
         <xsl:param name="color-scheme" as="xs:string"/>
@@ -1100,13 +1101,15 @@
         <xsl:variable name="lineheight" select="14"/>
         <xsl:variable name="fontSize" select="10"/>
         <xsl:variable name="stroke-width" select="0.5"/>
-
-        <xsl:variable name="text-lengths" select="array {$cells?* ! array {.?* ! es:renderedTextLength(?content, 'Arial', 'plain', $fontSize)}}"/>
+        
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        
+        <xsl:variable name="text-lengths" select="array {$cells?* ! array {.?* ! es:renderedTextLength(?content, $fontInfo)}}"/>
         <xsl:variable name="cols" select="$cells?* ! array:size(.) => max()"/>
 
         <xsl:variable name="cell-padding2" select="$cell-padding * 2"/>
 
-        <xsl:variable name="titleWidth" select="es:renderedTextLength(($title, '')[1], 'Arial', 'plain', $fontSize) + $cell-padding2"/>
+        <xsl:variable name="titleWidth" select="es:renderedTextLength(($title, '')[1], $fontInfo) + $cell-padding2"/>
 
 
         <xsl:variable name="colWidths" select="
@@ -1133,7 +1136,8 @@
                     
                     <path d="{es:createHalfRoundBox($tableWidth, $titleHeight, 7.5, true(), false())}" class="{$class} shaded filled"/>
                     
-                    <text x="{$cell-padding}" y="{$titleHeight - 7.5}" class="{$class} shaded backgrounded" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                    <text x="{$cell-padding}" y="{$titleHeight - 7.5}" class="{$class} shaded backgrounded">
+                        <xsl:sequence select="$fontInfo?svg-attributes"/>
                         <xsl:value-of select="$title"/>
                     </text>
                     <line x1="0" x2="{$tableWidth}" y1="{$titleHeight}" y2="{$titleHeight}" class="{$class} bordered" stroke-width="{$stroke-width}"/>
@@ -1159,7 +1163,8 @@
                         <xsl:variable name="x" select="sum($colWidths[position() lt $colnr])"/>
 
 
-                        <text x="{$x + $cell-padding}" y="0" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                        <text x="{$x + $cell-padding}" y="0">
+                            <xsl:sequence select="$fontInfo?svg-attributes"/>
                             <xsl:if test="?tooltip">
                                 <title>
                                     <xsl:value-of select="?tooltip"/>
@@ -1259,7 +1264,10 @@
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="paddingLR" select="5"/>
         <xsl:variable name="label" select="es:printQName($parentName, $schemaSetConfig)"/>
-        <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
+        
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        
+        <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
         <svg width="{$width}" height="30" es:cY="15">
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
@@ -1277,7 +1285,8 @@
                                     <xsl:sequence select="$symbol"/>
                                 </g>
 
-                                <text x="{$paddingLR + $symbolWidth}" y="16" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}" class="{$class} link-text">
+                                <text x="{$paddingLR + $symbolWidth}" y="16" class="{$class} link-text">
+                                    <xsl:sequence select="$fontInfo?svg-attributes"/>
                                     <xsl:value-of select="$label"/>
                                 </text>
                             </g>
@@ -1576,7 +1585,8 @@
         <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
         <xsl:variable name="label" select="es:printQName($typeName, $schemaSetConfig)"/>
-        <xsl:variable name="width" select="es:renderedTextLength($label, 'Arial', 'plain', $fontSize)"/>
+        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
         <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:displayW="{$width}" es:displayH="0" es:multiValue="one">
@@ -1600,7 +1610,8 @@
                                 <xsl:sequence select="$symbol"/>
                             </g>
 
-                            <text x="{$paddingLR + $symbolWidth}" y="16" font-family="arial, helvetica, sans-serif" font-size="{$fontSize}">
+                            <text x="{$paddingLR + $symbolWidth}" y="16">
+                                <xsl:sequence select="$fontInfo?svg-attributes"/>
                                 <xsl:value-of select="$label"/>
                             </text>
                         </g>
