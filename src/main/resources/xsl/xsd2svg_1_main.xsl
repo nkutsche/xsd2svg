@@ -723,7 +723,6 @@
                     'complexType'
                 else
                     'simpleType'"/>
-        <xsl:variable name="colors" select="es:getColors($colorType, $schemaSetConfig)"/>
 
         <xsl:variable name="baseIsXSD" select="$baseNs = $XSDNS"/>
         <xsl:variable name="boxTitle" select="
@@ -796,8 +795,6 @@
     <xsl:template match="xs:sequence" mode="es:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="colors" select="es:getColors('#default', $schemaSetConfig)"/>
-
         <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
 
         <xsl:variable name="content">
@@ -808,7 +805,6 @@
                 <xsl:with-param name="content" select="$content/svg:svg"/>
                 <xsl:with-param name="x1" select="3"/>
                 <xsl:with-param name="x2" select="30"/>
-                <xsl:with-param name="strokeColor" select="$colors?main"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:variable name="elementSymbol">
@@ -1558,7 +1554,6 @@
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" select="$parentContent/svg:svg"/>
                 <xsl:with-param name="rightPathPosition" select="true()"/>
-                <xsl:with-param name="strokeColor" select="es:getColors(local-name($this), $schemaSetConfig)?main"/>
             </xsl:call-template>
         </xsl:variable>
         <xsl:copy-of select="$parentConnect"/>
@@ -1568,7 +1563,6 @@
         <xsl:param name="typeName" select="es:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="colors" select="es:getColors('simpleType', $schemaSetConfig)" as="map(xs:string, xs:string)"/>
         <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
 
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>

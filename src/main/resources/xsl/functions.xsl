@@ -1085,7 +1085,6 @@
     <xsl:template name="drawObjectPaths">
         <xsl:param name="content" as="element(svg:svg)*"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="strokeColor" as="xs:string" select="es:getColors('#default', $schemaSetConfig)?main"/>
         <xsl:param name="x0" select="0"/>
         <xsl:param name="x1" select="25"/>
         <xsl:param name="x2" select="50"/>
@@ -1725,27 +1724,6 @@
         <xsl:sequence select="
                 map:merge($maps, map {'duplicates': 'combine'})"/>
     </xsl:function>
-
-    <xsl:function name="es:getColors">
-        <xsl:param name="type" as="xs:string"/>
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
-
-        <xsl:variable name="colorScheme" select="$schemaSetConfig?config?styling?colors"/>
-        <xsl:choose>
-            <xsl:when test="map:contains($colorScheme, $type)">
-                <xsl:sequence select="$colorScheme($type)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:message terminate="no" expand-text="yes">Unknown color type {$type}, using default color set.</xsl:message>
-                <xsl:sequence select="$colorScheme('#default')"/>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:function>
-
-    <!--<xsl:function name="es:getParents" as="element()*">
-        <xsl:param name="this" as="element()"/>
-        <xsl:sequence select="es:getParents($this, es:getReferencedSchemas(root($this)))"/>
-    </xsl:function>-->
 
     <xsl:function name="es:getParents" as="element()*">
         <xsl:param name="this" as="element()"/>
