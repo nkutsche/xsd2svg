@@ -95,7 +95,9 @@
 
     <xsl:function name="es:create-css" as="xs:string?">
         <xsl:param name="styles" as="map(*)"/>
-        <xsl:variable name="cssText" select="$styles?css?href ! unparsed-text(.) ! replace(., '\r\n', '&#xA;') ! replace(., '\r', '&#xA;')"/>
+        <xsl:variable name="embeddedCss" select="resolve-uri('../cfg/colors.css', static-base-uri())"/>
+        <xsl:variable name="cssHref" select="($styles?css?href, $embeddedCss) => distinct-values()"/>
+        <xsl:variable name="cssText" select="$cssHref ! unparsed-text(.) ! replace(., '\r\n', '&#xA;') ! replace(., '\r', '&#xA;')"/>
 
         <xsl:variable name="fontEmph" select="$styles?fonts?emphasis[?type = 'truetype'] ! es:font-face(?href, (?name, 'xsd2svg emphasis')[1], ?type)"/>
         <xsl:variable name="fontMain" select="$styles?fonts?main[?type = 'truetype'] ! es:font-face(?href, (?name, 'xsd2svg main')[1], ?type)"/>
