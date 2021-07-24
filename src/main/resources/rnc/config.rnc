@@ -2,28 +2,46 @@ datatypes xs = "http://www.w3.org/2001/XMLSchema-datatypes"
 
 start = config
 
-config = element config { styles? }
+config = 
+## Root element of the configuration document
+element config { styles? }
 
-styles = element styles {css?, fonts?}
+styles = 
+## Configures the styling part of the SVG generation
+element styles {css?, fonts?}
 
-css = element css {href}
+css = 
+## Provides by the href attribute a CSS document which will be embedded for standalone SVG graphics
+element css {href}
 
-fonts = element fonts {emphasis, main}
+fonts = 
+## Configures the used fonts for SVG graphics. 
+element fonts {emphasis, main}
 
-emphasis = element emphasis {fontAttr}
-main = element main {fontAttr}
+emphasis = 
+## Configures the font of emphasized text in the SVG graphics
+element emphasis {fontAttr}
+main = 
+## Configures the font of regular text in the SVG graphics
+element main {fontAttr}
 
 
-fontAttr = (installedFont | fileFont)
+fontAttr = 
+## Use an installed font or reference to a font file.
+(installedFont | fileFont)
 
 installedFont = (
+    ## Name of the used font. For installed font this needs to match to an installed font. For a font file reference the name is used for references in CSS.
     attribute name {xs:string},
     attribute style {"bold" | "regular" | "italic"}
 )
 
 fileFont = (
+    ## path to a font file. Allowed formats are truetype and woff (not tested yet!)
     href,
-    attribute name {xs:string}
+    ## Name of the used font. For installed font this needs to match to an installed font. For a font file reference the name is used for references in CSS.
+    attribute name {xs:string},
+    ## Specifies the format of the font file referenced by href attribute.
     attribute type {"truetype" | "woff"}
 )
 
