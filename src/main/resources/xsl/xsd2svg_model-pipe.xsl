@@ -35,7 +35,7 @@
     SVG MODEL
     -->
 
-    <xsl:function name="es:svg-model">
+    <xsl:function name="es:svg-model" as="node()*">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="config" as="map(xs:string, map(*))"/>
         <xsl:param name="standalone" as="xs:boolean"/>

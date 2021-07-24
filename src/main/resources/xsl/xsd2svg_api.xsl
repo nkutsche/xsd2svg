@@ -46,14 +46,14 @@
     
     SVG MODEL
     -->
-    <xsl:function name="xsd2svg:svg-model">
+    <xsl:function name="xsd2svg:svg-model" as="node()*">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="standalone" as="xs:boolean"/>
         <xsl:variable name="rootDoc" select="root($xsdnode) treat as document-node()"/>
         <xsl:sequence select="xsd2svg:svg-model($xsdnode, xsd2svg:createSchemaSetConfig($rootDoc), $standalone)"/>
     </xsl:function>
     
-    <xsl:function name="xsd2svg:svg-model">
+    <xsl:function name="xsd2svg:svg-model" as="node()*" visibility="private">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="config" as="map(xs:string, map(*))"/>
         <xsl:param name="standalone" as="xs:boolean"/>
@@ -69,21 +69,19 @@
     -->
     
     <xsl:function name="xsd2svg:getSchemaInfo" as="map(*)">
-        <xsl:param name="url" as="xs:anyURI"/>
-        <xsl:sequence select="xsd2svg:getSchemaInfo($url, $effConfig)"/>
+        <xsl:param name="schema-url" as="xs:anyURI"/>
+        <xsl:sequence select="xsd2svg:getSchemaInfo($schema-url, xsd2svg:createSchemaSetConfig(doc($schema-url), $effConfig))"/>
     </xsl:function>
     
-    <xsl:function name="xsd2svg:getSchemaInfo" as="map(*)">
-        <xsl:param name="url" as="xs:anyURI"/>
-        <xsl:param name="config" as="map(*)"/>
-        
-        <xsl:variable name="schemaSetCfg" select="xsd2svg:createSchemaSetConfig(doc($url), $config)"/>
+    <xsl:function name="xsd2svg:getSchemaInfo" as="map(*)" visibility="private">
+        <xsl:param name="schema-url" as="xs:anyURI"/>
+        <xsl:param name="schemaSetCfg" as="map(xs:string, item()*)"/>
         
         <xsl:variable name="component-infos" select="es:getComponentInfos($schemaSetCfg)"/>
         <xsl:sequence select="
             map{
                 'schema-namespace-map' : $schemaSetCfg?schema-map,
-                'create-css' : function(){es:create-css($config?styles)},
+                'create-css' : function(){es:create-css($schemaSetCfg?config?styles)},
                 'get-grouped-components' : function($grouping as xs:string*){ es:group-components($component-infos, $grouping)},
                 'namespaces' : $component-infos?namespace => distinct-values(),
                 'types' : $component-infos?type => distinct-values(),
@@ -134,12 +132,12 @@
     
     
     
-    <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)">
+    <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)" visibility="private">
         <xsl:param name="schema" as="document-node(element(xs:schema))"/>
         <xsl:sequence select="xsd2svg:createSchemaSetConfig($schema, $effConfig)"/>
     </xsl:function>
     
-    <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)">
+    <xsl:function name="xsd2svg:createSchemaSetConfig" as="map(xs:string, item()*)" visibility="private">
         <xsl:param name="schema" as="document-node(element(xs:schema))"/>
         <xsl:param name="config" as="map(*)"/>
         
