@@ -1,4 +1,29 @@
 /*
+ * 
+ * Color variables
+ */
+ 
+:root {
+    --cs-default:#007;
+    --cs-element:#007;
+    --cs-attribute:#770;
+    --cs-attributeGroup:#770;
+    --cs-simpleType:#070;
+    --cs-complexType:#077;
+    --cs-group:#707;
+    --cs-any:#700;
+    
+    --cs-compl-default:#88f;
+    --cs-compl-element:#88f;
+    --cs-compl-attribute:#ee8;
+    --cs-compl-attributeGroup:#ee8;
+    --cs-compl-simpleType:#8f8;
+    --cs-compl-complexType:#8ee;
+    --cs-compl-group:#e8e;
+    --cs-compl-any:#f88;
+}
+
+/*
  * General
  */
 text {
@@ -40,21 +65,21 @@ text.backgrounded.shaded {
 .cs_default.filled,
 .cs_element.filled
 {
-    fill:#007;
+    fill:var(--cs-default);
 }
 
 .bordered,
 .cs_default.bordered,
 .cs_element.bordered 
 {
-    stroke:#007;
+    stroke:var(--cs-default);
 }
 
 text.backgrounded,
 text.cs_default.backgrounded,
 text.cs_element.backgrounded
 {
-    fill:#007;
+    fill:var(--cs-default);
 }
 
 /*
@@ -62,21 +87,37 @@ text.cs_element.backgrounded
  * Attributes
  */
 
-.cs_attribute.filled,
-.cs_attributeGroup.filled
+.cs_attribute.filled
 {
-    fill:#770;
+    fill:var(--cs-attribute);
 }
 
-.cs_attribute.bordered, 
+.cs_attribute.bordered
+{
+    stroke:var(--cs-attribute);
+}
+text.cs_attribute.backgrounded
+{
+    fill:var(--cs-attribute);
+}
+
+/*
+ * 
+ * Attributes Groups
+ */
+
+.cs_attributeGroup.filled
+{
+    fill:var(--cs-attributeGroup);
+}
+
 .cs_attributeGroup.bordered 
 {
-    stroke:#770;
+    stroke:var(--cs-attributeGroup);
 }
-text.cs_attribute.backgrounded,
 text.cs_attributeGroup.backgrounded
 {
-    fill:#770;
+    fill:var(--cs-attributeGroup);
 }
 
 /*
@@ -86,15 +127,15 @@ text.cs_attributeGroup.backgrounded
 
 .cs_simpleType.filled
 {
-    fill:#070;
+    fill:var(--cs-simpleType);
 }
 
 .cs_simpleType.bordered 
 {
-    stroke:#070;
+    stroke:var(--cs-simpleType);
 }
 text.cs_simpleType.backgrounded {
-    fill:#070;
+    fill:var(--cs-simpleType);
 }
 
 /*
@@ -104,16 +145,16 @@ text.cs_simpleType.backgrounded {
 
 .cs_complexType.filled
 {
-    fill:#077;
+    fill:var(--cs-complexType);
 }
 
 .cs_complexType.bordered 
 {
-    stroke:#077;
+    stroke:var(--cs-complexType);
 }
 
 text.cs_complexType.backgrounded {
-    fill:#077;
+    fill:var(--cs-complexType);
 }
 
 /*
@@ -123,16 +164,16 @@ text.cs_complexType.backgrounded {
 
 .cs_group.filled
 {
-    fill:#707;
+    fill:var(--cs-group);
 }
 
 .cs_group.bordered 
 {
-    stroke:#707;
+    stroke:var(--cs-group);
 }
 
 text.cs_group.backgrounded {
-    fill:#707;
+    fill:var(--cs-group);
 }
 
 /*
@@ -142,16 +183,16 @@ text.cs_group.backgrounded {
 
 .cs_any.filled
 {
-    fill:#700;
+    fill:var(--cs-any);
 }
 
 .cs_any.bordered 
 {
-    stroke:#700;
+    stroke:var(--cs-any);
 }
 
 text.cs_any.backgrounded {
-    fill:#700;
+    fill:var(--cs-any);
 }
 
 a:hover text.cs_default,
@@ -161,23 +202,26 @@ a:hover text.cs_element
 }
 
 a:hover .link-background {
-    fill:#88f;
+    fill:var(--cs-compl-default);
     opacity:1;
 }
-a:hover .cs_attribute.link-background,
+a:hover .cs_attribute.link-background
+{
+    fill:var(--cs-compl-attribute);
+}
 a:hover .cs_attributeGroup.link-background
 {
-    fill:#ee8;
+    fill:var(--cs-compl-attributeGroup);
 }
 a:hover .cs_simpleType.link-background {
-    fill:#8f8;
+    fill:var(--cs-compl-simpleType);
 }
 a:hover .cs_complexType.link-background {
-    fill:#8ee;
+    fill:var(--cs-compl-complexType);
 }
 a:hover .cs_group.link-background {
-    fill:#e8e;
+    fill:var(--cs-compl-group);
 }
 a:hover .cs_any.link-background {
-    fill:#f88;
+    fill:var(--cs-compl-any);
 }
