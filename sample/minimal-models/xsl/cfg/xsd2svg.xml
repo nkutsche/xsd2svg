@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="../rnc/config.rnc" type="application/relax-ng-compact-syntax"?>
+<config>
+    <styles>
+        <css href="custom.css"/>
+        <!--<fonts>
+            <emphasis name="Arial" style="bold"/>
+            <main name="Arial" style="regular"/>
+        </fonts>-->
+    </styles>
+    
+</config>

@@ -4,6 +4,7 @@
     <xsl:use-package name="http://www.escali.schematron-quickfix.com/xsd2svg" package-version="*">
         <xsl:override>
             <xsl:param name="link-provider-function" select="function($comp){'#card_' || $comp?id}" as="function(map(xs:string, item()*)) as xs:string?"/>
+            <xsl:param name="config" select="doc('cfg/xsd2svg.xml')" as="document-node()?"/>
         </xsl:override>
     </xsl:use-package>
     
