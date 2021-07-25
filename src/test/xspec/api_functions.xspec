@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:xsd2svg="http://www.xsd2svg.schematron-quickfix.com/" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:es="http://www.escali.schematron-quickfix.com/" stylesheet="../../main/resources/xsl/xsd2svg_api.xsl">
     
-    <x:param name="config" select="'xsd/cfg/test-config.json' => resolve-uri(base-uri(/)) => json-doc()" href="api_functions.xspec"/>
-
     <x:scenario label="Scenario for testing function getMasterFiles">
         <x:call function="xsd2svg:getMasterFiles">
             <x:param name="extension" position="2" select="'xsd'"/>
@@ -55,29 +53,28 @@
         <x:variable name="ns1Doc" href="xsd/components/case1/ns1.xsd"/>
         <x:variable name="ns2Doc" href="xsd/components/case1/ns2.xsd"/>
         <x:scenario label="with default grouping">
+            <x:variable name="grouping" select="('namespace', 'type', 'scope')"/>
             <x:scenario label="case1">
                 <x:call>
                     <x:param select="resolve-uri('case1/ns1.xsd', $base-uri)"/>
                 </x:call>
-                <x:expect label="component info of global ns1 element(s)" test="$x:result?grouped-components?ns1.com?element?global?component" select="$ns1Doc/*/xs:element[@name = 'foo']"/>
-                <x:expect label="local ns2 attribute(s)" test="$x:result?grouped-components?ns2.com?attribute?local?component" select="$ns2Doc/*/xs:attributeGroup[@name = 'attrGroup']/xs:attribute"/>
-                <x:expect label="all components of ns2" test="$x:result?grouped-components?ns2.com?*?*?component/self::*" select="$ns2Doc//*[@name]"/>
-                <x:expect label="all global components" test="$x:result?grouped-components?*?*?global?component/self::*" select="($ns1Doc | $ns2Doc)/*/*[@name]"/>
+                <x:expect label="component info of global ns1 element(s)" test="$x:result?get-grouped-components($grouping)?ns1.com?element?global?component" select="$ns1Doc/*/xs:element[@name = 'foo']"/>
+                <x:expect label="local ns2 attribute(s)" test="$x:result?get-grouped-components($grouping)?ns2.com?attribute?local?component" select="$ns2Doc/*/xs:attributeGroup[@name = 'attrGroup']/xs:attribute"/>
+                <x:expect label="all components of ns2" test="$x:result?get-grouped-components($grouping)?ns2.com?*?*?component/self::*" select="$ns2Doc//*[@name]"/>
+                <x:expect label="all global components" test="$x:result?get-grouped-components($grouping)?*?*?global?component/self::*" select="($ns1Doc | $ns2Doc)/*/*[@name]"/>
             </x:scenario>
         </x:scenario>
         <x:scenario label="with scope-type-namespace grouping">
-            <x:call>
-                <x:param select="(map{'component-grouping' : ['scope', 'namespace', 'type']}, $config) => es:mergeMaps()" position="2"/>
-            </x:call>
+            <x:variable name="grouping" select="('scope', 'namespace', 'type')"/>
             <x:scenario label="case1">
                 <x:call>
                     <x:param select="resolve-uri('case1/ns1.xsd', $base-uri)"/>
                 </x:call>
-                <x:expect label="component info of global ns1 element(s)" test="$x:result?grouped-components?global?ns1.com?element?component" select="$ns1Doc/*/xs:element[@name = 'foo']"/>
-                <x:expect label="local ns2 attribute(s)" test="$x:result?grouped-components?local?ns2.com?attribute?component" select="$ns2Doc/*/xs:attributeGroup[@name = 'attrGroup']/xs:attribute"/>
-                <x:expect label="all components of ns2" test="$x:result?grouped-components?*?ns2.com?*?component/self::*" select="$ns2Doc//*[@name]"/>
-                <x:expect label="all global components" test="$x:result?grouped-components?global?*?*?component/self::*" select="($ns1Doc | $ns2Doc)/*/*[@name]"/>
-                <x:expect label="distinct namespaces" test="$x:result?grouped-components?* ! map:keys(.) => distinct-values() => sort()" select="'ns1.com', 'ns2.com'"/>
+                <x:expect label="component info of global ns1 element(s)" test="$x:result?get-grouped-components($grouping)?global?ns1.com?element?component" select="$ns1Doc/*/xs:element[@name = 'foo']"/>
+                <x:expect label="local ns2 attribute(s)" test="$x:result?get-grouped-components($grouping)?local?ns2.com?attribute?component" select="$ns2Doc/*/xs:attributeGroup[@name = 'attrGroup']/xs:attribute"/>
+                <x:expect label="all components of ns2" test="$x:result?get-grouped-components($grouping)?*?ns2.com?*?component/self::*" select="$ns2Doc//*[@name]"/>
+                <x:expect label="all global components" test="$x:result?get-grouped-components($grouping)?global?*?*?component/self::*" select="($ns1Doc | $ns2Doc)/*/*[@name]"/>
+                <x:expect label="distinct namespaces" test="$x:result?get-grouped-components($grouping)?* ! map:keys(.) => distinct-values() => sort()" select="'ns1.com', 'ns2.com'"/>
             </x:scenario>
         </x:scenario>
     </x:scenario>
