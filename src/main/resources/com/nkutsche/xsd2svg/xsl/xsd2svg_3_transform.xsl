@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:math="http://www.w3.org/2005/xpath-functions/math"
-    xmlns:es="http://www.escali.schematron-quickfix.com/" 
+    xmlns:nk="http://www.nkutsche.com/" 
     xmlns:svg="http://www.w3.org/2000/svg" 
     xmlns:map="http://www.w3.org/2005/xpath-functions/map"
     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -13,51 +13,51 @@
     
     
         
-    <xsl:template match="svg:svg" mode="es:xsd2svg-transform">
+    <xsl:template match="svg:svg" mode="nk:xsd2svg-transform">
         <xsl:variable name="content">
             <xsl:apply-templates select="node()" mode="#current"/>
         </xsl:variable>
-        <xsl:variable name="thisSize" select="es:number(@width), es:number(@height)" as="xs:double+"/>
-        <xsl:variable name="contentSize" select="es:number(max($content/svg:*/@es:width)), es:number(max($content/svg:*/@es:height))" as="xs:double+"/>
+        <xsl:variable name="thisSize" select="nk:number(@width), nk:number(@height)" as="xs:double+"/>
+        <xsl:variable name="contentSize" select="nk:number(max($content/svg:*/@nk:width)), nk:number(max($content/svg:*/@nk:height))" as="xs:double+"/>
         <xsl:variable name="corrSize" select="max(($thisSize[1], $contentSize[1])), max(($thisSize[2], $contentSize[2]))"/>
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="#current"/>
             <xsl:attribute name="width" select="$corrSize[1]"/>
             <xsl:attribute name="height" select="$corrSize[2]"/>
-            <xsl:attribute name="es:width" select="$corrSize[1]"/>
-            <xsl:attribute name="es:height" select="$corrSize[2]"/>
+            <xsl:attribute name="nk:width" select="$corrSize[1]"/>
+            <xsl:attribute name="nk:height" select="$corrSize[2]"/>
             <xsl:copy-of select="$content"/>
         </xsl:copy>
         
     </xsl:template>
     
-    <xsl:template match="svg:g" mode="es:xsd2svg-transform">
+    <xsl:template match="svg:g" mode="nk:xsd2svg-transform">
         <xsl:variable name="content">
             <xsl:apply-templates select="node()" mode="#current"/>
         </xsl:variable>
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="#current"/>
-            <xsl:attribute name="es:width" select="es:number(max($content/svg:*/@es:width))"/>
-            <xsl:attribute name="es:height" select="es:number(max($content/svg:*/@es:height))"/>
+            <xsl:attribute name="nk:width" select="nk:number(max($content/svg:*/@nk:width))"/>
+            <xsl:attribute name="nk:height" select="nk:number(max($content/svg:*/@nk:height))"/>
             <xsl:sequence select="$content"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="svg:*[@transform]" mode="es:xsd2svg-transform" priority="10">
+    <xsl:template match="svg:*[@transform]" mode="nk:xsd2svg-transform" priority="10">
         <xsl:variable name="content">
             <xsl:apply-templates select="node()" mode="#current"/>
         </xsl:variable>
-        <xsl:variable name="contentSize" select="es:number(max($content/svg:*/@es:width)), es:number(max($content/svg:*/@es:height))" as="xs:double+"/>
-        <xsl:variable name="size" select="es:translateSize(@transform, $contentSize)"/>
+        <xsl:variable name="contentSize" select="nk:number(max($content/svg:*/@nk:width)), nk:number(max($content/svg:*/@nk:height))" as="xs:double+"/>
+        <xsl:variable name="size" select="nk:translateSize(@transform, $contentSize)"/>
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="#current"/>
-            <xsl:attribute name="es:width" select="$size[1]"/>
-            <xsl:attribute name="es:height" select="$size[2]"/>
+            <xsl:attribute name="nk:width" select="$size[1]"/>
+            <xsl:attribute name="nk:height" select="$size[2]"/>
             <xsl:copy-of select="$content"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:function name="es:translateSize" as="xs:double*">
+    <xsl:function name="nk:translateSize" as="xs:double*">
         <xsl:param name="transform" as="xs:string"/>
         <xsl:param name="size" as="xs:double+"/>
         <xsl:variable name="regex" select="'translate\(([^\)]*)\)'"/>

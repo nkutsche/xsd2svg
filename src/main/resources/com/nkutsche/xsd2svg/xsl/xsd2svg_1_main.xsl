@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:math="http://www.w3.org/2005/xpath-functions/math" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:array="http://www.w3.org/2005/xpath-functions/array" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" exclude-result-prefixes="#all" version="3.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:math="http://www.w3.org/2005/xpath-functions/math" xmlns:nk="http://www.nkutsche.com/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:array="http://www.w3.org/2005/xpath-functions/array" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" exclude-result-prefixes="#all" version="3.0">
 
 
 
 
-    <xsl:mode name="es:xsd2svg-parent"/>
-    <xsl:mode name="es:xsd2svg-content"/>
+    <xsl:mode name="nk:xsd2svg-parent"/>
+    <xsl:mode name="nk:xsd2svg-content"/>
 
 
 
@@ -15,8 +15,8 @@
     Model main elements
     -->
 
-    <xsl:template match="xs:element[@name] | xs:attribute[@name]" mode="es:xsd2svg" priority="10">
-        <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
+    <xsl:template match="xs:element[@name] | xs:attribute[@name]" mode="nk:xsd2svg" priority="10">
+        <xsl:param name="elementName" select="nk:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
@@ -29,7 +29,7 @@
         <xsl:variable name="paddingLR" select="5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:* | @type" mode="es:xsd2svg-content">
+            <xsl:apply-templates select="xs:* | @type" mode="nk:xsd2svg-content">
                 <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                 <xsl:with-param name="cY" select="$cY"/>
             </xsl:apply-templates>
@@ -48,32 +48,32 @@
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
 
-        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width)"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/svg:svg/@width)"/>
 
         <xsl:variable name="contentSVGs" select="$content/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
 
-        <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
+        <xsl:variable name="maxCY" select="max(($contentSVGs/@nk:cY, $elementHeight div 2, $parents/@nk:cY))"/>
 
-        <xsl:variable name="parentPosY" select="es:number($maxCY - $parents/@es:cY)"/>
-        <xsl:variable name="elementPosY" select="es:number($maxCY - ($elementHeight div 2))"/>
-        <xsl:variable name="contentPosY" select="es:number($maxCY - $contentSVGs/@es:cY)"/>
+        <xsl:variable name="parentPosY" select="nk:number($maxCY - $parents/@nk:cY)"/>
+        <xsl:variable name="elementPosY" select="nk:number($maxCY - ($elementHeight div 2))"/>
+        <xsl:variable name="contentPosY" select="nk:number($maxCY - $contentSVGs/@nk:cY)"/>
 
-        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - ($elementHeight div 2), 0))"/>
+        <xsl:variable name="posY" select="max(($contentSVGs/@nk:cY - ($elementHeight div 2), 0))"/>
         <xsl:variable name="position" select="(0, $posY)"/>
 
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{nk:convertId(string($elementName))}" nk:cY="{$contentSVGs/@nk:cY}">
             <desc/>
 
 
             <xsl:variable name="fontSize" select="11"/>
             
-            <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, true())"/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), $fontInfo)"/>
+            <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, true())"/>
+            <xsl:variable name="width" select="nk:renderedTextLength(nk:printQName($elementName, $schemaSetConfig), $fontInfo)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
-            <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
+            <xsl:variable name="parentWidth" select="nk:number(max($parents/@width))"/>
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
@@ -89,7 +89,7 @@
                             <xsl:value-of select="$elementName"/>
                         </text>
                     </g>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="nk:createDoku(.)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -106,8 +106,8 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:schema/xs:complexType[@name]" mode="es:xsd2svg" priority="10">
-        <xsl:param name="elementName" select="es:getName(.)" as="xs:QName"/>
+    <xsl:template match="xs:schema/xs:complexType[@name]" mode="nk:xsd2svg" priority="10">
+        <xsl:param name="elementName" select="nk:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="content-line" select="exists(self::xs:complexType)" as="xs:boolean"/>
@@ -121,7 +121,7 @@
         <xsl:variable name="paddingLR" select="5"/>
 
         <xsl:variable name="content">
-            <xsl:apply-templates select="." mode="es:xsd2svg-content"/>
+            <xsl:apply-templates select="." mode="nk:xsd2svg-content"/>
         </xsl:variable>
 
         <xsl:variable name="symbol">
@@ -129,7 +129,7 @@
                 <xsl:with-param name="bold" select="true()"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
@@ -140,22 +140,22 @@
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
 
-        <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
+        <xsl:variable name="maxCY" select="max(($contentSVGs/@nk:cY, $elementHeight div 2, $parents/@nk:cY))"/>
 
-        <xsl:variable name="parentPosY" select="es:number($maxCY - $parents/@es:cY)"/>
-        <xsl:variable name="elementPosY" select="es:number($maxCY - ($elementHeight div 2))"/>
-        <xsl:variable name="contentPosY" select="es:number($maxCY - $contentSVGs/@es:cY)"/>
+        <xsl:variable name="parentPosY" select="nk:number($maxCY - $parents/@nk:cY)"/>
+        <xsl:variable name="elementPosY" select="nk:number($maxCY - ($elementHeight div 2))"/>
+        <xsl:variable name="contentPosY" select="nk:number($maxCY - $contentSVGs/@nk:cY)"/>
 
-        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - ($elementHeight div 2), 0))"/>
+        <xsl:variable name="posY" select="max(($contentSVGs/@nk:cY - ($elementHeight div 2), 0))"/>
         <xsl:variable name="position" select="(0, $posY)"/>
 
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($elementName))}" es:cY="{$contentSVGs/@es:cY}">
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{nk:convertId(string($elementName))}" nk:cY="{$contentSVGs/@nk:cY}">
             <desc/>
-            <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, true())"/>
-            <xsl:variable name="width" select="es:renderedTextLength(es:printQName($elementName, $schemaSetConfig), $fontInfo)"/>
+            <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, true())"/>
+            <xsl:variable name="width" select="nk:renderedTextLength(nk:printQName($elementName, $schemaSetConfig), $fontInfo)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
-            <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
+            <xsl:variable name="parentWidth" select="nk:number(max($parents/@width))"/>
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
@@ -170,7 +170,7 @@
                         <xsl:sequence select="$fontInfo?svg-attributes"/>
                         <xsl:value-of select="$elementName"/>
                     </text>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="nk:createDoku(.)"/>
                 </svg>
             </g>
             <xsl:for-each select="$contentSVGs">
@@ -187,8 +187,8 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:simpleType[@name]" mode="es:xsd2svg">
-        <xsl:param name="typeName" select="es:getName(.)" as="xs:QName"/>
+    <xsl:template match="xs:simpleType[@name]" mode="nk:xsd2svg">
+        <xsl:param name="typeName" select="nk:getName(.)" as="xs:QName"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
@@ -203,7 +203,7 @@
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
                 <xsl:with-param name="content" as="element(svg:svg)?">
-                    <xsl:apply-templates select="xs:*" mode="es:xsd2svg-content">
+                    <xsl:apply-templates select="xs:*" mode="nk:xsd2svg-content">
                         <xsl:with-param name="hover_id" select="$hoverId" tunnel="yes"/>
                         <xsl:with-param name="cY" select="$cY"/>
                     </xsl:apply-templates>
@@ -218,7 +218,7 @@
                 <xsl:with-param name="bold" select="true()"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
         <xsl:variable name="parents">
             <xsl:call-template name="makeParentSVGs"/>
@@ -229,23 +229,23 @@
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
         <xsl:variable name="elementHeight" select="30"/>
 
-        <xsl:variable name="maxCY" select="max(($contentSVGs/@es:cY, $elementHeight div 2, $parents/@es:cY))"/>
+        <xsl:variable name="maxCY" select="max(($contentSVGs/@nk:cY, $elementHeight div 2, $parents/@nk:cY))"/>
 
-        <xsl:variable name="parentPosY" select="es:number($maxCY - $parents/@es:cY)"/>
-        <xsl:variable name="elementPosY" select="es:number($maxCY - ($elementHeight div 2))"/>
-        <xsl:variable name="contentPosY" select="es:number($maxCY - $contentSVGs/@es:cY)"/>
+        <xsl:variable name="parentPosY" select="nk:number($maxCY - $parents/@nk:cY)"/>
+        <xsl:variable name="elementPosY" select="nk:number($maxCY - ($elementHeight div 2))"/>
+        <xsl:variable name="contentPosY" select="nk:number($maxCY - $contentSVGs/@nk:cY)"/>
 
-        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - ($elementHeight div 2), 0))"/>
+        <xsl:variable name="posY" select="max(($contentSVGs/@nk:cY - ($elementHeight div 2), 0))"/>
         <xsl:variable name="position" select="(0, $posY)"/>
 
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight, $parents/@height))"/>
-        <svg width="10" height="{$svgHeight}" id="{$model-id}_{es:convertId(string($typeName))}" es:cY="{$contentSVGs/@es:cY}">
+        <svg width="10" height="{$svgHeight}" id="{$model-id}_{nk:convertId(string($typeName))}" nk:cY="{$contentSVGs/@nk:cY}">
             <desc/>
-            <xsl:variable name="label" select="es:printQName($typeName, $schemaSetConfig)"/>
-            <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, true())"/>
-            <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
+            <xsl:variable name="label" select="nk:printQName($typeName, $schemaSetConfig)"/>
+            <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, true())"/>
+            <xsl:variable name="width" select="nk:renderedTextLength($label, $fontInfo)"/>
             <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
-            <xsl:variable name="parentWidth" select="es:number(max($parents/@width))"/>
+            <xsl:variable name="parentWidth" select="nk:number(max($parents/@width))"/>
 
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
@@ -260,7 +260,7 @@
                         <xsl:sequence select="$fontInfo?svg-attributes"/>
                         <xsl:value-of select="$label"/>
                     </text>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="nk:createDoku(.)"/>
                 </svg>
             </g>
 
@@ -278,7 +278,7 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" name="namedGroup" mode="es:xsd2svg">
+    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" name="namedGroup" mode="nk:xsd2svg">
         <xsl:param name="id" select="generate-id()"/>
         <xsl:param name="multiValue" select="$MultiValues[2]"/>
         <xsl:param name="model-id" tunnel="yes"/>
@@ -289,10 +289,10 @@
         <xsl:variable name="class" select="'object main cs_' || $color-scheme"/>
 
 
-        <xsl:variable name="groupName" select="es:getName(.)"/>
+        <xsl:variable name="groupName" select="nk:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_group_', $id)"/>
         <xsl:variable name="content">
-            <xsl:apply-templates select="xs:*" mode="es:xsd2svg-content"/>
+            <xsl:apply-templates select="xs:*" mode="nk:xsd2svg-content"/>
         </xsl:variable>
         <xsl:variable name="content">
             <xsl:call-template name="drawObjectPaths">
@@ -308,13 +308,13 @@
             </xsl:if>
         </xsl:variable>
         <xsl:variable name="parents" select="$parents/svg:svg"/>
-        <xsl:variable name="parentsWidth" select="es:number($parents/@width)"/>
-        <xsl:variable name="parentsHeight" select="es:number($parents/@height)"/>
-        <xsl:variable name="parentsCY" select="es:number($parents/@es:cY)"/>
+        <xsl:variable name="parentsWidth" select="nk:number($parents/@width)"/>
+        <xsl:variable name="parentsHeight" select="nk:number($parents/@height)"/>
+        <xsl:variable name="parentsCY" select="nk:number($parents/@nk:cY)"/>
 
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
-                <xsl:with-param name="title" select="es:printQName($groupName, $schemaSetConfig)"/>
+                <xsl:with-param name="title" select="nk:printQName($groupName, $schemaSetConfig)"/>
                 <xsl:with-param name="bold" select="$isRoot" tunnel="yes"/>
                 <xsl:with-param name="backgrounded" select="$isRoot" tunnel="yes"/>
                 <xsl:with-param name="color-scheme" select="$color-scheme"/>
@@ -322,20 +322,20 @@
         </xsl:variable>
         <xsl:variable name="header" select="$header/svg:svg"/>
 
-        <xsl:variable name="cY" select="$content/@es:cY + $header/@height + 7.5"/>
+        <xsl:variable name="cY" select="$content/@nk:cY + $header/@height + 7.5"/>
 
 
-        <xsl:variable name="maxCY" select="max(($cY, $parents/@es:cY))"/>
+        <xsl:variable name="maxCY" select="max(($cY, $parents/@nk:cY))"/>
 
-        <xsl:variable name="parentPosY" select="es:number($maxCY - $parentsCY)"/>
-        <xsl:variable name="groupPosY" select="es:number($maxCY - $cY)"/>
+        <xsl:variable name="parentPosY" select="nk:number($maxCY - $parentsCY)"/>
+        <xsl:variable name="groupPosY" select="nk:number($maxCY - $cY)"/>
         <xsl:variable name="groupHeight" select="sum(($content/@height, $header/@height))"/>
 
         <xsl:variable name="width" select="max(($content/@width, $header/@width))"/>
         <xsl:variable name="height" select="max(($groupHeight, $parentsHeight))"/>
 
 
-        <svg width="{$width + 8 + $parentsWidth}" height="{$height + 15}" es:cY="{$cY}" class="element_group" es:multiValue="{$multiValue}">
+        <svg width="{$width + 8 + $parentsWidth}" height="{$height + 15}" nk:cY="{$cY}" class="element_group" nk:multiValue="{$multiValue}">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="$height + 18.5"/>
             </xsl:if>
@@ -401,7 +401,7 @@
 
                     <xsl:copy-of select="$headerWithBorder"/>
 
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="nk:createDoku(.)"/>
                 </svg>
 
                 <g transform="translate(0, {$header/@height + 2.5})">
@@ -417,15 +417,15 @@
     <!--
     Model contents
     -->
-    <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="es:xsd2svg-content">
+    <xsl:template match="xs:attribute[@name] | xs:element[@name]" mode="nk:xsd2svg-content">
         <xsl:param name="model-id" tunnel="yes"/>
-        <xsl:param name="multiValue" select="es:getMultiValue(.)" as="xs:string"/>
+        <xsl:param name="multiValue" select="nk:getMultiValue(.)" as="xs:string"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
 
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
 
-        <xsl:variable name="attributName" select="es:getName(.)"/>
+        <xsl:variable name="attributName" select="nk:getName(.)"/>
         <xsl:variable name="elementHeight" select="
                 if (@type) then
                     40
@@ -442,32 +442,32 @@
                 <xsl:call-template name="attributeSymbol"/>
             </xsl:if>
         </xsl:variable>
-        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width)"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/svg:svg/@width)"/>
 
-        <xsl:variable name="type-target" select="@type/es:getReference(., $schemaSetConfig)"/>
+        <xsl:variable name="type-target" select="@type/nk:getReference(., $schemaSetConfig)"/>
         <xsl:variable name="type-mode" select="($type-target/local-name(), 'simpleType')[1]"/>
         <xsl:variable name="type-class" select="'object content cs_' || $type-mode"/>
 
 
         <xsl:variable name="hoverId" select="concat($model-id, '_attributName_', generate-id())"/>
 
-        <xsl:variable name="label" select="es:printQName($attributName, $schemaSetConfig)"/>
+        <xsl:variable name="label" select="nk:printQName($attributName, $schemaSetConfig)"/>
         <xsl:variable name="typeLabel" select="
                 if (@type) then
-                    'Type: ' || es:printQName(es:getQName(@type), $schemaSetConfig)
+                'Type: ' || nk:printQName(nk:getQName(@type), $schemaSetConfig)
                 else
                     ''"/>
 
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, false())"/>
         <xsl:variable name="widths" select="
-                es:renderedTextLength($label, $fontInfo) + $symbolWidth,
-                es:renderedTextLength($typeLabel, $fontInfo)
+            nk:renderedTextLength($label, $fontInfo) + $symbolWidth,
+            nk:renderedTextLength($typeLabel, $fontInfo)
                 "/>
 
 
         <xsl:variable name="width" select="$widths => max()"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR)"/>
-        <svg width="{$width}" height="{$elementHeight + 5}" es:cY="{$cY}" class="attribute" id="{$model-id}_attribute_{es:convertId($label)}" es:multiValue="{$multiValue}">
+        <svg width="{$width}" height="{$elementHeight + 5}" nk:cY="{$cY}" class="attribute" id="{$model-id}_attribute_{nk:convertId($label)}" nk:multiValue="{$multiValue}">
             <desc/>
             <g alignment-baseline="baseline" transform="translate({$position[1]}, {$position[2]})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="{$elementHeight + 1}">
@@ -476,7 +476,7 @@
                             <xsl:with-param name="content">
                                 <xsl:choose>
                                     <xsl:when test="@type">
-                                        <path d="{es:createHalfRoundBox($width, $elementHeight div 2, 10, true(), false())}" class="{$class} opaque link-background"/>
+                                        <path d="{nk:createHalfRoundBox($width, $elementHeight div 2, 10, true(), false())}" class="{$class} opaque link-background"/>
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" x="0" y="0" class="{$class} opaque link-background"/>
@@ -494,7 +494,7 @@
                             </xsl:with-param>
                         </xsl:call-template>
                     </g>
-                    <xsl:sequence select="es:createDoku(.)"/>
+                    <xsl:sequence select="nk:createDoku(.)"/>
                 </svg>
 
                 <xsl:if test="@type">
@@ -503,17 +503,17 @@
                             <xsl:call-template name="createLink">
                                 <xsl:with-param name="content">
                                     <g transform="translate(0,{$elementHeight div 2})">
-                                        <path d="{es:createHalfRoundBox($width, $elementHeight div 2, 10, true())}" class="{$type-class} shaded filled link-background"/>
+                                        <path d="{nk:createHalfRoundBox($width, $elementHeight div 2, 10, true())}" class="{$type-class} shaded filled link-background"/>
                                     </g>
                                     <text x="{$paddingLR}" y="32" class="{$type-class} shaded backgrounded link-text">
                                         <xsl:sequence select="$fontInfo?svg-attributes"/>
                                         <xsl:value-of select="$typeLabel"/>
                                     </text>
                                 </xsl:with-param>
-                                <xsl:with-param name="linkTarget" select="es:getReference(@type, $schemaSetConfig)"/>
+                                <xsl:with-param name="linkTarget" select="nk:getReference(@type, $schemaSetConfig)"/>
                             </xsl:call-template>
                         </g>
-                        <xsl:sequence select="$type-target/es:createDoku(.)"/>
+                        <xsl:sequence select="$type-target/nk:createDoku(.)"/>
                     </svg>
                 </xsl:if>
 
@@ -534,8 +534,8 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:element/@type | xs:attribute/@type" mode="es:xsd2svg-content">
-        <xsl:param name="typeName" select="es:getQName(.)"/>
+    <xsl:template match="xs:element/@type | xs:attribute/@type" mode="nk:xsd2svg-content">
+        <xsl:param name="typeName" select="nk:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
@@ -543,7 +543,7 @@
 
         <xsl:variable name="isXsd" select="$namespace = $XSDNS"/>
 
-        <xsl:variable name="reference" select="es:getReference(., $schemaSetConfig)"/>
+        <xsl:variable name="reference" select="nk:getReference(., $schemaSetConfig)"/>
 
         <xsl:variable name="kindOfType" select="
                 if ($isXsd) then
@@ -581,16 +581,16 @@
 
     </xsl:template>
 
-    <xsl:template match="xs:element[@ref] | xs:attribute[@ref]" name="elementRef" mode="es:xsd2svg-content">
-        <xsl:param name="elementName" select="es:getName(.)"/>
+    <xsl:template match="xs:element[@ref] | xs:attribute[@ref]" name="elementRef" mode="nk:xsd2svg-content">
+        <xsl:param name="elementName" select="nk:getName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
-        <xsl:param name="multiValue" select="es:getMultiValue(.)"/>
+        <xsl:param name="multiValue" select="nk:getMultiValue(.)"/>
         <xsl:param name="refAttribute" select="@ref" as="attribute()?"/>
-        <xsl:param name="refTarget" select="$refAttribute/es:getReference(., $schemaSetConfig)" as="node()?"/>
-        <xsl:param name="label" select="es:printQName($elementName, $schemaSetConfig)"/>
+        <xsl:param name="refTarget" select="$refAttribute/nk:getReference(., $schemaSetConfig)" as="node()?"/>
+        <xsl:param name="label" select="nk:printQName($elementName, $schemaSetConfig)"/>
         <xsl:param name="bold" select="false()" as="xs:boolean"/>
-        <xsl:param name="fontInfo" as="map(*)" select="es:create-font-info($schemaSetConfig, 11, false())"/>
+        <xsl:param name="fontInfo" as="map(*)" select="nk:create-font-info($schemaSetConfig, 11, false())"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
 
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
@@ -606,23 +606,23 @@
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="paddingLR" select="5"/>
 
-        <xsl:variable name="symbol" select="$refType ! es:getSymbol(., $schemaSetConfig)"/>
+        <xsl:variable name="symbol" select="$refType ! nk:getSymbol(., $schemaSetConfig)"/>
 
-        <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
 
         <xsl:variable name="fontSize" select="$fontInfo?size"/>
         <xsl:variable name="fontStyle" select="($fontInfo?style, 'normal')[. != 'plain'][1]"/>
 
-        <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
+        <xsl:variable name="width" select="nk:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
 
-        <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:multiValue="{$multiValue}">
+        <svg width="{$width}" height="30" class="element_ref" nk:cY="{$cY}" nk:multiValue="{$multiValue}">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="33.5"/>
             </xsl:if>
-            <xsl:attribute name="es:minOccurs" select="1"/>
-            <xsl:attribute name="es:maxOccurs" select="1"/>
+            <xsl:attribute name="nk:minOccurs" select="1"/>
+            <xsl:attribute name="nk:maxOccurs" select="1"/>
             <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
             <desc/>
             <g alignment-baseline="baseline" class="svg-element-ref" transform="translate(0, 2.5)">
@@ -665,27 +665,27 @@
                         </xsl:call-template>
 
                     </g>
-                    <xsl:sequence select="$refTarget/es:createDoku(.)"/>
+                    <xsl:sequence select="$refTarget/nk:createDoku(.)"/>
                 </svg>
             </g>
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:group[@ref] | xs:attributeGroup[@ref]" mode="es:xsd2svg-content">
+    <xsl:template match="xs:group[@ref] | xs:attributeGroup[@ref]" mode="nk:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="groupName" select="es:getName(.)"/>
+        <xsl:variable name="groupName" select="nk:getName(.)"/>
         <xsl:variable name="namespace" select="namespace-uri-from-QName($groupName)"/>
         <xsl:variable name="mode" select="local-name()"/>
-        <xsl:variable name="refGroup" select="es:getReference(@ref, $schemaSetConfig)" as="node()"/>
+        <xsl:variable name="refGroup" select="nk:getReference(@ref, $schemaSetConfig)" as="node()"/>
 
         <xsl:apply-templates select="$refGroup" mode="#current">
             <xsl:with-param name="id" select="generate-id()"/>
-            <xsl:with-param name="multiValue" select="es:getMultiValue(.)"/>
+            <xsl:with-param name="multiValue" select="nk:getMultiValue(.)"/>
         </xsl:apply-templates>
     </xsl:template>
 
-    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="es:xsd2svg-content">
+    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="nk:xsd2svg-content">
         <xsl:param name="multiValue"/>
         <xsl:call-template name="namedGroup">
             <xsl:with-param name="isRoot" select="false()"/>
@@ -693,7 +693,7 @@
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="xs:complexType" mode="es:xsd2svg-content">
+    <xsl:template match="xs:complexType" mode="nk:xsd2svg-content">
         <xsl:variable name="content">
             <xsl:call-template name="createAttributeBox"/>
             <xsl:apply-templates select="xs:* except (xs:attribute | xs:attributeGroup)" mode="#current"/>
@@ -705,7 +705,7 @@
     </xsl:template>
 
 
-    <xsl:template match="xs:complexContent/xs:extension | xs:simpleContent/xs:extension | xs:simpleContent/xs:restriction | xs:simpleType/xs:restriction" mode="es:xsd2svg-content">
+    <xsl:template match="xs:complexContent/xs:extension | xs:simpleContent/xs:extension | xs:simpleContent/xs:restriction | xs:simpleType/xs:restriction" mode="nk:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="
                 if (parent::xs:complexContent) then
@@ -714,10 +714,10 @@
                     'simpleType'
                 " as="xs:string"/>
 
-        <xsl:variable name="baseName" select="es:getQName(@base)"/>
+        <xsl:variable name="baseName" select="nk:getQName(@base)"/>
         <xsl:variable name="baseNs" select="namespace-uri-from-QName($baseName)"/>
 
-        <xsl:variable name="ref" select="es:getReference(@base, $schemaSetConfig)"/>
+        <xsl:variable name="ref" select="nk:getReference(@base, $schemaSetConfig)"/>
         <xsl:variable name="colorType" select="
                 if (parent::xs:complexContent) then
                     'complexType'
@@ -728,7 +728,7 @@
         <xsl:variable name="boxTitle" select="
                 (
                 'Base: ',
-                es:printQName(es:getQName(@base), $schemaSetConfig)[not($baseIsXSD)]
+                nk:printQName(nk:getQName(@base), $schemaSetConfig)[not($baseIsXSD)]
                 ) => string-join()
                 "/>
 
@@ -792,10 +792,10 @@
 
     </xsl:template>
 
-    <xsl:template match="xs:sequence" mode="es:xsd2svg-content">
+    <xsl:template match="xs:sequence" mode="nk:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
+        <xsl:variable name="multiValue" select="nk:getMultiValue(.)"/>
 
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
@@ -820,7 +820,7 @@
         <xsl:variable name="elementWidth" select="max($elementSVG/@width)"/>
 
 
-        <xsl:variable name="posY" select="max(($contentSVGs/@es:cY - es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2)), 0))"/>
+        <xsl:variable name="posY" select="max(($contentSVGs/@nk:cY - nk:number($elementSVG/@nk:cY, xs:decimal($elementHeight div 2)), 0))"/>
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
         <xsl:variable name="svgWidth" select="
                 (if ($contentSVGs/@width) then
@@ -828,9 +828,9 @@
                 else
                     (0)) + $elementWidth"/>
 
-        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" es:cY="{max(($contentSVGs/@es:cY, es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2))))}" es:multiValue="{$multiValue}">
-            <xsl:attribute name="es:minOccurs" select="1"/>
-            <xsl:attribute name="es:maxOccurs" select="1"/>
+        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" nk:cY="{max(($contentSVGs/@nk:cY, nk:number($elementSVG/@nk:cY, xs:decimal($elementHeight div 2))))}" nk:multiValue="{$multiValue}">
+            <xsl:attribute name="nk:minOccurs" select="1"/>
+            <xsl:attribute name="nk:maxOccurs" select="1"/>
             <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
 
             <g transform="translate(0,{$posY})">
@@ -842,7 +842,7 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:choice" mode="es:xsd2svg-content" priority="10">
+    <xsl:template match="xs:choice" mode="nk:xsd2svg-content" priority="10">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'default'"/>
 
@@ -850,7 +850,7 @@
             <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
 
-        <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
+        <xsl:variable name="multiValue" select="nk:getMultiValue(.)"/>
 
         <xsl:call-template name="createTreeNode">
             <xsl:with-param name="content" select="$content"/>
@@ -870,7 +870,7 @@
     </xsl:template>
 
 
-    <xsl:template match="xs:element/xs:simpleType | xs:attribute/xs:simpleType" mode="es:xsd2svg-content">
+    <xsl:template match="xs:element/xs:simpleType | xs:attribute/xs:simpleType" mode="nk:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'simpleType'"/>
         <xsl:call-template name="drawObjectPaths">
@@ -881,7 +881,7 @@
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="xs:union" mode="es:xsd2svg-content" priority="10">
+    <xsl:template match="xs:union" mode="nk:xsd2svg-content" priority="10">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'simpleType'"/>
 
@@ -892,7 +892,7 @@
                 <xsl:with-param name="color-scheme" select="$color-scheme"/>
                 <xsl:with-param name="content">
                     <xsl:for-each select="@memberTypes/tokenize(., '\s')">
-                        <xsl:variable name="qname" select="es:getQName(., $union)"/>
+                        <xsl:variable name="qname" select="nk:getQName(., $union)"/>
                         <xsl:variable name="ns" select="namespace-uri-from-QName($qname)"/>
                         <xsl:for-each select="$union">
                             <xsl:choose>
@@ -904,7 +904,7 @@
                                 <xsl:otherwise>
                                     <xsl:call-template name="elementRef">
                                         <xsl:with-param name="elementName" select="$qname"/>
-                                        <xsl:with-param name="refTarget" select="es:getReferenceByQName($qname, $schemaSetConfig, 'simpleType')"/>
+                                        <xsl:with-param name="refTarget" select="nk:getReferenceByQName($qname, $schemaSetConfig, 'simpleType')"/>
                                         <xsl:with-param name="multiValue" select="'one'"/>
                                         <xsl:with-param name="color-scheme" select="'simpleType'"/>
                                     </xsl:call-template>
@@ -927,14 +927,14 @@
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="xs:list" mode="es:xsd2svg-content" priority="10">
+    <xsl:template match="xs:list" mode="nk:xsd2svg-content" priority="10">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'simpleType'"/>
 
         <xsl:variable name="content">
             <xsl:choose>
                 <xsl:when test="@itemType">
-                    <xsl:variable name="qname" select="es:getQName(@itemType)"/>
+                    <xsl:variable name="qname" select="nk:getQName(@itemType)"/>
                     <xsl:variable name="ns" select="namespace-uri-from-QName($qname)"/>
                     <xsl:choose>
                         <xsl:when test="$ns = $XSDNS">
@@ -944,7 +944,7 @@
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:call-template name="elementRef">
-                                <xsl:with-param name="elementName" select="es:getQName(@itemType)"/>
+                                <xsl:with-param name="elementName" select="nk:getQName(@itemType)"/>
                                 <xsl:with-param name="refAttribute" select="@itemType"/>
                                 <xsl:with-param name="multiValue" select="'one'"/>
                                 <xsl:with-param name="color-scheme" select="$color-scheme"/>
@@ -974,14 +974,14 @@
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:template match="xs:list/xs:simpleType | xs:union/xs:simpleType" mode="es:xsd2svg-content">
+    <xsl:template match="xs:list/xs:simpleType | xs:union/xs:simpleType" mode="nk:xsd2svg-content">
         <xsl:param name="color-scheme" select="local-name()"/>
         <xsl:variable name="content">
             <xsl:apply-templates select="xs:*" mode="#current"/>
         </xsl:variable>
         <xsl:variable name="content">
             <svg>
-                <xsl:sequence select="$content/svg:svg/(@* except @es:multiValue)"/>
+                <xsl:sequence select="$content/svg:svg/(@* except @nk:multiValue)"/>
                 <xsl:sequence select="$content"/>
             </svg>
         </xsl:variable>
@@ -992,7 +992,7 @@
     </xsl:template>
 
 
-    <xsl:template match="xs:restriction" mode="es:xsd2svg-content">
+    <xsl:template match="xs:restriction" mode="nk:xsd2svg-content">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="st-table-title" select="'Facets'" as="xs:string?" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'simpleType'"/>
@@ -1011,25 +1011,25 @@
                     'minInclusive': 'Minimal Value (Inclusive)',
                     'minExclusive': 'Minimal Value (Exclusive)'
                 }"/>
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, 10, false())"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, 10, false())"/>
 
-        <xsl:variable name="enumValuesCut" select="xs:enumeration/@value => es:cut-join(' | ', '...', 100.0, $fontInfo)"/>
+        <xsl:variable name="enumValuesCut" select="xs:enumeration/@value => nk:cut-join(' | ', '...', 100.0, $fontInfo)"/>
         <xsl:variable name="enumValues" select="xs:enumeration/@value => string-join(' | ')"/>
         <xsl:variable name="enumCell" select="
-                es:tcell($enumValuesCut, $enumValues)
+            nk:tcell($enumValuesCut, $enumValues)
                 "/>
 
         <xsl:variable name="table" as="array(map(xs:string, item()?))*">
-            <xsl:sequence select="([es:tcell('Values:'), $enumCell])[exists(.?2)]"/>
+            <xsl:sequence select="([nk:tcell('Values:'), $enumCell])[exists(.?2)]"/>
             <xsl:for-each select="* except xs:enumeration">
-                <xsl:sequence select="[es:tcell($labels(local-name())), es:tcell(@value)]"/>
+                <xsl:sequence select="[nk:tcell($labels(local-name())), nk:tcell(@value)]"/>
             </xsl:for-each>
         </xsl:variable>
 
-        <xsl:sequence select="es:create-table($schemaSetConfig, array {$table}, 10, $color-scheme, $st-table-title)"/>
+        <xsl:sequence select="nk:create-table($schemaSetConfig, array {$table}, 10, $color-scheme, $st-table-title)"/>
     </xsl:template>
 
-    <xsl:template match="xs:any" mode="es:xsd2svg-content">
+    <xsl:template match="xs:any" mode="nk:xsd2svg-content">
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="local-name()" as="xs:string"/>
@@ -1052,7 +1052,7 @@
 <!--        
             TODO: this should be italic, not supported yet.
         -->
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, 11, false())"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, 11, false())"/>
 
         <xsl:call-template name="elementRef">
             <xsl:with-param name="elementName" select="QName($XSDNS, 'any')"/>
@@ -1064,11 +1064,11 @@
         </xsl:call-template>
     </xsl:template>
 
-    <xsl:function name="es:tcell" as="map(xs:string, item()?)?">
+    <xsl:function name="nk:tcell" as="map(xs:string, item()?)?">
         <xsl:param name="content" as="xs:string?"/>
-        <xsl:sequence select="es:tcell($content, ())"/>
+        <xsl:sequence select="nk:tcell($content, ())"/>
     </xsl:function>
-    <xsl:function name="es:tcell" as="map(xs:string, item()?)?">
+    <xsl:function name="nk:tcell" as="map(xs:string, item()?)?">
         <xsl:param name="content" as="xs:string?"/>
         <xsl:param name="tooltip" as="xs:string?"/>
         <xsl:sequence select="map{
@@ -1077,15 +1077,15 @@
             }[exists($content)]"/>
     </xsl:function>
 
-    <xsl:function name="es:create-table">
+    <xsl:function name="nk:create-table">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
         <xsl:param name="color-scheme" as="xs:string"/>
-        <xsl:sequence select="es:create-table($schemaSetConfig, $cells, $cell-padding, $color-scheme, ())"/>
+        <xsl:sequence select="nk:create-table($schemaSetConfig, $cells, $cell-padding, $color-scheme, ())"/>
     </xsl:function>
 
-    <xsl:function name="es:create-table">
+    <xsl:function name="nk:create-table">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="cells" as="array(array(map(xs:string, item()?)))"/>
         <xsl:param name="cell-padding" as="xs:double"/>
@@ -1098,14 +1098,14 @@
         <xsl:variable name="fontSize" select="10"/>
         <xsl:variable name="stroke-width" select="0.5"/>
         
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, false())"/>
         
-        <xsl:variable name="text-lengths" select="array {$cells?* ! array {.?* ! es:renderedTextLength(?content, $fontInfo)}}"/>
+        <xsl:variable name="text-lengths" select="array {$cells?* ! array {.?* ! nk:renderedTextLength(?content, $fontInfo)}}"/>
         <xsl:variable name="cols" select="$cells?* ! array:size(.) => max()"/>
 
         <xsl:variable name="cell-padding2" select="$cell-padding * 2"/>
 
-        <xsl:variable name="titleWidth" select="es:renderedTextLength(($title, '')[1], $fontInfo) + $cell-padding2"/>
+        <xsl:variable name="titleWidth" select="nk:renderedTextLength(($title, '')[1], $fontInfo) + $cell-padding2"/>
 
 
         <xsl:variable name="colWidths" select="
@@ -1130,7 +1130,7 @@
             <xsl:if test="$title">
                 <g>
                     
-                    <path d="{es:createHalfRoundBox($tableWidth, $titleHeight, 7.5, true(), false())}" class="{$class} shaded filled"/>
+                    <path d="{nk:createHalfRoundBox($tableWidth, $titleHeight, 7.5, true(), false())}" class="{$class} shaded filled"/>
                     
                     <text x="{$cell-padding}" y="{$titleHeight - 7.5}" class="{$class} shaded backgrounded">
                         <xsl:sequence select="$fontInfo?svg-attributes"/>
@@ -1141,7 +1141,7 @@
             </xsl:if>
         </xsl:variable>
 
-        <svg width="{$tableWidth + 1}" height="{$tableHeight}" es:cY="{$tableHeight div 2}" es:displayW="{$tableWidth}" es:displayH="{$tableHeight}">
+        <svg width="{$tableWidth + 1}" height="{$tableHeight}" nk:cY="{$tableHeight div 2}" nk:displayW="{$tableWidth}" nk:displayH="{$tableHeight}">
             <xsl:sequence select="$title-svg"/>
             <g>
                 <rect width="{$tableWidth}" height="{$tableHeight}" rx="7.5" ry="7.5" class="{$class} bordered" stoke-width="1" fill="none"/>
@@ -1192,7 +1192,7 @@
 
     </xsl:function>
 
-    <xsl:function name="es:cut-join">
+    <xsl:function name="nk:cut-join">
         <xsl:param name="values" as="xs:string*"/>
         <xsl:param name="sep" as="xs:string"/>
         <xsl:param name="endvalue" as="xs:string"/>
@@ -1207,7 +1207,7 @@
                         then
                             $oldValue
                         else
-                            if (es:renderedTextLength($newVal || $endvalue, $textStyle) ge $cutvalue)
+                        if (nk:renderedTextLength($newVal || $endvalue, $textStyle) ge $cutvalue)
                             then
                                 $oldValue || $endvalue
                             else
@@ -1217,30 +1217,30 @@
     </xsl:function>
 
 
-    <xsl:template match="@maxOccurs | @minOccurs" mode="es:xsd2svg-content"/>
+    <xsl:template match="@maxOccurs | @minOccurs" mode="nk:xsd2svg-content"/>
 
-    <xsl:template match="xs:annotation" mode="es:xsd2svg-content"/>
-
-
+    <xsl:template match="xs:annotation" mode="nk:xsd2svg-content"/>
 
 
-    <xsl:template match="@*" mode="es:xsd2svg-content">
-        <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The attribute ' || name() || ' is not supported.')"/>
+
+
+    <xsl:template match="@*" mode="nk:xsd2svg-content">
+        <xsl:sequence select="error(xs:QName('nk:not-supported-element'), 'The attribute ' || name() || ' is not supported.')"/>
     </xsl:template>
 
-    <xsl:template match="*" mode="es:xsd2svg">
-        <xsl:sequence select="error(xs:QName('es:not-supported-element'), 'The element ' || name() || ' can not be converted to a SVG model. [' || path(.) || ']')"/>
+    <xsl:template match="*" mode="nk:xsd2svg">
+        <xsl:sequence select="error(xs:QName('nk:not-supported-element'), 'The element ' || name() || ' can not be converted to a SVG model. [' || path(.) || ']')"/>
     </xsl:template>
 
-    <xsl:template match="*" mode="es:xsd2svg-parent">
-        <xsl:sequence select="error(xs:QName('es:not-supported-parent'), 'The element ' || name() || ' is not supported as a parent XSD node.')"/>
+    <xsl:template match="*" mode="nk:xsd2svg-parent">
+        <xsl:sequence select="error(xs:QName('nk:not-supported-parent'), 'The element ' || name() || ' is not supported as a parent XSD node.')"/>
     </xsl:template>
 
     <!--
     Parents
     -->
 
-    <xsl:template match="xs:element[@name] | xs:attribute[@name] | xs:complexType[@name]" mode="es:xsd2svg-parent">
+    <xsl:template match="xs:element[@name] | xs:attribute[@name] | xs:complexType[@name]" mode="nk:xsd2svg-parent">
         <xsl:param name="childId"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
@@ -1249,25 +1249,25 @@
         <xsl:variable name="class" select="'object parent cs_' || $color-scheme"/>
 
 
-        <xsl:variable name="symbol" select="es:getSymbol(local-name(.), $schemaSetConfig)"/>
+        <xsl:variable name="symbol" select="nk:getSymbol(local-name(.), $schemaSetConfig)"/>
 
-        <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
 
-        <xsl:variable name="parentName" select="es:getName(.)"/>
+        <xsl:variable name="parentName" select="nk:getName(.)"/>
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
 
 
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="paddingLR" select="5"/>
-        <xsl:variable name="label" select="es:printQName($parentName, $schemaSetConfig)"/>
+        <xsl:variable name="label" select="nk:printQName($parentName, $schemaSetConfig)"/>
         
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, false())"/>
         
-        <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
+        <xsl:variable name="width" select="nk:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
-        <svg width="{$width}" height="30" es:cY="15">
+        <svg width="{$width}" height="30" nk:cY="15">
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
-                <!-- TODO               <a xlink:href="#{es:convertId($parentName)}" target="_top">-->
+                <!-- TODO               <a xlink:href="#{nk:convertId($parentName)}" target="_top">-->
 
                 <xsl:call-template name="createLink">
                     <xsl:with-param name="content">
@@ -1286,7 +1286,7 @@
                                     <xsl:value-of select="$label"/>
                                 </text>
                             </g>
-                            <xsl:sequence select="es:createDoku(.)"/>
+                            <xsl:sequence select="nk:createDoku(.)"/>
                         </svg>
                     </xsl:with-param>
                 </xsl:call-template>
@@ -1295,7 +1295,7 @@
         </svg>
     </xsl:template>
 
-    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="es:xsd2svg-parent">
+    <xsl:template match="xs:group[@name] | xs:attributeGroup[@name]" mode="nk:xsd2svg-parent">
         <xsl:param name="childId"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
@@ -1304,11 +1304,11 @@
         <xsl:variable name="class" select="'object parent cs_' || $color-scheme"/>
 
         <xsl:variable name="hoverId" select="concat($model-id, '_', generate-id(), '_parentOf_', $childId)"/>
-        <xsl:variable name="groupName" select="es:getName(.)"/>
+        <xsl:variable name="groupName" select="nk:getName(.)"/>
 
         <xsl:variable name="header">
             <xsl:call-template name="groupTitle">
-                <xsl:with-param name="title" select="es:printQName($groupName, $schemaSetConfig)"/>
+                <xsl:with-param name="title" select="nk:printQName($groupName, $schemaSetConfig)"/>
                 <xsl:with-param name="color-scheme" select="$color-scheme"/>
             </xsl:call-template>
         </xsl:variable>
@@ -1316,9 +1316,9 @@
         <xsl:variable name="width" select="$header/@width"/>
         <xsl:variable name="height" select="$header/@height"/>
 
-        <svg width="{$width}" height="{$height + 5}" es:cY="{($height div 2) + 2.5}" es:color-scheme="{$color-scheme}">
+        <svg width="{$width}" height="{$height + 5}" nk:cY="{($height div 2) + 2.5}" nk:color-scheme="{$color-scheme}">
             <g transform="translate(1,1)" id="{$hoverId}">
-                <!--    TODO            <a xlink:href="#{es:convertId($groupName)}" target="_top">-->
+                <!--    TODO            <a xlink:href="#{nk:convertId($groupName)}" target="_top">-->
                 <xsl:call-template name="createLink">
                     <xsl:with-param name="content">
                         <path stoke-width="1" class="{$class} bordered opaque link-background">
@@ -1338,7 +1338,7 @@
                 </xsl:call-template>
                 <!--</a>-->
             </g>
-            <xsl:sequence select="es:createDoku(.)"/>
+            <xsl:sequence select="nk:createDoku(.)"/>
         </svg>
     </xsl:template>
 
@@ -1347,7 +1347,7 @@
         <xsl:call-template name="createContentBox">
             <xsl:with-param name="color-scheme" select="'attribute'"/>
             <xsl:with-param name="content">
-                <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="es:xsd2svg-content"/>
+                <xsl:apply-templates select="xs:attribute | xs:attributeGroup" mode="nk:xsd2svg-content"/>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
@@ -1383,7 +1383,7 @@
 
         <xsl:variable name="svgWidth" select="$contentWidth + 2.5"/>
         <xsl:if test="$content">
-            <svg width="{$svgWidth + 1}" height="{$contentHeight + 10}" class="attribute_box" es:cY="{$content/@es:cY + 5 + $titleHeight}" es:multiValue="{es:multiValuesMerge($contentSVGs)}" es:color-scheme="{$color-scheme}">
+            <svg width="{$svgWidth + 1}" height="{$contentHeight + 10}" class="attribute_box" nk:cY="{$content/@nk:cY + 5 + $titleHeight}" nk:multiValue="{nk:multiValuesMerge($contentSVGs)}" nk:color-scheme="{$color-scheme}">
                 <g transform="translate(0.5, 2.5)">
 
                     <xsl:if test="$titleSvg">
@@ -1477,7 +1477,7 @@
             </xsl:call-template>
         </xsl:variable>
 
-        <xsl:variable name="multiValue" select="es:getMultiValue(.)"/>
+        <xsl:variable name="multiValue" select="nk:getMultiValue(.)"/>
 
         <xsl:variable name="contentSVGs" select="$contentNet/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
@@ -1490,24 +1490,24 @@
                 if ($countContent = 2)
                 then
                     (
-                    ($contentSVGs[2]/@es:cY + $contentSVGs[1]/@height + $contentSVGs[1]/@es:cY
+                    ($contentSVGs[2]/@nk:cY + $contentSVGs[1]/@height + $contentSVGs[1]/@nk:cY
                     ) div 2
                     )
                 else
                     if ($countContent = 1)
                     then
-                        ($contentSVGs[1]/@es:cY)
+                    ($contentSVGs[1]/@nk:cY)
                     else
-                        ($contentSVGs[2]/@es:cY + $contentSVGs[1]/@height)"/>
+                    ($contentSVGs[2]/@nk:cY + $contentSVGs[1]/@height)"/>
 
-        <xsl:variable name="posY" select="max(($contentCY - es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2)), 0))"/>
+        <xsl:variable name="posY" select="max(($contentCY - nk:number($elementSVG/@nk:cY, xs:decimal($elementHeight div 2)), 0))"/>
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
         <xsl:variable name="svgWidth" select="
                 (if ($contentSVGs/@width) then
                     (max($contentSVGs/@width))
                 else
                     (0)) + $elementWidth"/>
-        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" es:cY="{max(($contentCY, es:number($elementSVG/@es:cY, xs:decimal($elementHeight div 2))))}" es:multiValue="{$multiValue}">
+        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" nk:cY="{max(($contentCY, nk:number($elementSVG/@nk:cY, xs:decimal($elementHeight div 2))))}" nk:multiValue="{$multiValue}">
             <g transform="translate(0,{$posY})">
                 <xsl:copy-of select="$elementSVG"/>
             </g>
@@ -1520,16 +1520,16 @@
             </xsl:for-each>
             <xsl:if test="$countContent gt 1">
                 <path fill="none" stroke-width="1" class="{$class} bordered">
-                    <xsl:variable name="ctop" select="$elementSVG/@es:cXTop, $elementSVG/@es:cYTop"/>
+                    <xsl:variable name="ctop" select="$elementSVG/@nk:cXTop, $elementSVG/@nk:cYTop"/>
                     <xsl:attribute name="d" select="
                             ('M', $ctop[1], $posY + $ctop[2],
-                            'L', $ctop[1], $contentSVGs[1]/@es:cY + 7,
-                            'Q', $ctop[1], $contentSVGs[1]/@es:cY, $ctop[1] + 7, $contentSVGs[1]/@es:cY,
-                            'L', $elementWidth, $contentSVGs[1]/@es:cY)"/>
+                            'L', $ctop[1], $contentSVGs[1]/@nk:cY + 7,
+                            'Q', $ctop[1], $contentSVGs[1]/@nk:cY, $ctop[1] + 7, $contentSVGs[1]/@nk:cY,
+                            'L', $elementWidth, $contentSVGs[1]/@nk:cY)"/>
                 </path>
                 <path fill="none" stroke-width="1" class="{$class} bordered">
-                    <xsl:variable name="cbot" select="$elementSVG/@es:cXBottom, $elementSVG/@es:cYBottom"/>
-                    <xsl:variable name="lastCY" select="sum($contentSVGs[position() != last()]/@height) + $contentSVGs[last()]/@es:cY"/>
+                    <xsl:variable name="cbot" select="$elementSVG/@nk:cXBottom, $elementSVG/@nk:cYBottom"/>
+                    <xsl:variable name="lastCY" select="sum($contentSVGs[position() != last()]/@height) + $contentSVGs[last()]/@nk:cY"/>
                     <xsl:attribute name="d" select="
                             ('M', $cbot[1], $posY + $cbot[2],
                             'L', $cbot[1], $lastCY - 7,
@@ -1545,10 +1545,10 @@
         <xsl:param name="this" select="." as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
-        <xsl:variable name="parents" select="es:getParents($this, $schemaSetConfig)"/>
+        <xsl:variable name="parents" select="nk:getParents($this, $schemaSetConfig)"/>
 
         <xsl:variable name="parentContent">
-            <xsl:apply-templates select="$parents" mode="es:xsd2svg-parent"/>
+            <xsl:apply-templates select="$parents" mode="nk:xsd2svg-parent"/>
         </xsl:variable>
         <xsl:variable name="parentConnect">
             <xsl:call-template name="drawObjectPaths">
@@ -1560,7 +1560,7 @@
     </xsl:template>
 
     <xsl:template name="xsdSimpleTypeRef">
-        <xsl:param name="typeName" select="es:getQName(.)"/>
+        <xsl:param name="typeName" select="nk:getQName(.)"/>
         <xsl:param name="model-id" tunnel="yes"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
@@ -1576,16 +1576,16 @@
         <xsl:variable name="symbol">
             <xsl:call-template name="simpleTypeSymbol"/>
         </xsl:variable>
-        <xsl:variable name="symbolWidth" select="es:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/svg:svg/@width/(. + $paddingLR div 2))"/>
 
-        <xsl:variable name="label" select="es:printQName($typeName, $schemaSetConfig)"/>
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, false())"/>
-        <xsl:variable name="width" select="es:renderedTextLength($label, $fontInfo)"/>
+        <xsl:variable name="label" select="nk:printQName($typeName, $schemaSetConfig)"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, false())"/>
+        <xsl:variable name="width" select="nk:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
 
-        <svg width="{$width}" height="30" class="element_ref" es:cY="{$cY}" es:displayW="{$width}" es:displayH="0" es:multiValue="one">
-            <xsl:attribute name="es:minOccurs" select="1"/>
-            <xsl:attribute name="es:maxOccurs" select="1"/>
+        <svg width="{$width}" height="30" class="element_ref" nk:cY="{$cY}" nk:displayW="{$width}" nk:displayH="0" nk:multiValue="one">
+            <xsl:attribute name="nk:minOccurs" select="1"/>
+            <xsl:attribute name="nk:maxOccurs" select="1"/>
             <desc/>
             <g alignment-baseline="baseline" class="svg-element-ref" transform="translate(0, 2.5)">
                 <g id="{$hoverId}">
@@ -1610,7 +1610,7 @@
                             </text>
                         </g>
 
-                        <xsl:sequence select="es:createDoku($buildInTypeDocs, 'simpleType')"/>
+                        <xsl:sequence select="nk:createDoku($buildInTypeDocs, 'simpleType')"/>
 
                     </svg>
 

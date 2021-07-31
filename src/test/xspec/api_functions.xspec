@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:xsd2svg="http://www.xsd2svg.schematron-quickfix.com/" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:es="http://www.escali.schematron-quickfix.com/" stylesheet="../../main/resources/xsl/xsd2svg_api.xsl">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:xsd2svg="http://www.xsd2svg.nkutsche.com/" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:nk="http://www.nkutsche.com/" stylesheet="../../main/resources/com/nkutsche/xsd2svg/xsl/xsd2svg_api.xsl">
     
     <x:scenario label="Scenario for testing function getMasterFiles">
         <x:call function="xsd2svg:getMasterFiles">

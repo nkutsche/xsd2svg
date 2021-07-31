@@ -1,4 +1,4 @@
-package de.data2type.je.textdimensions;
+package com.nkutsche.xsd2svg.textdimensions;
 
 
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static de.data2type.je.textdimensions.TextDimensions.TDCfgF.*;
+import static com.nkutsche.xsd2svg.textdimensions.TextDimensions.TDCfgF.*;
 
 
 public class TextDimensions {

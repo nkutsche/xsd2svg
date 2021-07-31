@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:es="http://www.escali.schematron-quickfix.com/"  xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="http://www.w3.org/2000/svg"  stylesheet="../../main/resources/xsl/xsd2svg_model-pipe.xsl">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:nk="http://www.nkutsche.com/"  xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2000/svg"  stylesheet="../../main/resources/com/nkutsche/xsd2svg/xsl/xsd2svg_model-pipe.xsl">
     
     <x:scenario label="Scenario testing transform dimensions">
         <x:scenario label="with trivial object">
-            <x:context mode="es:xsd2svg-zindex">
+            <x:context mode="nk:xsd2svg-zindex">
                 <svg width="10" height="10">
-                    <g es:z-index="10">
+                    <g nk:z-index="10">
                         <text>up</text>
                     </g>
-                    <g es:z-index="5">
+                    <g nk:z-index="5">
                         <text>down</text>
                     </g>
                 </svg>
             </x:context>
             <x:expect label="sorted result">
                 <svg width="10" height="10">
-                    <g es:z-index="5" es:z-levels="..." es:z-filter="...">
-                        <text es:z-index="5" es:z-levels="..." es:z-filter="...">down</text>
+                    <g nk:z-index="5" nk:z-levels="..." nk:z-filter="...">
+                        <text nk:z-index="5" nk:z-levels="..." nk:z-filter="...">down</text>
                     </g>
-                    <g es:z-index="10" es:z-levels="..." es:z-filter="...">
-                        <text es:z-index="10" es:z-levels="..." es:z-filter="...">up</text>
+                    <g nk:z-index="10" nk:z-levels="..." nk:z-filter="...">
+                        <text nk:z-index="10" nk:z-levels="..." nk:z-filter="...">up</text>
                     </g>
                 </svg>
             </x:expect>

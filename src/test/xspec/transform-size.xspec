@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:es="http://www.escali.schematron-quickfix.com/"  xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="http://www.w3.org/2000/svg"  stylesheet="../../main/resources/xsl/xsd2svg_model-pipe.xsl">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:nk="http://www.nkutsche.com/"  xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.w3.org/2000/svg"  stylesheet="../../main/resources/com/nkutsche/xsd2svg/xsl/xsd2svg_model-pipe.xsl">
     
     <x:scenario label="Scenario testing transform dimensions">
         <x:scenario label="with trivial object">
-            <x:context mode="es:xsd2svg-transform">
+            <x:context mode="nk:xsd2svg-transform">
                 <svg width="10" height="10">
                     <g>
                         <text>test</text>
@@ -15,7 +15,7 @@
             <x:expect label="result height" test="$x:result/@height/number()" select="10"/>
         </x:scenario>
         <x:scenario label="with trivial dim correction">
-            <x:context mode="es:xsd2svg-transform">
+            <x:context mode="nk:xsd2svg-transform">
                 <svg width="10" height="10">
                     <g>
                         <svg width="20" height="20">
@@ -30,7 +30,7 @@
             <x:expect label="result height" test="$x:result/@height/number()" select="20"/>
         </x:scenario>
         <x:scenario label="with transformed dim correction">
-            <x:context mode="es:xsd2svg-transform">
+            <x:context mode="nk:xsd2svg-transform">
                 <svg width="10" height="10">
                     <g transform="translate(5, 5)">
                         <svg width="20" height="20">
@@ -45,7 +45,7 @@
             <x:expect label="result height" test="$x:result/@height/number()" select="25"/>
         </x:scenario>
         <x:scenario label="with nested transformed dim correction">
-            <x:context mode="es:xsd2svg-transform">
+            <x:context mode="nk:xsd2svg-transform">
                 <svg width="10" height="10">
                     <g transform="translate(5, 5)">
                         <g transform="translate(5, 5)">

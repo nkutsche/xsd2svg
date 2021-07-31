@@ -2,8 +2,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:math="http://www.w3.org/2005/xpath-functions/math"
-    xmlns:es="http://www.escali.schematron-quickfix.com/" 
-    xmlns:xsd2svg="http://www.xsd2svg.schematron-quickfix.com/"
+    xmlns:nk="http://www.nkutsche.com/" 
+    xmlns:xsd2svg="http://www.xsd2svg.nkutsche.com/"
     xmlns:svg="http://www.w3.org/2000/svg" 
     xmlns:map="http://www.w3.org/2005/xpath-functions/map"
     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -30,7 +30,7 @@
     -->
     
     
-    <xsl:variable name="effConfig" select="($config, doc('../cfg/default-config.xml')) => es:config-as-map()" as="map(*)"/>
+    <xsl:variable name="effConfig" select="($config, doc('../cfg/default-config.xml')) => nk:config-as-map()" as="map(*)"/>
     
     
     
@@ -58,7 +58,7 @@
         <xsl:param name="config" as="map(xs:string, map(*))"/>
         <xsl:param name="standalone" as="xs:boolean"/>
 
-        <xsl:sequence select="es:svg-model($xsdnode, $config, $standalone)"/>
+        <xsl:sequence select="nk:svg-model($xsdnode, $config, $standalone)"/>
 
     </xsl:function>
     
@@ -77,18 +77,18 @@
         <xsl:param name="schema-url" as="xs:anyURI"/>
         <xsl:param name="schemaSetCfg" as="map(xs:string, item()*)"/>
         
-        <xsl:variable name="component-infos" select="es:getComponentInfos($schemaSetCfg)"/>
+        <xsl:variable name="component-infos" select="nk:getComponentInfos($schemaSetCfg)"/>
         <xsl:sequence select="
             map{
                 'schema-namespace-map' : $schemaSetCfg?schema-map,
-                'create-css' : function(){es:create-css($schemaSetCfg?config?styles)},
-                'get-grouped-components' : function($grouping as xs:string*){ es:group-components($component-infos, $grouping)},
+                'create-css' : function(){nk:create-css($schemaSetCfg?config?styles)},
+                'get-grouped-components' : function($grouping as xs:string*){ nk:group-components($component-infos, $grouping)},
                 'namespaces' : $component-infos?namespace => distinct-values(),
                 'types' : $component-infos?type => distinct-values(),
                 'qnames' : $component-infos?qname => distinct-values(),
-                'print-qname' : function($qname){es:printQName($qname, $schemaSetCfg)},
+                'print-qname' : function($qname){nk:printQName($qname, $schemaSetCfg)},
                 'components-by-id' : ($component-infos ! map{.?id : .} ) => map:merge(),
-                'find-reference' : function($attribute){es:getReferencInfo($attribute, $schemaSetCfg)}
+                'find-reference' : function($attribute){nk:getReferencInfo($attribute, $schemaSetCfg)}
             }
             "/>
     </xsl:function>
@@ -123,7 +123,7 @@
         
         <xsl:sequence select="
             if ($hasPathQuery) then
-            es:getMasterFiles(xs:anyURI($path))
+            nk:getMasterFiles(xs:anyURI($path))
             else
             xsd2svg:getMasterFiles($path || '?' || $query)
             "/>
@@ -142,9 +142,9 @@
         <xsl:param name="config" as="map(*)"/>
         
         
-        <xsl:variable name="schema-namespace-map" select="es:getReferencedSchemas($schema)"/>
+        <xsl:variable name="schema-namespace-map" select="nk:getReferencedSchemas($schema)"/>
         
-        <xsl:variable name="prefix-map" select="es:getPrefixes($schema-namespace-map)"/>
+        <xsl:variable name="prefix-map" select="nk:getPrefixes($schema-namespace-map)"/>
         
         <xsl:variable name="schemaSetCfg" select="map{
             'schema-map' : $schema-namespace-map,
@@ -155,9 +155,9 @@
         <xsl:sequence select="$schemaSetCfg"/>
     </xsl:function>
     
-    <xsl:function name="es:config-as-map" as="map(*)">
+    <xsl:function name="nk:config-as-map" as="map(*)">
         <xsl:param name="configs" as="document-node()*"/>
-        <xsl:sequence select="es:config-as-map($configs, map{'link-provider' : $link-provider-function})"/>
+        <xsl:sequence select="nk:config-as-map($configs, map{'link-provider' : $link-provider-function})"/>
     </xsl:function>
     
     

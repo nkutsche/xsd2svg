@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="xs" version="3.0" xmlns:math="http://www.w3.org/2005/xpath-functions/math">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:svg="http://www.w3.org/2000/svg" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nk="http://www.nkutsche.com/" xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="xs" version="3.0" xmlns:math="http://www.w3.org/2005/xpath-functions/math">
 
     <xsl:variable name="XSDNS" select="'http://www.w3.org/2001/XMLSchema'"/>
 
@@ -45,40 +45,40 @@
                 }
             }" as="map(xs:string, map(xs:string, xs:string))"/>-->
 
-    <xsl:key name="elementByQName" match="xs:schema/xs:*[@name]" use="es:getName(.)"/>
+    <xsl:key name="elementByQName" match="xs:schema/xs:*[@name]" use="nk:getName(.)"/>
 
     <xsl:key name="parentByElementRef" match="xs:element[@name] | xs:group[@name]" use="
-            (.//xs:element[@ref] except .//xs:element[@name]//*)/es:getName(.)
+            (.//xs:element[@ref] except .//xs:element[@name]//*)/nk:getName(.)
             "/>
     <xsl:key name="parentByGroupRef" match="xs:element[@name] | xs:group[@name]" use="
-            (.//xs:group[@ref] except .//xs:element[@name]//*)/es:getName(.)
+            (.//xs:group[@ref] except .//xs:element[@name]//*)/nk:getName(.)
             "/>
 
     <xsl:key name="elementByAttributename" match="xs:element[@name] | xs:attributeGroup[@name] | xs:complexType[@name]" use="
-            ((.//xs:attribute[@ref] | .//xs:attributeGroup) except .//xs:element[@name]//*) ! es:getName(.)
+            ((.//xs:attribute[@ref] | .//xs:attributeGroup) except .//xs:element[@name]//*) ! nk:getName(.)
             "/>
 
     <xsl:key name="parentByType" match="xs:element[@type] | xs:attribute[@type]" use="
-            es:getQName(@type)
+            nk:getQName(@type)
             "/>
 
-    <xsl:key name="globalAttributesByName" match="xs:schema/xs:attribute" use="es:getName(@name)"/>
+    <xsl:key name="globalAttributesByName" match="xs:schema/xs:attribute" use="nk:getName(@name)"/>
 
 
 
-    <xsl:function name="es:getPrefixes" as="map(xs:string, xs:string)">
+    <xsl:function name="nk:getPrefixes" as="map(xs:string, xs:string)">
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
-        <xsl:sequence select="es:getPrefixes((map:keys($schema-context), $XSDNS), $schema-context)"/>
+        <xsl:sequence select="nk:getPrefixes((map:keys($schema-context), $XSDNS), $schema-context)"/>
     </xsl:function>
 
-    <xsl:function name="es:getPrefixes" as="map(xs:string, xs:string)">
+    <xsl:function name="nk:getPrefixes" as="map(xs:string, xs:string)">
         <xsl:param name="namespaces" as="xs:string*"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
 
 
         <xsl:variable name="head" select="head($namespaces)"/>
         <xsl:variable name="others" select="
-            if (count($namespaces) gt 1) then es:getPrefixes(tail($namespaces), $schema-context) else map{}
+            if (count($namespaces) gt 1) then nk:getPrefixes(tail($namespaces), $schema-context) else map{}
             "/>
 
         <xsl:variable name="schema" select="$schema-context($head), $schema-context?*"/>
@@ -101,7 +101,7 @@
 
     </xsl:function>
 
-    <xsl:function name="es:printQName" as="xs:string">
+    <xsl:function name="nk:printQName" as="xs:string">
         <xsl:param name="qname" as="xs:QName"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
 
@@ -129,29 +129,29 @@
 
     </xsl:function>
 
-    <xsl:function name="es:error">
+    <xsl:function name="nk:error">
         <xsl:param name="id" as="xs:string"/>
         <xsl:param name="message"/>
-        <xsl:sequence select="error(QName('http://www.escali.schematron-quickfix.com/', $id), $message)"/>
+        <xsl:sequence select="error(QName('http://www.nkutsche.com/', $id), $message)"/>
     </xsl:function>
 
-    <xsl:function name="es:exactly-one" as="item()">
+    <xsl:function name="nk:exactly-one" as="item()">
         <xsl:param name="item" as="item()*"/>
         <xsl:param name="message"/>
         <xsl:sequence select="
                 if (count($item) eq 1) then
                     ($item)
                 else
-                    es:error('exactly-one', $message)
+                    nk:error('exactly-one', $message)
                 "/>
     </xsl:function>
 
-    <xsl:function name="es:getQName" as="xs:QName">
+    <xsl:function name="nk:getQName" as="xs:QName">
         <xsl:param name="attr" as="attribute()"/>
-        <xsl:sequence select="es:getQName(string($attr), $attr/parent::*)"/>
+        <xsl:sequence select="nk:getQName(string($attr), $attr/parent::*)"/>
     </xsl:function>
 
-    <xsl:function name="es:getQName" as="xs:QName">
+    <xsl:function name="nk:getQName" as="xs:QName">
         <xsl:param name="name" as="xs:string"/>
         <xsl:param name="namespace-context" as="element()"/>
         <xsl:variable name="prefix" select="
@@ -164,18 +164,18 @@
         <xsl:variable name="namespace" select="$namespace-context/namespace::*[name() = $prefix]"/>
         <xsl:sequence select="
                 if ($prefix != '' and not($namespace)) then
-                    es:error('unbound-prefix', 'Unbound prefix ' || $prefix || ' at ' || path($namespace-context))
+                    nk:error('unbound-prefix', 'Unbound prefix ' || $prefix || ' at ' || path($namespace-context))
                 else
                     QName(string($namespace), $name)"/>
     </xsl:function>
 
 
-    <xsl:function name="es:getName" as="xs:QName">
+    <xsl:function name="nk:getName" as="xs:QName">
         <xsl:param name="node" as="node()"/>
 
         <xsl:choose>
             <xsl:when test="$node/@ref">
-                <xsl:sequence select="es:getQName($node/@ref)"/>
+                <xsl:sequence select="nk:getQName($node/@ref)"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:variable name="local-name" select="$node/@name"/>
@@ -208,7 +208,7 @@
                             ''" as="xs:string"/>
 
                 <xsl:if test="not($local-name castable as xs:NCName)">
-                    <xsl:sequence select="es:error('bad-qname', 'Can not create QName for ' || name($node) || '. ''' || $local-name || ''' is not a valid NCName.')"/>
+                    <xsl:sequence select="nk:error('bad-qname', 'Can not create QName for ' || name($node) || '. ''' || $local-name || ''' is not a valid NCName.')"/>
                 </xsl:if>
 
                 <xsl:sequence select="QName($namespace, $local-name)"/>
@@ -216,7 +216,7 @@
         </xsl:choose>
 
     </xsl:function>
-    <xsl:function name="es:getName">
+    <xsl:function name="nk:getName">
         <xsl:param name="node" as="node()"/>
         <xsl:param name="attrName"/>
         <xsl:variable name="nameRef" select="$node/@*[name() = $attrName]"/>
@@ -224,7 +224,7 @@
         <xsl:value-of select="$localName"/>
     </xsl:function>
 
-    <xsl:function name="es:getReferences" as="node()*">
+    <xsl:function name="nk:getReferences" as="node()*">
         <xsl:param name="attr" as="attribute()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
 
@@ -233,16 +233,16 @@
                 <xsl:variable name="element" select="$attr/parent::*"/>
                 <xsl:sequence select="
                         $attr/tokenize(., '\s') !
-                        es:getReferenceByQName(es:getQName(., $element), $schemaSetConfig, 'simpleType', false())
+                        nk:getReferenceByQName(nk:getQName(., $element), $schemaSetConfig, 'simpleType', false())
                         "/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:sequence select="es:getReference($attr, $schemaSetConfig)"/>
+                <xsl:sequence select="nk:getReference($attr, $schemaSetConfig)"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
 
-    <xsl:function name="es:getReference" as="node()?">
+    <xsl:function name="nk:getReference" as="node()?">
         <xsl:param name="attr" as="attribute()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
 
@@ -272,28 +272,28 @@
                 <xsl:sequence select="$schema-context($ns)[1]/xs:schema"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:variable name="qnameRef" select="es:getQName($attr)"/>
+                <xsl:variable name="qnameRef" select="nk:getQName($attr)"/>
                 <xsl:variable name="namespace" select="namespace-uri-from-QName($qnameRef)"/>
                 <xsl:sequence select="
                         if ($namespace = $XSDNS) then
                             ()
                         else
-                            es:getReferenceByQName($qnameRef, $schemaSetConfig, $element)"/>
+                            nk:getReferenceByQName($qnameRef, $schemaSetConfig, $element)"/>
             </xsl:otherwise>
         </xsl:choose>
 
 
     </xsl:function>
 
-    <xsl:function name="es:getReferenceByQName" as="node()*">
+    <xsl:function name="nk:getReferenceByQName" as="node()*">
         <xsl:param name="qname" as="xs:QName"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="refKind" as="xs:string*"/>
 
-        <xsl:sequence select="es:getReferenceByQName($qname, $schemaSetConfig, $refKind, true())"/>
+        <xsl:sequence select="nk:getReferenceByQName($qname, $schemaSetConfig, $refKind, true())"/>
     </xsl:function>
 
-    <xsl:function name="es:getReferenceByQName" as="node()*">
+    <xsl:function name="nk:getReferenceByQName" as="node()*">
         <xsl:param name="qname" as="xs:QName"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="refKind" as="xs:string*"/>
@@ -309,37 +309,37 @@
                 [local-name() = $refKind]"/>
 
 
-        <xsl:variable name="qnamePrint" select="es:printQName($qname, $schema-context)"/>
+        <xsl:variable name="qnamePrint" select="nk:printQName($qname, $schema-context)"/>
         <xsl:sequence select="
                 if (count($target) eq 1 or not($exactlyOneRef)) then
                     ($target)
                 else
                     if (count($target) lt 1) then
-                        es:error('missing-ref-target', 'There is no defintion for the reference target ' || $qnamePrint)
+                        nk:error('missing-ref-target', 'There is no defintion for the reference target ' || $qnamePrint)
                     else
-                        es:error('duplicate-ref-target', 'There is more than one defintion for the reference target ' || $qnamePrint)
+                        nk:error('duplicate-ref-target', 'There is more than one defintion for the reference target ' || $qnamePrint)
                 "/>
 
 
     </xsl:function>
 
-    <xsl:function name="es:convertId" as="xs:string">
+    <xsl:function name="nk:convertId" as="xs:string">
         <xsl:param name="id" as="xs:string"/>
         <xsl:value-of select="replace($id, ':', '_')"/>
     </xsl:function>
 
-    <xsl:function name="es:createRoundBox">
+    <xsl:function name="nk:createRoundBox">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
-        <xsl:value-of select="es:createRoundBox($width, $height, 0.25)"/>
+        <xsl:value-of select="nk:createRoundBox($width, $height, 0.25)"/>
     </xsl:function>
-    <xsl:function name="es:createRoundBox">
+    <xsl:function name="nk:createRoundBox">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
         <xsl:param name="edgesRel" as="xs:double"/>
-        <xsl:value-of select="es:createRoundBox($width, $height, $edgesRel, false())"/>
+        <xsl:value-of select="nk:createRoundBox($width, $height, $edgesRel, false())"/>
     </xsl:function>
-    <xsl:function name="es:createRoundBox">
+    <xsl:function name="nk:createRoundBox">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
         <xsl:param name="edgesRel" as="xs:double"/>
@@ -379,14 +379,14 @@
         <xsl:value-of select="$seq" separator=" "/>
     </xsl:function>
 
-    <xsl:function name="es:createHalfRoundBox" as="xs:string">
+    <xsl:function name="nk:createHalfRoundBox" as="xs:string">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
         <xsl:param name="edgesRel" as="xs:double"/>
         <xsl:param name="edgesAbs" as="xs:boolean"/>
-        <xsl:sequence select="es:createHalfRoundBox($width, $height, $edgesRel, $edgesAbs, true())"/>
+        <xsl:sequence select="nk:createHalfRoundBox($width, $height, $edgesRel, $edgesAbs, true())"/>
     </xsl:function>
-    <xsl:function name="es:createHalfRoundBox" as="xs:string">
+    <xsl:function name="nk:createHalfRoundBox" as="xs:string">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
         <xsl:param name="edgesRel" as="xs:double"/>
@@ -440,15 +440,15 @@
 
 
 
-    <xsl:function name="es:createBalloon" as="xs:string">
+    <xsl:function name="nk:createBalloon" as="xs:string">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
         <xsl:param name="rx" as="xs:double"/>
         <xsl:param name="ry" as="xs:double"/>
         <xsl:param name="cy" as="xs:double"/>
-        <xsl:sequence select="es:createBalloon($width, $height, $rx, $ry, $cy, 5.0)"/>
+        <xsl:sequence select="nk:createBalloon($width, $height, $rx, $ry, $cy, 5.0)"/>
     </xsl:function>
-    <xsl:function name="es:createBalloon" as="xs:string">
+    <xsl:function name="nk:createBalloon" as="xs:string">
         <xsl:param name="width" as="xs:double"/>
         <xsl:param name="height" as="xs:double"/>
         <xsl:param name="rx" as="xs:double"/>
@@ -488,13 +488,13 @@
         <xsl:value-of select="$seq" separator=" "/>
     </xsl:function>
 
-    <xsl:function name="es:multiValuesMerge" as="xs:string">
+    <xsl:function name="nk:multiValuesMerge" as="xs:string">
         <xsl:param name="funcMultiValues" as="element(svg:svg)*"/>
 
-        <xsl:variable name="oneOrMores" select="$funcMultiValues[@es:multiValue = $MultiValues[4]]"/>
-        <xsl:variable name="zeroOrMores" select="$funcMultiValues[@es:multiValue = $MultiValues[3]]"/>
-        <xsl:variable name="ones" select="$funcMultiValues[@es:multiValue = $MultiValues[2]] | $funcMultiValues[not(@es:multiValue)]"/>
-        <xsl:variable name="zeroOrOnes" select="$funcMultiValues[@es:multiValue = $MultiValues[1]]"/>
+        <xsl:variable name="oneOrMores" select="$funcMultiValues[@nk:multiValue = $MultiValues[4]]"/>
+        <xsl:variable name="zeroOrMores" select="$funcMultiValues[@nk:multiValue = $MultiValues[3]]"/>
+        <xsl:variable name="ones" select="$funcMultiValues[@nk:multiValue = $MultiValues[2]] | $funcMultiValues[not(@nk:multiValue)]"/>
+        <xsl:variable name="zeroOrOnes" select="$funcMultiValues[@nk:multiValue = $MultiValues[1]]"/>
         <xsl:choose>
             <xsl:when test="$ones or ($oneOrMores and $zeroOrOnes)">
                 <xsl:sequence select="$MultiValues[2]"/>
@@ -523,7 +523,7 @@
 
         <xsl:variable name="class" select="'symbol sequence cs_' || $color-scheme"/>
 
-        <svg width="20" height="20" es:cY="10">
+        <svg width="20" height="20" nk:cY="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
                 <xsl:attribute name="height" select="23.5"/>
             </xsl:if>
@@ -581,9 +581,9 @@
 
         <xsl:variable name="class" select="'symbol choice cs_' || $color-scheme"/>
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
-                <xsl:attribute name="es:cY" select="10"/>
+                <xsl:attribute name="nk:cY" select="10"/>
                 <xsl:attribute name="height" select="23.5"/>
             </xsl:if>
             <xsl:sequence select="$title"/>
@@ -654,7 +654,7 @@
 
         <xsl:variable name="class" select="'symbol union cs_' || $color-scheme"/>
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="symbol union cs_{$color-scheme} bordered opaque"/>
@@ -682,7 +682,7 @@
 
         <xsl:variable name="class" select="'symbol list cs_' || $color-scheme"/>
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="{$class} opaque bordered"/>
@@ -712,7 +712,7 @@
 
         <xsl:variable name="class" select="'symbol extension cs_' || $color-scheme"/>
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="{$class} opaque bordered"/>
@@ -740,7 +740,7 @@
 
         <xsl:variable name="class" select="'symbol restriction cs_' || $color-scheme"/>
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g>
                 <rect width="19" height="19" x="0.5" y="0.5" rx="2.5" ry="2.5" stroke-width="1" class="{$class} opaque bordered"/>
@@ -769,7 +769,7 @@
         <xsl:variable name="class" select="'symbol any cs_' || $color-scheme"/>
 
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
             <g transform="translate(5, 9)">
                 <rect width="10" height="2" class="{$class} massive filled"/>
@@ -794,10 +794,10 @@
         <xsl:param name="bold" select="false()" as="xs:boolean"/>
         <xsl:param name="color-scheme" select="'complexType'" as="xs:string"/>
 
-        <xsl:variable name="class" select="es:addBoldClass('symbol complexType cs_' || $color-scheme, $bold)"/>
+        <xsl:variable name="class" select="nk:addBoldClass('symbol complexType cs_' || $color-scheme, $bold)"/>
 
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
 
             <g>
@@ -828,11 +828,11 @@
         <xsl:param name="bold" select="false()" as="xs:boolean"/>
         <xsl:param name="color-scheme" select="'simpleType'" as="xs:string"/>
 
-        <xsl:variable name="class" select="es:addBoldClass('symbol simpleType cs_' || $color-scheme, $bold)"/>
+        <xsl:variable name="class" select="nk:addBoldClass('symbol simpleType cs_' || $color-scheme, $bold)"/>
 
 
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
 
             <g>
@@ -849,10 +849,10 @@
         </xsl:param>
         <xsl:param name="color-scheme" select="'attribute'" as="xs:string"/>
         <xsl:param name="bold" select="false()" as="xs:boolean"/>
-        <xsl:variable name="class" select="es:addBoldClass('symbol attribute cs_' || $color-scheme, $bold)"/>
+        <xsl:variable name="class" select="nk:addBoldClass('symbol attribute cs_' || $color-scheme, $bold)"/>
 
 
-        <svg width="20" height="20" es:cYTop="0" es:cXTop="10" es:cYRight="10" es:cXRight="20" es:cYBottom="20" es:cXBottom="10">
+        <svg width="20" height="20" nk:cYTop="0" nk:cXTop="10" nk:cYRight="10" nk:cXRight="20" nk:cYBottom="20" nk:cXBottom="10">
             <xsl:sequence select="$title"/>
 
             <g transform="translate(-19.5, -4)">
@@ -868,7 +868,7 @@
         <xsl:param name="title" select="'group'" as="xs:string"/>
         <xsl:param name="color-scheme" select="'attribute'" as="xs:string"/>
         <xsl:param name="bold" select="false()" as="xs:boolean"/>
-        <xsl:variable name="class" select="es:addBoldClass('symbol group cs_' || $color-scheme, $bold)"/>
+        <xsl:variable name="class" select="nk:addBoldClass('symbol group cs_' || $color-scheme, $bold)"/>
         <svg width="15" height="15">
             <title xsl:expand-text="yes">{$title}</title>
             <rect width="5" height="5" x="1" y="1" fill="none" class="{$class} filled" stroke-width="0.75" opacity="1"/>
@@ -880,13 +880,13 @@
         </svg>
     </xsl:template>
 
-    <xsl:function name="es:addBoldClass" as="xs:string">
+    <xsl:function name="nk:addBoldClass" as="xs:string">
         <xsl:param name="class" as="xs:string"/>
         <xsl:param name="bold" as="xs:boolean"/>
         <xsl:sequence select="($class, 'massive'[$bold]) => string-join(' ')"/>
     </xsl:function>
 
-    <xsl:function name="es:getSymbol" as="element(svg:svg)?">
+    <xsl:function name="nk:getSymbol" as="element(svg:svg)?">
         <xsl:param name="type"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:choose>
@@ -925,7 +925,7 @@
             </xsl:when>
             <xsl:when test="$type = ('element', 'schema')"/>
             <xsl:otherwise>
-                <xsl:sequence select="es:error('bad-symbol-type-request', 'No symbol for type ' || $type || ' available.')"/>
+                <xsl:sequence select="nk:error('bad-symbol-type-request', 'No symbol for type ' || $type || ' available.')"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
@@ -963,13 +963,13 @@
 
         <xsl:variable name="fontSize" select="11"/>
         <xsl:variable name="symbol" select="$symbol/(self::svg:svg, svg:svg)[1]"/>
-        <xsl:variable name="symbolWidth" select="es:number($symbol/@width)"/>
+        <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
         <xsl:variable name="space" select="6"/>
 
 
 
-        <xsl:variable name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, $bold)"/>
-        <xsl:variable name="textWidth" select="es:renderedTextLength($title, $fontInfo)"/>
+        <xsl:variable name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, $bold)"/>
+        <xsl:variable name="textWidth" select="nk:renderedTextLength($title, $fontInfo)"/>
         <xsl:variable name="width" select="$textWidth + $symbolWidth + 4 * $space + 3"/>
 
         <svg width="{max(($width, 0))}" height="25">
@@ -1028,8 +1028,8 @@
                     ($x2)"/>
 
         <xsl:if test="$content">
-            <xsl:variable name="firstContentConnect" select="($content[1]/@es:cY, $content[1]/@height div 2)[1]"/>
-            <xsl:variable name="lastContentConnect" select="($content[last()]/@es:cY, $content[last()]/@height div 2)[1]"/>
+            <xsl:variable name="firstContentConnect" select="($content[1]/@nk:cY, $content[1]/@height div 2)[1]"/>
+            <xsl:variable name="lastContentConnect" select="($content[last()]/@nk:cY, $content[last()]/@height div 2)[1]"/>
             <xsl:variable name="lastContentConnect" select="$contentHeight - ($content[last()]/@height - $lastContentConnect)"/>
 
             <xsl:variable name="moreThenOne" select="count($content) gt 1" as="xs:boolean"/>
@@ -1037,9 +1037,9 @@
             <xsl:variable name="cY" select="
                     if ($moreThenOne)
                     then
-                        (((es:number($lastContentConnect) - es:number($firstContentConnect)) div 2) + es:number($firstContentConnect))
+                        (((nk:number($lastContentConnect) - nk:number($firstContentConnect)) div 2) + nk:number($firstContentConnect))
                     else
-                        es:number($content/@es:cY)"/>
+                        nk:number($content/@nk:cY)"/>
             <xsl:variable name="x1ForOne" select="
                     if ($rightPathPosition and not($moreThenOne))
                     then
@@ -1066,8 +1066,8 @@
                         else
                             ($x1ForOne)))"/>
 
-            <xsl:variable name="contentMultiValue" select="es:multiValuesMerge($content)"/>
-            <svg width="{$svgWidth}" height="{$contentHeight}" es:cY="{$cY}" class="objectPaths" es:multiValue="{$contentMultiValue}">
+            <xsl:variable name="contentMultiValue" select="nk:multiValuesMerge($content)"/>
+            <svg width="{$svgWidth}" height="{$contentHeight}" nk:cY="{$cY}" class="objectPaths" nk:multiValue="{$contentMultiValue}">
                 <xsl:variable name="contentReq" select="not(matches($contentMultiValue, 'zero'))" as="xs:boolean"/>
                 <xsl:variable name="contentMore" select="matches($contentMultiValue, 'More')" as="xs:boolean"/>
                 <xsl:variable name="gap" select="
@@ -1097,15 +1097,15 @@
                 <xsl:variable name="dash" select="5"/>
                 <xsl:for-each select="reverse($content)">
 
-                    <xsl:variable name="classForContent" select="'path cs_' || (@es:color-scheme, $color-scheme)[1]"/>
+                    <xsl:variable name="classForContent" select="'path cs_' || (@nk:color-scheme, $color-scheme)[1]"/>
 
                     <xsl:variable name="precHeight" select="sum(preceding-sibling::svg:svg/@height)"/>
                     <xsl:variable name="thisWidth" select="@width"/>
-                    <xsl:variable name="y" select="$precHeight + @es:cY"/>
+                    <xsl:variable name="y" select="$precHeight + @nk:cY"/>
                     <xsl:variable name="pos" select="position()"/>
 
-                    <xsl:variable name="followY" select="$precHeight + @height + following-sibling::svg:svg[1]/@es:cY"/>
-                    <xsl:variable name="precY" select="$precHeight - preceding-sibling::svg:svg[1]/@height + preceding-sibling::svg:svg[1]/@es:cY"/>
+                    <xsl:variable name="followY" select="$precHeight + @height + following-sibling::svg:svg[1]/@nk:cY"/>
+                    <xsl:variable name="precY" select="$precHeight - preceding-sibling::svg:svg[1]/@height + preceding-sibling::svg:svg[1]/@nk:cY"/>
 
                     <xsl:variable name="pathToY" select="
                             if ($y gt $cY)
@@ -1137,7 +1137,7 @@
                     <xsl:choose>
                         <xsl:when test="not($pos = (1, last()))">
                             <xsl:variable name="gap" select="
-                                    if (matches(@es:multiValue, 'More')) then
+                                    if (matches(@nk:multiValue, 'More')) then
                                         (1.5)
                                     else
                                         (0)" as="xs:double"/>
@@ -1146,7 +1146,7 @@
                                 <xsl:attribute name="d" select="
                                         'M', $x1, $y - $gap,
                                         'L', $x2, $y - $gap" separator=" "/>
-                                <xsl:if test="matches(@es:multiValue, 'zero')">
+                                <xsl:if test="matches(@nk:multiValue, 'zero')">
                                     <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
                                 </xsl:if>
                             </path>
@@ -1155,12 +1155,12 @@
                                     <xsl:attribute name="d" select="
                                             'M', $x1, $y + $gap,
                                             'L', $x2, $y + $gap" separator=" "/>
-                                    <xsl:if test="matches(@es:multiValue, 'zero')">
+                                    <xsl:if test="matches(@nk:multiValue, 'zero')">
                                         <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
                                     </xsl:if>
                                 </path>
                             </xsl:if>
-                            <xsl:variable name="mergedMultiValue" select="es:multiValuesMerge($strokeRespContent)"/>
+                            <xsl:variable name="mergedMultiValue" select="nk:multiValuesMerge($strokeRespContent)"/>
                             <xsl:variable name="gap" select="
                                     if (matches($mergedMultiValue, 'More')) then
                                         (1.5)
@@ -1198,7 +1198,7 @@
                                         ($y + $curve)"/>
 
                             <xsl:variable name="gap" select="
-                                    if (matches(@es:multiValue, 'More')) then
+                                    if (matches(@nk:multiValue, 'More')) then
                                         (1.5)
                                     else
                                         (0)" as="xs:double"/>
@@ -1208,18 +1208,18 @@
                                         'L', $xCurve, $y - $gap,
                                         'Q', $x1 + $gap, $y - $gap, $x1 + $gap, $yCurve,
                                         'L', $x1 + $gap, $pathToY"/>
-                                <xsl:if test="matches(@es:multiValue, 'zero')">
+                                <xsl:if test="matches(@nk:multiValue, 'zero')">
                                     <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
                                 </xsl:if>
                             </path>
-                            <xsl:if test="matches(@es:multiValue, 'More')">
+                            <xsl:if test="matches(@nk:multiValue, 'More')">
                                 <path class="{$classForContent} bordered" stroke-width="1" fill="none">
                                     <xsl:attribute name="d" select="
                                             'M', $x2, $y + $gap,
                                             'L', $xCurve, $y + $gap,
                                             'Q', $x1 - $gap, $y + $gap, $x1 - $gap, $yCurve,
                                             'L', $x1 - $gap, $pathToY"/>
-                                    <xsl:if test="matches(@es:multiValue, 'zero')">
+                                    <xsl:if test="matches(@nk:multiValue, 'zero')">
                                         <xsl:attribute name="stroke-dasharray" select="$dash, $dash" separator=","/>
                                     </xsl:if>
                                 </path>
@@ -1299,11 +1299,14 @@
                 $schemaSetConfig?config?link-provider,
                 function ($comp) {
                     
+                    
+                    
+                    
                 }
                 )[1]"/>
         <xsl:variable name="link" select="
                 if ($linkTarget) then
-                    $link-provider(es:getComponentCoreInfo($linkTarget))
+                    $link-provider(nk:getComponentCoreInfo($linkTarget))
                 else
                     ()
                 "/>
@@ -1321,11 +1324,11 @@
 
     </xsl:template>
 
-    <xsl:function name="es:number" as="xs:decimal">
+    <xsl:function name="nk:number" as="xs:decimal">
         <xsl:param name="value"/>
-        <xsl:sequence select="es:number($value, 0)"/>
+        <xsl:sequence select="nk:number($value, 0)"/>
     </xsl:function>
-    <xsl:function name="es:number" as="xs:decimal">
+    <xsl:function name="nk:number" as="xs:decimal">
         <xsl:param name="value"/>
         <xsl:param name="default" as="xs:decimal"/>
         <xsl:sequence select="
@@ -1336,7 +1339,7 @@
     </xsl:function>
 
     <xsl:variable name="MultiValues" select="('zeroOrOne', 'one', 'zeroOrMore', 'oneOrMore')"/>
-    <xsl:function name="es:getMultiValue" as="xs:string">
+    <xsl:function name="nk:getMultiValue" as="xs:string">
         <xsl:param name="node" as="element()"/>
         <xsl:choose>
             <xsl:when test="$node/self::xs:attribute">
@@ -1349,7 +1352,7 @@
                 <xsl:value-of select="$MultiValues[index-of($uses, $use)]"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:variable name="min" select="es:number($node/@minOccurs, 1)"/>
+                <xsl:variable name="min" select="nk:number($node/@minOccurs, 1)"/>
                 <xsl:variable name="min" select="
                         if ($min = 0)
                         then
@@ -1361,7 +1364,7 @@
                         then
                             (-1)
                         else
-                            (es:number($node/@maxOccurs, 1))"/>
+                            (nk:number($node/@maxOccurs, 1))"/>
                 <xsl:variable name="max" select="
                         if ($max = 1)
                         then
@@ -1374,15 +1377,15 @@
     </xsl:function>
 
 
-    <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
+    <xsl:function name="nk:createDoku" as="element(svg:foreignObject)?">
         <xsl:param name="element" as="element()"/>
-        <xsl:sequence select="es:createDoku($element/xs:annotation, $element/local-name())"/>
+        <xsl:sequence select="nk:createDoku($element/xs:annotation, $element/local-name())"/>
     </xsl:function>
 
-    <xsl:function name="es:createDoku" as="element(svg:foreignObject)?">
+    <xsl:function name="nk:createDoku" as="element(svg:foreignObject)?">
         <xsl:param name="annotation" as="element(xs:annotation)*"/>
         <xsl:param name="color-scheme" as="xs:string"/>
-        <foreignObject es:color-scheme="{$color-scheme}">
+        <foreignObject nk:color-scheme="{$color-scheme}">
             <xsl:sequence select="$annotation"/>
         </foreignObject>
     </xsl:function>
@@ -1396,7 +1399,7 @@
         <xsl:param name="style" select="'plain'" as="xs:string"/>
         <xsl:param name="class" select="()" as="xs:string*"/>
         <xsl:param name="width"/>
-        <xsl:param name="fontInfo" select="es:create-font-info($schemaSetConfig, $fontSize, $style = 'bold')" tunnel="yes"/>
+        <xsl:param name="fontInfo" select="nk:create-font-info($schemaSetConfig, $fontSize, $style = 'bold')" tunnel="yes"/>
         <xsl:variable name="subwoerter">
             <xsl:analyze-string select="$text" regex="[^\s-]+([\s-]+|$)">
                 <xsl:matching-substring>
@@ -1408,11 +1411,11 @@
         </xsl:variable>
         <xsl:variable name="tspans">
             <xsl:for-each select="$subwoerter/svg:tspan">
-                
-                <xsl:variable name="length" select="es:renderedTextLength(., $fontInfo)"/>
-                
+
+                <xsl:variable name="length" select="nk:renderedTextLength(., $fontInfo)"/>
+
                 <tspan>
-                    <xsl:attribute name="es:length" select="$length"/>
+                    <xsl:attribute name="nk:length" select="$length"/>
                     <xsl:value-of select="."/>
                 </tspan>
             </xsl:for-each>
@@ -1426,13 +1429,13 @@
                 <xsl:with-param name="lineWidth" select="$width"/>
             </xsl:call-template>
         </xsl:variable>
-        <svg width="{$width}" height="{(count($lines/es:line) * $lineHeight) + $spaceAfter}" class="text_box">
+        <svg width="{$width}" height="{(count($lines/nk:line) * $lineHeight) + $spaceAfter}" class="text_box">
             <text>
                 <xsl:sequence select="$fontInfo?svg-attributes"/>
                 <xsl:if test="exists($class)">
                     <xsl:attribute name="class" select="$class" separator=" "/>
                 </xsl:if>
-                <xsl:copy-of select="$lines/es:line/*"/>
+                <xsl:copy-of select="$lines/nk:line/*"/>
             </text>
         </svg>
     </xsl:template>
@@ -1444,13 +1447,13 @@
         <xsl:param name="lineHeight" select="16" as="xs:double"/>
         <xsl:param name="lineWidth"/>
 
-        <xsl:variable name="firstLine" select="$tspans[sum(preceding-sibling::*/@es:length) + @es:length lt $lineWidth]"/>
+        <xsl:variable name="firstLine" select="$tspans[sum(preceding-sibling::*/@nk:length) + @nk:length lt $lineWidth]"/>
         <xsl:variable name="nextLines">
             <xsl:copy-of select="$tspans except $firstLine"/>
         </xsl:variable>
 
         <xsl:if test="$firstLine">
-            <es:line>
+            <nk:line>
                 <xsl:for-each select="$firstLine">
                     <xsl:copy>
                         <xsl:copy-of select="@*"/>
@@ -1461,7 +1464,7 @@
                         <xsl:copy-of select="node()"/>
                     </xsl:copy>
                 </xsl:for-each>
-            </es:line>
+            </nk:line>
         </xsl:if>
         <xsl:choose>
             <xsl:when test="$nextLines and $firstLine">
@@ -1481,12 +1484,12 @@
 
 
 
-    <xsl:function name="es:font-face">
+    <xsl:function name="nk:font-face">
         <xsl:param name="href" as="xs:string"/>
         <xsl:param name="name" as="xs:string"/>
         <xsl:param name="type" as="xs:string"/>
 
-        <xsl:variable name="data-url" select="es:font-data-url($href, $type)"/>
+        <xsl:variable name="data-url" select="nk:font-data-url($href, $type)"/>
 
         <xsl:variable name="font-face" as="xs:string*">
             <xsl:text>@font-face {</xsl:text>
@@ -1496,13 +1499,13 @@
         <xsl:sequence select="$font-face => string-join()"/>
     </xsl:function>
 
-    <xsl:function name="es:font-data-url" as="xs:string">
+    <xsl:function name="nk:font-data-url" as="xs:string">
         <xsl:param name="href" as="xs:string"/>
         <xsl:param name="type" as="xs:string"/>
 
         <xsl:variable name="result" select="''"/>
 
-        <xsl:variable name="result" select="es:font-as-data-url($href, $type)" use-when="function-available('es:font-as-data-url')"/>
+        <xsl:variable name="result" select="nk:font-as-data-url($href, $type)" use-when="function-available('nk:font-as-data-url')"/>
 
         <xsl:variable name="result" use-when="function-available('ioutils:toByteArray')" xmlns:url="java.net.URL" xmlns:istrem="java.io.InputStream" xmlns:ioutils="org.apache.commons.io.IOUtils" xmlns:enc="java.util.Base64$Encoder" xmlns:b64="java.util.Base64">
             <!--        
@@ -1523,7 +1526,7 @@
 
     </xsl:function>
 
-    <xsl:function name="es:renderedTextLength" as="xs:double">
+    <xsl:function name="nk:renderedTextLength" as="xs:double">
         <xsl:param name="text" as="xs:string"/>
         <xsl:param name="fontStyle" as="map(*)"/>
         <xsl:variable name="result" select="-1"/>
@@ -1540,29 +1543,30 @@
             <xsl:variable name="r2d" select="font:getStringBounds($jfont, $text, $frc)"/>
             <xsl:sequence select="r2d:getWidth($r2d)"/>
         </xsl:variable>
-        <xsl:variable name="result" use-when="function-available('es:textdimensions')">
-            <xsl:sequence select="es:textdimensions($text, map:put($fontStyle, 'unit', 'pt'))?width ! xs:double(.)"/>
+        <xsl:variable name="result" use-when="function-available('nk:textdimensions')">
+            <xsl:sequence select="nk:textdimensions($text, map:put($fontStyle, 'unit', 'pt'))?width ! xs:double(.)"/>
         </xsl:variable>
         <xsl:sequence select="$result"/>
 
     </xsl:function>
 
-    <xsl:function name="es:create-font-info" as="map(*)">
+    <xsl:function name="nk:create-font-info" as="map(*)">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:param name="size" as="xs:double"/>
         <xsl:param name="emphasis" as="xs:boolean"/>
 
         <xsl:variable name="fonts" select="$schemaSetConfig?config?styles?fonts"/>
 
-        <xsl:variable name="variant" select="if ($emphasis) then
-            ('emphasis')
-            else
-            ('main')"/>
+        <xsl:variable name="variant" select="
+                if ($emphasis) then
+                    ('emphasis')
+                else
+                    ('main')"/>
         <xsl:variable name="font" select="
-            $fonts($variant)"/>
+                $fonts($variant)"/>
         <xsl:variable name="style" select="($font?style, 'normal')[1]"/>
         <xsl:variable name="name" select="($font?name, 'xsd2svg ' || $variant)[1]"/>
-        
+
         <xsl:variable name="svg-attributes" as="attribute()*">
             <xsl:attribute name="font-family" select="$name"/>
             <xsl:attribute name="font-size" select="$size"/>
@@ -1591,12 +1595,12 @@
 
     </xsl:function>
 
-    <xsl:function name="es:getReferencedSchemas" as="map(xs:string, document-node(element(xs:schema))*)">
+    <xsl:function name="nk:getReferencedSchemas" as="map(xs:string, document-node(element(xs:schema))*)">
         <xsl:param name="schema" as="document-node()"/>
-        <xsl:sequence select="es:getReferencedSchemas($schema, ())"/>
+        <xsl:sequence select="nk:getReferencedSchemas($schema, ())"/>
     </xsl:function>
 
-    <xsl:function name="es:getReferencedSchemas" as="map(xs:string, document-node(element(xs:schema))*)">
+    <xsl:function name="nk:getReferencedSchemas" as="map(xs:string, document-node(element(xs:schema))*)">
         <xsl:param name="schema" as="document-node()"/>
         <xsl:param name="knownURIs" as="xs:string*"/>
 
@@ -1614,14 +1618,14 @@
                 for $iu
                 in ($importURIs)[not(. = $knownURIs)]
                 return
-                    es:getReferencedSchemas(doc($iu),
+                    nk:getReferencedSchemas(doc($iu),
                     ($knownURIs, $schemaUri, $importURIs, $includeURIs))" as="map(xs:string, document-node(element(xs:schema))*)*"/>
 
         <xsl:variable name="includeSchemas" select="
                 for $iu
                 in ($includeURIs)[not(. = ($knownURIs, $schemaUri))]
                 return
-                    es:getReferencedSchemas(doc($iu),
+                    nk:getReferencedSchemas(doc($iu),
                     ($knownURIs, $schemaUri, $importURIs, $includeURIs))" as="map(xs:string, document-node(element(xs:schema))*)*"/>
 
 
@@ -1631,7 +1635,7 @@
                 map:merge($maps, map {'duplicates': 'combine'})"/>
     </xsl:function>
 
-    <xsl:function name="es:getParents" as="element()*">
+    <xsl:function name="nk:getParents" as="element()*">
         <xsl:param name="this" as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
 
@@ -1655,11 +1659,11 @@
 
                 <xsl:variable name="key" select="$key-map($this/local-name())"/>
 
-                <xsl:variable name="key" select="es:exactly-one($key, 'No parents available for ' || $this/local-name() || ' elements.')"/>
+                <xsl:variable name="key" select="nk:exactly-one($key, 'No parents available for ' || $this/local-name() || ' elements.')"/>
 
                 <xsl:variable name="schemas" select="map:keys($schema-context) ! $schema-context(.)"/>
 
-                <xsl:variable name="parents" select="$schemas/key($key, es:getName($this))"/>
+                <xsl:variable name="parents" select="$schemas/key($key, nk:getName($this))"/>
 
                 <xsl:sequence select="$parents"/>
 
@@ -1671,7 +1675,7 @@
 
     </xsl:function>
 
-    <xsl:function name="es:getUses" as="element()*">
+    <xsl:function name="nk:getUses" as="element()*">
         <xsl:param name="component"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
 
@@ -1682,23 +1686,23 @@
 
         <xsl:variable name="containedLocals" select="$containedLocals except $ignores"/>
 
-        <xsl:variable name="typeRef" select="$component/(self::xs:element | self::xs:attribute)/@type/es:getReference(., $schemaSetConfig)"/>
+        <xsl:variable name="typeRef" select="$component/(self::xs:element | self::xs:attribute)/@type/nk:getReference(., $schemaSetConfig)"/>
 
         <xsl:variable name="children" select="$component//xs:* except $ignores"/>
-        <xsl:variable name="refs" select="$children/(@ref | @base | @itemType | @memberTypes)/es:getReferences(., $schemaSetConfig)"/>
+        <xsl:variable name="refs" select="$children/(@ref | @base | @itemType | @memberTypes)/nk:getReferences(., $schemaSetConfig)"/>
 
         <xsl:sequence select="$containedLocals | $typeRef | $refs"/>
 
     </xsl:function>
 
-    <xsl:function name="es:mergeMaps" as="map(*)">
+    <xsl:function name="nk:mergeMaps" as="map(*)">
         <xsl:param name="maps" as="map(*)*"/>
 
-        <xsl:sequence select="fold-left($maps, map{}, es:mergeMaps#2)"/>
+        <xsl:sequence select="fold-left($maps, map{}, nk:mergeMaps#2)"/>
 
     </xsl:function>
 
-    <xsl:function name="es:mergeMaps" as="map(*)">
+    <xsl:function name="nk:mergeMaps" as="map(*)">
         <xsl:param name="map1" as="map(*)"/>
         <xsl:param name="map2" as="map(*)"/>
 
@@ -1709,7 +1713,7 @@
                 <xsl:variable name="value2" select="$map2($key)"/>
                 <xsl:map-entry key="$key" select="
                         if ($value1 instance of map(*) and $value2 instance of map(*)) then
-                            es:mergeMaps($value1, $value2)
+                            nk:mergeMaps($value1, $value2)
                         else
                             if (empty($value1)) then
                                 ($value2)
@@ -1727,7 +1731,7 @@
     Component Info
     -->
 
-    <xsl:function name="es:group-components" as="map(xs:string, item()*)">
+    <xsl:function name="nk:group-components" as="map(xs:string, item()*)">
         <xsl:param name="components" as="map(xs:string, item()*)*"/>
         <xsl:param name="grouping" as="xs:string*"/>
 
@@ -1737,32 +1741,32 @@
         <xsl:map>
             <xsl:for-each-group select="$components" group-by=".($first-grouping)">
                 <xsl:sequence select="map{
-                    string(current-grouping-key()) : if (empty($rest-grouping)) then (current-group()) else es:group-components(current-group(), $rest-grouping)
+                    string(current-grouping-key()) : if (empty($rest-grouping)) then (current-group()) else nk:group-components(current-group(), $rest-grouping)
                     }"/>
             </xsl:for-each-group>
         </xsl:map>
 
     </xsl:function>
 
-    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+    <xsl:function name="nk:getComponentInfos" as="map(xs:string, item()*)*">
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
-        <xsl:sequence select="es:getComponentInfos($schemaSetConfig, '*')"/>
+        <xsl:sequence select="nk:getComponentInfos($schemaSetConfig, '*')"/>
     </xsl:function>
 
-    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+    <xsl:function name="nk:getComponentInfos" as="map(xs:string, item()*)*">
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
         <xsl:param name="types" as="xs:string*"/>
-        <xsl:sequence select="es:getComponentInfos($schemaSetConfig, $types, '*')"/>
+        <xsl:sequence select="nk:getComponentInfos($schemaSetConfig, $types, '*')"/>
     </xsl:function>
 
-    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+    <xsl:function name="nk:getComponentInfos" as="map(xs:string, item()*)*">
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
         <xsl:param name="types" as="xs:string*"/>
         <xsl:param name="namesapce" as="xs:string*"/>
-        <xsl:sequence select="es:getComponentInfos($schemaSetConfig, $types, $namesapce, '*')"/>
+        <xsl:sequence select="nk:getComponentInfos($schemaSetConfig, $types, $namesapce, '*')"/>
     </xsl:function>
 
-    <xsl:function name="es:getComponentInfos" as="map(xs:string, item()*)*">
+    <xsl:function name="nk:getComponentInfos" as="map(xs:string, item()*)*">
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
         <xsl:param name="types" as="xs:string*"/>
         <xsl:param name="namesapce" as="xs:string*"/>
@@ -1784,12 +1788,12 @@
 
         <xsl:variable name="components" select="$all-components[(local-name(), '*') = $types]"/>
 
-        <xsl:sequence select="$components ! es:getComponentInfo(., $schemaSetConfig)"/>
+        <xsl:sequence select="$components ! nk:getComponentInfo(., $schemaSetConfig)"/>
 
     </xsl:function>
 
 
-    <xsl:function name="es:getComponentInfo" as="map(xs:string, item()*)">
+    <xsl:function name="nk:getComponentInfo" as="map(xs:string, item()*)">
         <xsl:param name="comp" as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
 
@@ -1797,15 +1801,15 @@
         <xsl:variable name="nested" select="$nested except $nested//*"/>
         <xsl:variable name="nested-by" select="$comp/ancestor::*[@name][1]"/>
 
-        <xsl:variable name="coreInfo" select="es:getComponentCoreInfo($comp)"/>
+        <xsl:variable name="coreInfo" select="nk:getComponentCoreInfo($comp)"/>
 
         <xsl:variable name="detailInfo" select="
             map{
-            'used-by' : $comp/es:getParents(., $schemaSetConfig) ! es:getComponentCoreInfo(.),
-            'uses' : $comp/es:getUses(., $schemaSetConfig) ! es:getComponentCoreInfo(.),
-            'nested' : $nested/es:getComponentCoreInfo(.),
-            'nested-by' : $nested-by/es:getComponentCoreInfo(.),
-            'get-svg-model' : function($standalone as xs:boolean){es:svg-model($comp, $schemaSetConfig, $standalone)}
+            'used-by' : $comp/nk:getParents(., $schemaSetConfig) ! nk:getComponentCoreInfo(.),
+            'uses' : $comp/nk:getUses(., $schemaSetConfig) ! nk:getComponentCoreInfo(.),
+            'nested' : $nested/nk:getComponentCoreInfo(.),
+            'nested-by' : $nested-by/nk:getComponentCoreInfo(.),
+            'get-svg-model' : function($standalone as xs:boolean){nk:svg-model($comp, $schemaSetConfig, $standalone)}
             }
             "/>
 
@@ -1814,7 +1818,7 @@
                 "/>
 
     </xsl:function>
-    <xsl:function name="es:getComponentCoreInfo" as="map(xs:string, item()*)">
+    <xsl:function name="nk:getComponentCoreInfo" as="map(xs:string, item()*)">
         <xsl:param name="comp" as="element()"/>
 
         <xsl:sequence select="
@@ -1824,12 +1828,12 @@
                 'type' : $comp/local-name(),
                 'namespace' : ($comp/root(.)/xs:schema/@targetNamespace/string(.), '')[1],
                 'scope' : if ($comp/(parent::xs:schema|self::xs:schema)) then ('global') else ('local'),
-                'qname' : if ($comp/self::xs:schema) then () else es:getName($comp)
+                'qname' : if ($comp/self::xs:schema) then () else nk:getName($comp)
             }"/>
 
     </xsl:function>
 
-    <xsl:function name="es:getPrimitiveTypeCoreInfo" as="map(xs:string, item()*)">
+    <xsl:function name="nk:getPrimitiveTypeCoreInfo" as="map(xs:string, item()*)">
         <xsl:param name="primitiveTypeName" as="xs:QName"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
         <xsl:variable name="namespace" select="namespace-uri-from-QName($primitiveTypeName)"/>
@@ -1846,7 +1850,7 @@
 
     </xsl:function>
 
-    <xsl:function name="es:svg-model">
+    <xsl:function name="nk:svg-model">
         <xsl:param name="xsdnode" as="element()"/>
         <xsl:param name="schemaSetConfig" as="map(xs:string, map(*))"/>
         <xsl:param name="standalone" as="xs:boolean"/>
@@ -1856,7 +1860,7 @@
         -->
     </xsl:function>
 
-    <xsl:function name="es:getMasterFiles" as="xs:anyURI*">
+    <xsl:function name="nk:getMasterFiles" as="xs:anyURI*">
         <xsl:param name="url" as="xs:anyURI"/>
         <xsl:variable name="collection-urls" select="uri-collection($url)"/>
 
@@ -1872,7 +1876,7 @@
                     let $doc := doc(.),
                         $tns := ($doc/*/@targetNamespace, '')[1]
                     return
-                        es:getReferencedSchemas($doc)($tns) ! base-uri(/)
+                        nk:getReferencedSchemas($doc)($tns) ! base-uri(/)
                 }
                 ) => map:merge()
                 "/>
@@ -1897,61 +1901,61 @@
         <xsl:sequence select="$collection-urls[count($schema-include-reverse-map(.)) = 1]"/>
     </xsl:function>
 
-    <xsl:function name="es:getReferencInfo">
+    <xsl:function name="nk:getReferencInfo">
         <xsl:param name="attribute"/>
         <xsl:param name="schemaSetCfg" as="map(xs:string, item()*)"/>
         <xsl:variable name="parent" select="$attribute/parent::*"/>
         <xsl:variable name="qnames" select="
                 if ($attribute/self::attribute(memberTypes)) then
                     (
-                    $attribute/tokenize(., '\s') ! es:getQName(., $parent)
+                    $attribute/tokenize(., '\s') ! nk:getQName(., $parent)
                     )
                 else
-                    es:getQName($attribute)
+                    nk:getQName($attribute)
                 "/>
 
         <xsl:variable name="referencedComp" select="
                 if (count($qnames) gt 1) then
-                    $qnames ! es:getReferenceByQName(., $schemaSetCfg, 'simpleType', false())
+                    $qnames ! nk:getReferenceByQName(., $schemaSetCfg, 'simpleType', false())
                 else
-                    es:getReference($attribute, $schemaSetCfg)
+                    nk:getReference($attribute, $schemaSetCfg)
                 "/>
 
         <xsl:variable name="xsdSimpleTypes" select="$qnames[namespace-uri-from-QName(.) = $XSDNS]"/>
 
 
-        <xsl:sequence select="$referencedComp ! es:getComponentCoreInfo(.)"/>
+        <xsl:sequence select="$referencedComp ! nk:getComponentCoreInfo(.)"/>
 
-        <xsl:sequence select="$xsdSimpleTypes ! es:getPrimitiveTypeCoreInfo(., $schemaSetCfg)"/>
+        <xsl:sequence select="$xsdSimpleTypes ! nk:getPrimitiveTypeCoreInfo(., $schemaSetCfg)"/>
 
     </xsl:function>
 
-    <xsl:function name="es:config-as-map" as="map(*)">
+    <xsl:function name="nk:config-as-map" as="map(*)">
         <xsl:param name="configs" as="document-node()*"/>
-        <xsl:sequence select="es:config-as-map($configs, map{})"/>
+        <xsl:sequence select="nk:config-as-map($configs, map{})"/>
     </xsl:function>
 
-    <xsl:function name="es:config-as-map" as="map(*)">
+    <xsl:function name="nk:config-as-map" as="map(*)">
         <xsl:param name="configs" as="document-node()*"/>
         <xsl:param name="additional-parameter" as="map(*)"/>
 
         <xsl:variable name="as-maps" as="map(*)*">
-            <xsl:apply-templates select="$configs/*" mode="es:config-as-map"/>
+            <xsl:apply-templates select="$configs/*" mode="nk:config-as-map"/>
         </xsl:variable>
 
-        <xsl:sequence select="($as-maps, $additional-parameter) => es:mergeMaps()"/>
+        <xsl:sequence select="($as-maps, $additional-parameter) => nk:mergeMaps()"/>
 
     </xsl:function>
 
-    <xsl:mode name="es:config-as-map" on-no-match="fail"/>
+    <xsl:mode name="nk:config-as-map" on-no-match="fail"/>
 
-    <xsl:template match="/config" mode="es:config-as-map">
+    <xsl:template match="/config" mode="nk:config-as-map">
         <xsl:map>
             <xsl:apply-templates select="*" mode="#current"/>
         </xsl:map>
     </xsl:template>
 
-    <xsl:template match="styles | css | fonts | fonts/*" mode="es:config-as-map">
+    <xsl:template match="styles | css | fonts | fonts/*" mode="nk:config-as-map">
         <xsl:map-entry key="local-name()">
             <xsl:map>
                 <xsl:apply-templates select="@* | *" mode="#current"/>
@@ -1959,11 +1963,11 @@
         </xsl:map-entry>
     </xsl:template>
 
-    <xsl:template match="@href" mode="es:config-as-map">
+    <xsl:template match="@href" mode="nk:config-as-map">
         <xsl:map-entry key="local-name()" select="resolve-uri(., base-uri(..))"/>
     </xsl:template>
 
-    <xsl:template match="@*" mode="es:config-as-map">
+    <xsl:template match="@*" mode="nk:config-as-map">
         <xsl:map-entry key="local-name()" select="string(.)"/>
     </xsl:template>
 

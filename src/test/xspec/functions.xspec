@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:es="http://www.escali.schematron-quickfix.com/"  xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema" stylesheet="../../main/resources/xsl/functions.xsl">
+<x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:nk="http://www.nkutsche.com/" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema" stylesheet="../../main/resources/com/nkutsche/xsd2svg/xsl/functions.xsl">
     
-    <x:scenario label="Scenario for testing function es:getReference">
-        <x:call function="es:getReference"/>
+    <x:scenario label="Scenario for testing function nk:getReference">
+        <x:call function="nk:getReference"/>
         <x:scenario label="with one namespace/xsd">
             <x:variable name="schema" as="document-node()" select="/">
-                <xs:schema targetNamespace="http://www.escali.schematron-quickfix.com/">
+                <xs:schema targetNamespace="http://www.nkutsche.com/">
                     <xs:element name="foo">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element ref="es:bar"/>
-                                <xs:group ref="es:foo"/>
-                                <xs:any namespace="http://www.escali.schematron-quickfix.com/"/>
+                                <xs:element ref="nk:bar"/>
+                                <xs:group ref="nk:foo"/>
+                                <xs:any namespace="http://www.nkutsche.com/"/>
                                 <xs:any namespace="##targetNamespace"/>
                             </xs:sequence>
                         </xs:complexType>
                     </xs:element>
-                    <xs:element name="bar" type="es:barType"/>
+                    <xs:element name="bar" type="nk:barType"/>
                     <xs:simpleType name="barType"/>
                     <xs:group name="foo"/>
                 </xs:schema>
@@ -27,7 +27,7 @@
             </x:call>
             <x:scenario label="for reference to bar">
                 <x:call>
-                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:element[@ref = 'es:bar'][1]/@ref"/>
+                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:element[@ref = 'nk:bar'][1]/@ref"/>
                 </x:call>
                 <x:expect label="target name" test="$x:result/@name/string()" select="'bar'"/>
             </x:scenario>
@@ -39,7 +39,7 @@
             </x:scenario>
             <x:scenario label="for reference to bar" catch="true">
                 <x:call>
-                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:group[@ref = 'es:foo'][1]/@ref"/>
+                    <x:param select="$schema/*/xs:element[@name = 'foo']//xs:group[@ref = 'nk:foo'][1]/@ref"/>
                 </x:call>
                 <x:expect label="result"><xs:group name="foo"/></x:expect>
             </x:scenario>
@@ -47,26 +47,26 @@
                 <x:call>
                     <x:param select="$schema/*/xs:element[@name = 'foo']//xs:any[1]/@namespace"/>
                 </x:call>
-                <x:expect label="target name" test="$x:result/@targetNamespace/string()" select="'http://www.escali.schematron-quickfix.com/'"/>
+                <x:expect label="target name" test="$x:result/@targetNamespace/string()" select="'http://www.nkutsche.com/'"/>
                 <x:expect label="target type" test="$x:result/local-name()" select="'schema'"/>
             </x:scenario>
             <x:scenario label="for any namespace reference">
                 <x:call>
                     <x:param select="$schema/*/xs:element[@name = 'foo']//xs:any[2]/@namespace"/>
                 </x:call>
-                <x:expect label="target name" test="$x:result/@targetNamespace/string()" select="'http://www.escali.schematron-quickfix.com/'"/>
+                <x:expect label="target name" test="$x:result/@targetNamespace/string()" select="'http://www.nkutsche.com/'"/>
                 <x:expect label="target type" test="$x:result/local-name()" select="'schema'"/>
             </x:scenario>
         </x:scenario>
     </x:scenario>
     
-    <x:scenario label="Scenario for testing function es:getParents">
-        <x:call function="es:getParents"/>
+    <x:scenario label="Scenario for testing function nk:getParents">
+        <x:call function="nk:getParents"/>
         <x:scenario label="for case 1">
             <x:scenario label="with element bar">
                 <x:call>
                     <x:param href="xsd/parents/foo.xsd" select="/xs:schema/xs:element[1]"/>
-                    <x:param href="xsd/parents/foo.xsd" select="map{'schema-map' : es:getReferencedSchemas(/)}"/>
+                    <x:param href="xsd/parents/foo.xsd" select="map{'schema-map' : nk:getReferencedSchemas(/)}"/>
                 </x:call>
                 <x:expect label="amount of parents" test="count($x:result)" select="0"/>
                 <x:expect label="Parents"/>
@@ -74,8 +74,8 @@
         </x:scenario>
     </x:scenario>
     
-    <x:scenario label="Scenario for testing function es:getReferencedSchemas">
-        <x:call function="es:getReferencedSchemas"/>
+    <x:scenario label="Scenario for testing function nk:getReferencedSchemas">
+        <x:call function="nk:getReferencedSchemas"/>
         
         <x:scenario label="simple include reference">
             <x:call>
@@ -88,8 +88,8 @@
     </x:scenario>
     
     
-    <x:scenario label="Scenario for testing function es:getPrefixes">
-        <x:call function="es:getPrefixes"/>
+    <x:scenario label="Scenario for testing function nk:getPrefixes">
+        <x:call function="nk:getPrefixes"/>
         
         <x:scenario label="trivial">
             <x:variable name="foo" href="xsd/prefixes/trivial/foo.xsd"/>
@@ -155,8 +155,8 @@
         </x:scenario>
     </x:scenario>
     
-    <x:scenario label="Scenario for testing function es:mergeMaps">
-        <x:call function="es:mergeMaps"/>
+    <x:scenario label="Scenario for testing function nk:mergeMaps">
+        <x:call function="nk:mergeMaps"/>
         
         <x:scenario label="empty map">
             <x:call>
@@ -206,13 +206,13 @@
         </x:scenario>
         
     </x:scenario>
-    <x:scenario label="Scneario for testing function es:config-as-map">
-        <x:call function="es:config-as-map"/>
+    <x:scenario label="Scneario for testing function nk:config-as-map">
+        <x:call function="nk:config-as-map"/>
         
         <x:scenario label="trivial config">
             <x:call>
                 <x:param select="/">
-                    <config xml:base="http://www.escali.schematron-quickfix.com/">
+                    <config xml:base="http://www.nkutsche.com/">
                         <styles>
                             <css href="css/colors.css"/>
                             <fonts>
@@ -223,14 +223,14 @@
                     </config>
                 </x:param>
             </x:call>
-            <x:expect label="result css map entry" test="$x:result?styles?css" select="map{'href' : 'http://www.escali.schematron-quickfix.com/css/colors.css'}"/>
+            <x:expect label="result css map entry" test="$x:result?styles?css" select="map{'href' : 'http://www.nkutsche.com/css/colors.css'}"/>
             <x:expect label="result fonts map entry" test="$x:result?styles?fonts" select="map {
                         'emphasis' : map{
-                            'href' : 'http://www.escali.schematron-quickfix.com/font/Oswald-Bold.ttf',
+                            'href' : 'http://www.nkutsche.com/font/Oswald-Bold.ttf',
                             'type' : 'truetype'
                         },
                         'main' : map{
-                            'href' : 'http://www.escali.schematron-quickfix.com/font/Oswald-Regular.ttf',
+                            'href' : 'http://www.nkutsche.com/font/Oswald-Regular.ttf',
                             'type' : 'truetype'
                         }
                     }"/>

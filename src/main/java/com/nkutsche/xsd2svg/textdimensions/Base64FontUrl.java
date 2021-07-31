@@ -1,4 +1,4 @@
-package de.data2type.je.textdimensions;
+package com.nkutsche.xsd2svg.textdimensions;
 
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package de.data2type.je.textdimensions;
+package com.nkutsche.xsd2svg.textdimensions;
 
 import net.sf.saxon.event.SequenceCollector;
 import net.sf.saxon.expr.StaticProperty;
@@ -6,6 +6,7 @@ import net.sf.saxon.expr.XPathContext;
 import net.sf.saxon.lib.ExtensionFunctionCall;
 import net.sf.saxon.lib.ExtensionFunctionDefinition;
 import net.sf.saxon.ma.map.HashTrieMap;
+import net.sf.saxon.om.GroundedValue;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.Sequence;
 import net.sf.saxon.om.StructuredQName;
@@ -14,47 +15,34 @@ import net.sf.saxon.s9api.XdmMap;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.value.AtomicValue;
 import net.sf.saxon.value.SequenceType;
-import net.sf.saxon.value.StringValue;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 
-import static de.data2type.je.textdimensions.TextDimensions.TextDimensionConfig;
+import static com.nkutsche.xsd2svg.textdimensions.TextDimensions.*;
 
-public class Base64UrlFontExtensionFunction extends ExtensionFunctionDefinition {
+public class TextDimensionExtensionFunction extends ExtensionFunctionDefinition {
 
 
-    private final StructuredQName funcname = new StructuredQName("es", "http://www.escali.schematron-quickfix.com/", "font-as-data-url");
+    private final StructuredQName funcname = new StructuredQName("nk", "http://www.nkutsche.com/", "textdimensions");
 
     @Override
     public StructuredQName getFunctionQName() {
         return funcname;
     }
 
-
-    @Override
-    public int getMinimumNumberOfArguments() {
-        return 1;
-    }
-
-    @Override
-    public int getMaximumNumberOfArguments() {
-        return getArgumentTypes().length;
-    }
-
     @Override
     public SequenceType[] getArgumentTypes() {
         return new SequenceType[]{
                 SequenceType.SINGLE_STRING,
-                SequenceType.OPTIONAL_STRING
+                new SequenceType(ItemType.ANY_MAP.getUnderlyingItemType(), StaticProperty.EXACTLY_ONE)
         };
     }
 
     @Override
     public SequenceType getResultType(SequenceType[] sequenceTypes) {
-        return SequenceType.SINGLE_STRING;
+        return new SequenceType(ItemType.ANY_MAP.getUnderlyingItemType(), StaticProperty.EXACTLY_ONE);
     }
 
     @Override
@@ -66,23 +54,18 @@ public class Base64UrlFontExtensionFunction extends ExtensionFunctionDefinition 
                 /* to get result of java processing code, you need a 'outputter' */
                 SequenceCollector outputter = xPathContext.getController().allocateSequenceOutputter(50);
 
-                String url = args[0].head().getStringValue();
-
-                String fontType = "truetype";
-                if(args.length > 1 && args[1] != null){
-                    fontType = value(args[1].head(), fontType);
-                }
-
+                String text = args[0].head().getStringValue();
+                TextDimensionConfig config = createConfig((HashTrieMap) args[1]);
                 try {
-                    Base64FontUrl b64fu = new Base64FontUrl(new URL(url), fontType);
-                    String dataUrl = b64fu.getDataUrl();
 
-                    outputter.write(new StringValue(dataUrl));
+                    HashMap<String, Double> map = new TextDimensions(config).getTextDimensions(text);
+    
+                    outputter.write(XdmMap.makeMap(map).getUnderlyingValue());
                     return outputter.getSequence();
 
-                } catch (IOException e){
+                } catch (FontFormatException | IOException e){
                     throw new XPathException(e);
-                }
+            }
 
             }
         };
@@ -97,11 +80,8 @@ public class Base64UrlFontExtensionFunction extends ExtensionFunctionDefinition 
     }
 
     private String value(Item item){
-        return value(item, null);
-    }
-    private String value(Item item, String def){
         if(item == null)
-            return def;
+            return null;
         return item.getStringValue();
 }
 

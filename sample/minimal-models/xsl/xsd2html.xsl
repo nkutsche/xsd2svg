@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:math="http://www.w3.org/2005/xpath-functions/math" xmlns:es="http://www.escali.schematron-quickfix.com/" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" exclude-result-prefixes="xs math" version="3.0" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:array="http://www.w3.org/2005/xpath-functions/array" xmlns:xsd2svg="http://www.xsd2svg.schematron-quickfix.com/">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:math="http://www.w3.org/2005/xpath-functions/math" xmlns:nk="http://www.nkutsche.com/" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" exclude-result-prefixes="xs math" version="3.0" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:array="http://www.w3.org/2005/xpath-functions/array" xmlns:xsd2svg="http://www.xsd2svg.nkutsche.com/">
 
-    <xsl:use-package name="http://www.escali.schematron-quickfix.com/xsd2svg" package-version="*">
+    <xsl:use-package name="http://www.nkutsche.com/xsd2svg" package-version="*">
         <xsl:override>
-            <xsl:param name="link-provider-function" select="function($comp){'#card_' || $comp?id}" as="function(map(xs:string, item()*)) as xs:string?"/>
+            <xsl:param name="link-provider-function" select="
+                    function ($comp) {
+                        '#card_' || $comp?id
+                    }" as="function(map(xs:string, item()*)) as xs:string?"/>
             <xsl:param name="config" select="doc('cfg/xsd2svg.xml')" as="document-node()?"/>
         </xsl:override>
     </xsl:use-package>
-    
-    
+
+
 
     <xsl:output method="html" html-version="5.0" indent="yes"/>
 
@@ -34,13 +37,21 @@
                     <head>
                         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"/>
                         <style type="text/css">
-                            h1, h2, h3 {margin-top: 1em;}
-
-                            h4, h5, h6 {margin-top: .5em;}
+                            h1,
+                            h2,
+                            h3 {
+                                margin-top: 1em;
+                            }
                             
-                            .row {margin-top: 2em;}
+                            h4,
+                            h5,
+                            h6 {
+                                margin-top: .5em;
+                            }
                             
-                            <xsl:sequence select="$schemaInfo?create-css()"/>
+                            .row {
+                                margin-top: 2em;
+                            }<xsl:sequence select="$schemaInfo?create-css()"/>
                         </style>
                     </head>
                     <body>
@@ -65,8 +76,8 @@
 
                                         <xsl:for-each select="$types">
                                             <xsl:variable name="type" select="."/>
-                                            
-                                            
+
+
                                             <xsl:variable name="globalComponents" select="$grouped-components($namespace) ! .($type) ! .('global')"/>
 
                                             <xsl:if test="exists($globalComponents)">
@@ -87,7 +98,7 @@
 
                                                 </xsl:variable>
 
-                                                <xsl:sequence select="es:createBootstrapRows(array{$divs}, 3)"/>
+                                                <xsl:sequence select="nk:createBootstrapRows(array{$divs}, 3)"/>
 
                                             </xsl:if>
                                         </xsl:for-each>
@@ -112,7 +123,7 @@
 
         <div class="card" id="card_{$comp?id}">
             <div class="card-header">
-                <xsl:value-of select="es:createCompTitle($comp, $schemaInfo)"/>
+                <xsl:value-of select="nk:createCompTitle($comp, $schemaInfo)"/>
             </div>
 
             <div class="card-body">
@@ -128,12 +139,12 @@
                         <div class="row justify-content-start">
                             <xsl:where-populated>
                                 <div class="col">
-                                    <xsl:sequence select="es:componentList('Parents', $comp?used-by, $schemaInfo)"/>
+                                    <xsl:sequence select="nk:componentList('Parents', $comp?used-by, $schemaInfo)"/>
                                 </div>
                             </xsl:where-populated>
                             <xsl:where-populated>
                                 <div class="col">
-                                    <xsl:sequence select="es:componentList('Uses', $comp?uses, $schemaInfo)"/>
+                                    <xsl:sequence select="nk:componentList('Uses', $comp?uses, $schemaInfo)"/>
                                 </div>
                             </xsl:where-populated>
                         </div>
@@ -151,13 +162,13 @@
 
     </xsl:template>
 
-    <xsl:function name="es:createCompTitle">
+    <xsl:function name="nk:createCompTitle">
         <xsl:param name="comp" as="map(*)"/>
         <xsl:param name="schemaInfo" as="map(*)"/>
-        <xsl:sequence select="es:createCompTitle($comp, $schemaInfo, ' / ')"/>
+        <xsl:sequence select="nk:createCompTitle($comp, $schemaInfo, ' / ')"/>
     </xsl:function>
 
-    <xsl:function name="es:createCompTitle">
+    <xsl:function name="nk:createCompTitle">
         <xsl:param name="comp" as="map(*)"/>
         <xsl:param name="schemaInfo" as="map(*)"/>
         <xsl:param name="separator" as="xs:string"/>
@@ -165,19 +176,19 @@
         <xsl:variable name="nested-by" select="$comp?nested-by"/>
         <xsl:variable name="nested-by-comp" select="$schemaInfo?components-by-id($nested-by?id)"/>
         <xsl:variable name="compName" select="$schemaInfo?print-qname($comp?qname)"/>
-        
+
         <xsl:variable name="compName" select="('@'[$comp?type = 'attribute'], $compName) => string-join()"/>
-        
+
         <xsl:variable name="ancTitle" select="
                 if (empty($nested-by)) then
                     ()
                 else
-                    (es:createCompTitle($nested-by-comp, $schemaInfo))"/>
+                    (nk:createCompTitle($nested-by-comp, $schemaInfo))"/>
 
         <xsl:sequence select="string-join(($ancTitle, $compName), $separator)"/>
     </xsl:function>
 
-    <xsl:function name="es:componentList">
+    <xsl:function name="nk:componentList">
         <xsl:param name="title"/>
         <xsl:param name="components" as="map(*)*"/>
         <xsl:param name="schemaInfo"/>
@@ -203,7 +214,7 @@
 
     </xsl:function>
 
-    <xsl:function name="es:createBootstrapRows">
+    <xsl:function name="nk:createBootstrapRows">
         <xsl:param name="cells" as="array(*)"/>
         <xsl:param name="cols" as="xs:integer"/>
 
