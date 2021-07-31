@@ -24,6 +24,25 @@
         </dependency>
     </dependencies>
     
+<!--    
+    Just for testing cases deploy on data2type server...
+    TODO: Publish on Maven Central
+    -->
+    <distributionManagement>
+        <repository>
+            <id>data2type-nexus</id>
+            <layout>default</layout>
+            <name>d2t public repo</name>
+            <url>https://repo.data2type.de/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>data2type-nexus</id>
+            <layout>default</layout>
+            <name>d2t public repo</name>
+            <url>https://repo.data2type.de/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <build>
         <plugins>
             
