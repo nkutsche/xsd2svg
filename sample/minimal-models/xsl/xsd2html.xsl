@@ -3,13 +3,12 @@
 
     <xsl:use-package name="http://www.nkutsche.com/xsd2svg" package-version="*">
         <xsl:override>
-            <xsl:param name="link-provider-function" select="
-                    function ($comp) {
-                        '#card_' || $comp?id
-                    }" as="function(map(xs:string, item()*)) as xs:string?"/>
+            <xsl:param name="link-provider-function" select="nk:getLink#1" as="function(map(xs:string, item()*)) as xs:string?"/>
             <xsl:param name="config" select="doc('cfg/xsd2svg.xml')" as="document-node()?"/>
         </xsl:override>
     </xsl:use-package>
+    
+    
 
 
 
@@ -67,6 +66,7 @@
                                         <xsl:value-of select="$outUrl"/>
                                     </p>
                                     <xsl:for-each select="$namespaces">
+                                        <xsl:sort select="."/>
                                         <xsl:variable name="namespace" select="."/>
 
                                         <h2>
@@ -98,7 +98,7 @@
 
                                                 </xsl:variable>
 
-                                                <xsl:sequence select="nk:createBootstrapRows(array{$divs}, 3)"/>
+                                                <xsl:sequence select="nk:createBootstrapRows(array{$divs}, 2)"/>
 
                                             </xsl:if>
                                         </xsl:for-each>
@@ -202,7 +202,7 @@
                 <ul class="list-group list-group-flush">
                     <xsl:for-each select="$components">
                         <li class="list-group-item">
-                            <a href="#{.?id}">
+                            <a href="{nk:getLink(.)}">
                                 <xsl:value-of select="$schemaInfo?print-qname(.?qname)"/>
                             </a>
                         </li>
@@ -213,6 +213,11 @@
         </xsl:if>
 
     </xsl:function>
+    
+    <xsl:function name="nk:getLink" as="xs:string">
+        <xsl:param name="comp" as="map(xs:string, item()*)"/>
+        <xsl:sequence select="'#card_' || $comp?id"/>
+    </xsl:function>
 
     <xsl:function name="nk:createBootstrapRows">
         <xsl:param name="cells" as="array(*)"/>
@@ -220,19 +225,21 @@
 
         <xsl:variable name="size" select="array:size($cells)"/>
 
-        <xsl:for-each select="1 to ($size idiv $cols + 1)">
-            <xsl:variable name="idx" select="(. - 1) * $cols"/>
-            <div class="row justify-content-start">
-                <xsl:for-each select="1 to $cols">
-                    <xsl:variable name="idx" select="$idx + ."/>
-                    <xsl:if test="$idx le $size">
-                        <div class="col-{12 idiv $cols}">
-                            <xsl:sequence select="$cells($idx)"/>
-                        </div>
-                    </xsl:if>
-                </xsl:for-each>
-            </div>
-        </xsl:for-each>
+        <xsl:where-populated>
+            <xsl:for-each select="1 to ($size idiv $cols + 1)">
+                <xsl:variable name="idx" select="(. - 1) * $cols"/>
+                <div class="row justify-content-start">
+                    <xsl:for-each select="1 to $cols">
+                        <xsl:variable name="idx" select="$idx + ."/>
+                        <xsl:if test="$idx le $size">
+                            <div class="col-{12 idiv $cols}">
+                                <xsl:sequence select="$cells($idx)"/>
+                            </div>
+                        </xsl:if>
+                    </xsl:for-each>
+                </div>
+            </xsl:for-each>
+        </xsl:where-populated>
 
     </xsl:function>
 

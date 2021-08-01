@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="../rnc/config.rnc" type="application/relax-ng-compact-syntax"?>
+<?xml-model href="../../../../src/main/resources/com/nkutsche/xsd2svg/rnc/config.rnc" type="application/relax-ng-compact-syntax"?>
 <config>
     <styles>
         <css href="custom.css"/>
@@ -8,5 +8,20 @@
             <main name="Arial" style="regular"/>
         </fonts>-->
     </styles>
-    
+    <namespaces>
+        <namespace prefix="foo_1" uri="foo_01.com"/>
+        <namespace prefix="foo_2" uri="foo_02.com"/>
+        <namespace prefix="foo_3" uri="foo_03.com"/>
+        <namespace prefix="foo_4" uri="foo_04.com"/>
+        <namespace prefix="foo_5" uri="foo_05.com"/>
+        <namespace prefix="foo_6" uri="foo_06.com"/>
+        <namespace prefix="foo_7" uri="foo_07.com"/>
+        <namespace prefix="foo_8" uri="foo_08.com"/>
+        <namespace prefix="foo_9" uri="foo_09.com"/>
+        <namespace prefix="foo_10" uri="foo_10.com"/>
+        <namespace prefix="foo_11" uri="foo_11.com"/>
+        <namespace prefix="foo_12" uri="foo_12.com"/>
+        <namespace prefix="foo_13" uri="foo_13.com"/>
+        <namespace prefix="foo_14" uri="foo_14.com"/>
+    </namespaces>
 </config>
