@@ -68,17 +68,24 @@
 
     <xsl:function name="nk:getPrefixes" as="map(xs:string, xs:string)">
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
-        <xsl:sequence select="nk:getPrefixes((map:keys($schema-context), $XSDNS), $schema-context)"/>
+        <xsl:sequence select="nk:getPrefixes($schema-context, map{})"/>
+    </xsl:function>
+
+    <xsl:function name="nk:getPrefixes" as="map(xs:string, xs:string)">
+        <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="given-namespaces" as="map(xs:string, xs:string)"/>
+        <xsl:sequence select="nk:getPrefixes((map:keys($schema-context), $XSDNS), $schema-context, $given-namespaces)"/>
     </xsl:function>
 
     <xsl:function name="nk:getPrefixes" as="map(xs:string, xs:string)">
         <xsl:param name="namespaces" as="xs:string*"/>
         <xsl:param name="schema-context" as="map(xs:string, document-node(element(xs:schema))*)"/>
+        <xsl:param name="given-namespaces" as="map(xs:string, xs:string)"/>
 
 
         <xsl:variable name="head" select="head($namespaces)"/>
         <xsl:variable name="others" select="
-            if (count($namespaces) gt 1) then nk:getPrefixes(tail($namespaces), $schema-context) else map{}
+            if (count($namespaces) gt 1) then nk:getPrefixes(tail($namespaces), $schema-context, $given-namespaces) else $given-namespaces
             "/>
 
         <xsl:variable name="schema" select="$schema-context($head), $schema-context?*"/>
@@ -97,7 +104,11 @@
 
         <xsl:variable name="suffixedPrefix" select="$suffixedPrefix[1]" as="xs:string"/>
 
-        <xsl:sequence select="map:put($others, $head, $suffixedPrefix)"/>
+        <xsl:sequence select="
+            if (map:contains($others, $head)) 
+            then $others 
+            else  map:put($others, $head, $suffixedPrefix)
+            "/>
 
     </xsl:function>
 
@@ -1963,6 +1974,16 @@
         </xsl:map-entry>
     </xsl:template>
 
+    <xsl:template match="namespaces" mode="nk:config-as-map">
+        <xsl:map-entry key="local-name()">
+            <xsl:map>
+                <xsl:for-each select="namespace">
+                    <xsl:sequence select="map:entry(@uri/string(.), string(@prefix))"/>
+                </xsl:for-each>
+            </xsl:map>
+        </xsl:map-entry>
+    </xsl:template>
+    
     <xsl:template match="@href" mode="nk:config-as-map">
         <xsl:map-entry key="local-name()" select="resolve-uri(., base-uri(..))"/>
     </xsl:template>

@@ -4,7 +4,15 @@ start = config
 
 config = 
 ## Root element of the configuration document
-element config { styles? }
+element config { styles?, namespaces? }
+
+namespaces =
+## List of namespaces to provide specific configurations
+element namespaces {nspace*}
+
+nspace =
+## Configures a namespace
+element namespace {attribute prefix {xs:string}, attribute uri {xs:anyURI}}
 
 styles = 
 ## Configures the styling part of the SVG generation

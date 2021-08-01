@@ -120,6 +120,7 @@
             <x:variable name="baz" href="xsd/prefixes/conflict-2/baz.xsd"/>
             <x:call>
                 <x:param select="map{'foo.com' : $foo, 'bar.com' : $bar, 'baz.com' : $baz}" position="2"/>
+                <x:param select="map{}" position="3"/>
             </x:call>
             <x:scenario label="with order foo, bar, baz">
                 <x:call>
@@ -139,6 +140,7 @@
             <x:variable name="bar" href="xsd/prefixes/default-ns/bar.xsd"/>
             <x:call>
                 <x:param select="map{'foo.com' : $foo, 'bar.com' : $bar}" position="2"/>
+                <x:param select="map{}" position="3"/>
             </x:call>
             <x:scenario label="foo only">
                 <x:call>
@@ -151,6 +153,17 @@
                     <x:param select="('foo.com', 'bar.com')"/>
                 </x:call>
                 <x:expect label="return value" select="map{'foo.com' : 'ns2', 'bar.com' : 'ns1'}"/>
+            </x:scenario>
+        </x:scenario>
+        <x:scenario label="given namespace map">
+            <x:variable name="foo" href="xsd/prefixes/trivial/foo.xsd"/>
+            <x:scenario label="trivial">
+                <x:variable name="givenNs" select="map{'foo.com' : 'myFoo', 'bar.com' : 'bar'}"/>
+                <x:call>
+                    <x:param select="map{'foo.com' : $foo}"/>
+                    <x:param select="$givenNs"/>
+                </x:call>
+                <x:expect label="return value" select="map{'foo.com' : 'myFoo', 'bar.com' : 'bar', $XSDNS : 'xs'}"/>
             </x:scenario>
         </x:scenario>
     </x:scenario>

@@ -144,7 +144,7 @@
         
         <xsl:variable name="schema-namespace-map" select="nk:getReferencedSchemas($schema)"/>
         
-        <xsl:variable name="prefix-map" select="nk:getPrefixes($schema-namespace-map)"/>
+        <xsl:variable name="prefix-map" select="nk:getPrefixes($schema-namespace-map, ($config?namespaces, map{})[1])"/>
         
         <xsl:variable name="schemaSetCfg" select="map{
             'schema-map' : $schema-namespace-map,
