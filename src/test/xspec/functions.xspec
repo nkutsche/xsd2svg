@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:description xmlns:x="http://www.jenitennison.com/xslt/xspec" xmlns:nk="http://www.nkutsche.com/" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:xs="http://www.w3.org/2001/XMLSchema" stylesheet="../../main/resources/com/nkutsche/xsd2svg/xsl/functions.xsl">
-    
+
     <x:scenario label="Scenario for testing function nk:getReference">
         <x:call function="nk:getReference"/>
         <x:scenario label="with one namespace/xsd">
@@ -59,7 +59,7 @@
             </x:scenario>
         </x:scenario>
     </x:scenario>
-    
+
     <x:scenario label="Scenario for testing function nk:getParents">
         <x:call function="nk:getParents"/>
         <x:scenario label="for case 1">
@@ -73,10 +73,10 @@
             </x:scenario>
         </x:scenario>
     </x:scenario>
-    
+
     <x:scenario label="Scenario for testing function nk:getReferencedSchemas">
         <x:call function="nk:getReferencedSchemas"/>
-        
+
         <x:scenario label="simple include reference">
             <x:call>
                 <x:param href="xsd/includes/foo.xsd"/>
@@ -84,13 +84,13 @@
             <x:expect label="map keys" select="'foo.com'" test="map:keys($x:result)"/>
             <x:expect label="schema amount for ns foo.com" select="2" test="$x:result('foo.com') => count()"/>
         </x:scenario>
-        
+
     </x:scenario>
-    
-    
+
+
     <x:scenario label="Scenario for testing function nk:getPrefixes">
         <x:call function="nk:getPrefixes"/>
-        
+
         <x:scenario label="trivial">
             <x:variable name="foo" href="xsd/prefixes/trivial/foo.xsd"/>
             <x:call>
@@ -167,10 +167,10 @@
             </x:scenario>
         </x:scenario>
     </x:scenario>
-    
+
     <x:scenario label="Scenario for testing function nk:mergeMaps">
         <x:call function="nk:mergeMaps"/>
-        
+
         <x:scenario label="empty map">
             <x:call>
                 <x:param select="map{}"/>
@@ -203,25 +203,25 @@
             </x:call>
             <x:expect label="return map" select="map{'foo' : 'fooval', 'bar' : 'def-level2', 'baz' : 'def-level3'}"/>
         </x:scenario>
-        
+
         <x:scenario label="two maps, sub maps">
             <x:call>
                 <x:param select="map{'foo' : map{'bar' : 'value'}}, map{'foo' : map{'bar': 'default', 'baz' : 'default'}}"/>
             </x:call>
             <x:expect label="return map" select="map{'foo' : map{'bar' : 'value', 'baz' : 'default'}}"/>
         </x:scenario>
-        
+
         <x:scenario label="one map, one empty">
             <x:call>
                 <x:param select="map{'foo' : map{'bar' : 'value'}}, map{'foo' : map{'bar': 'default', 'baz' : 'default'}}"/>
             </x:call>
             <x:expect label="return map" select="map{'foo' : map{'bar' : 'value', 'baz' : 'default'}}"/>
         </x:scenario>
-        
+
     </x:scenario>
     <x:scenario label="Scneario for testing function nk:config-as-map">
         <x:call function="nk:config-as-map"/>
-        
+
         <x:scenario label="trivial config">
             <x:call>
                 <x:param select="/">
