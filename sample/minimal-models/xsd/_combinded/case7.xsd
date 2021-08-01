@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo_07.com" xmlns:foo="foo_07.com">
+
+        <xs:complexType name="fooType">
+                <xs:annotation>
+                        <xs:documentation>Documentation of type fooType</xs:documentation>
+                </xs:annotation>
+                <xs:attributeGroup ref="foo:barAGroup"/>
+        </xs:complexType>
+        
+        <xs:attributeGroup name="fooAGroup">
+                <xs:annotation>
+                        <xs:documentation>Documentation of attribute group fooAGroup</xs:documentation>
+                </xs:annotation>
+                <xs:attribute name="bar" type="xs:string">
+                        <xs:annotation>
+                                <xs:documentation>Documentation of attribute bar</xs:documentation>
+                        </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="baz" type="xs:string">
+                        <xs:annotation>
+                                <xs:documentation>Documentation of attribute baz</xs:documentation>
+                        </xs:annotation>
+                </xs:attribute>
+        </xs:attributeGroup>
+        
+        <xs:attributeGroup name="barAGroup">
+                <xs:annotation>
+                        <xs:documentation>Documentation of attribute group barAGroup</xs:documentation>
+                </xs:annotation>
+                <xs:attribute ref="foo:bar"/>
+                <xs:attributeGroup ref="foo:fooAGroup"/>
+        </xs:attributeGroup>
+        
+        <xs:attribute name="bar" type="xs:string">
+                <xs:annotation>
+                        <xs:documentation>Documentation of attribute foo:bar</xs:documentation>
+                </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="baz" type="foo:type">
+                <xs:annotation>
+                        <xs:documentation>Documentation of attribute foo:baz</xs:documentation>
+                </xs:annotation>
+        </xs:attribute>
+        
+        <xs:simpleType name="type">
+                <xs:annotation>
+                        <xs:documentation>Documentation of simpleType foo:type</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                        <xs:enumeration value="foo"/>
+                        <xs:enumeration value="bar"/>
+                        <xs:enumeration value="baz"/>
+                </xs:restriction>
+        </xs:simpleType>
+        
+        
+</xs:schema>

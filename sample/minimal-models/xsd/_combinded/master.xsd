@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:import schemaLocation="case1.xsd" namespace="foo_1.com"/>
+    <xs:import schemaLocation="case2.xsd" namespace="foo_2.com"/>
+    <xs:import schemaLocation="case3.xsd" namespace="foo_3.com"/>
+    <xs:import schemaLocation="case4.xsd" namespace="foo_4.com"/>
+    <xs:import schemaLocation="case5.xsd" namespace="foo_5.com"/>
+    <xs:import schemaLocation="case6.xsd" namespace="foo_6.com"/>
+    <xs:import schemaLocation="case7.xsd" namespace="foo_7.com"/>
+    <xs:import schemaLocation="case8.xsd" namespace="foo_8.com"/>
+    <xs:import schemaLocation="case9.xsd" namespace="foo_9.com"/>
+    <xs:import schemaLocation="case10.xsd" namespace="foo_10.com"/>
+    <xs:import schemaLocation="case11.xsd" namespace="foo_11.com"/>
+    <xs:import schemaLocation="case12_1.xsd" namespace="foo_12.com"/>
+    <xs:import schemaLocation="case13.xsd" namespace="foo_13.com"/>
+    <xs:import schemaLocation="case14.xsd" namespace="foo_14.com"/>
+</xs:schema>

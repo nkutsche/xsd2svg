@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo_02.com" xmlns:foo="foo_02.com">
+        <xs:element name="bar" type="xs:string">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element bar</xs:documentation>
+                </xs:annotation>
+        </xs:element>
+        <xs:element name="baz" type="foo:type">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element bar</xs:documentation>
+                </xs:annotation>
+        </xs:element>
+        <xs:simpleType name="type">
+                <xs:annotation>
+                        <xs:documentation>Documentation of simple type "type".</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                        <xs:enumeration value="foo"/>
+                        <xs:enumeration value="bar"/>
+                        <xs:enumeration value="baz"/>
+                        <xs:length value="10"/>
+                        <xs:pattern value="\w*"/>
+                        <xs:maxLength value="10"></xs:maxLength>
+                        <xs:minLength value="5"></xs:minLength>
+                        <xs:whiteSpace value="preserve"></xs:whiteSpace>
+                        <xs:fractionDigits value="3"></xs:fractionDigits>
+                        <xs:maxExclusive value="1001"></xs:maxExclusive>
+                        <xs:maxInclusive value="1000"></xs:maxInclusive>
+                        <xs:minInclusive value="-1000"></xs:minInclusive>
+                        <xs:minExclusive value="-1001"></xs:minExclusive>
+                        <xs:totalDigits value="4"></xs:totalDigits>
+                </xs:restriction>
+        </xs:simpleType>
+        
+        <xs:element name="foo">
+                <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                                <xs:enumeration value="foo"/>
+                                <xs:enumeration value="bar"/>
+                                <xs:enumeration value="baz"/>
+                        </xs:restriction>
+                </xs:simpleType>
+        </xs:element>
+        
+        <xs:simpleType name="fooType">
+                <xs:annotation>
+                        <xs:documentation>Documentation for simple Type fooType.</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                        <xs:enumeration value="a"/>
+                        <xs:enumeration value="b"/>
+                        <xs:enumeration value="c"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                        <xs:enumeration value="d"/>
+                </xs:restriction>
+        </xs:simpleType>
+</xs:schema>

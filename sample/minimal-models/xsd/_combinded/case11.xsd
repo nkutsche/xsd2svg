@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo_11.com" xmlns:foo="foo_11.com">
+        <xs:element name="bar" type="foo:fooType" nillable="true">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element bar</xs:documentation>
+                </xs:annotation>
+        </xs:element>
+        <xs:element name="baz" type="foo:fooType">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element bar</xs:documentation>
+                </xs:annotation>
+        </xs:element>
+        
+        <xs:simpleType name="fooType">
+                <xs:annotation>
+                        <xs:documentation>Documentation of simple type "fooType".</xs:documentation>
+                </xs:annotation>
+                <xs:list itemType="xs:integer"/>
+        </xs:simpleType>
+
+        <xs:simpleType name="barType">
+                <xs:annotation>
+                        <xs:documentation>Documentation of simple type "barType".</xs:documentation>
+                </xs:annotation>
+                <xs:list>
+                        <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                        <xs:enumeration value="foo"/>
+                                        <xs:enumeration value="bar"/>
+                                </xs:restriction>
+                        </xs:simpleType>
+                </xs:list>
+        </xs:simpleType>
+        
+        <xs:simpleType name="unionType">
+                <xs:annotation>
+                        <xs:documentation>Documentation of simple type "type".</xs:documentation>
+                </xs:annotation>
+                <xs:union memberTypes="foo:fooType xs:string">
+                        <xs:simpleType>
+                                <xs:restriction base="xs:integer">
+                                        <xs:maxInclusive value="0"/>
+                                </xs:restriction>
+                        </xs:simpleType>
+                </xs:union>
+                
+        </xs:simpleType>
+        
+        
+        
+</xs:schema>

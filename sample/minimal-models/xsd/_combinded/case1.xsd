@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="foo_01.com" xmlns:foo="foo_01.com">
+        <xs:element name="foo">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element foo</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                        <xs:sequence>
+                                <xs:element ref="foo:bar"/>
+                                <xs:element ref="foo:bar" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+        <xs:element name="bar" type="xs:string">
+                <xs:annotation>
+                        <xs:documentation>Documentation of element bar</xs:documentation>
+                </xs:annotation>
+        </xs:element>
+</xs:schema>
