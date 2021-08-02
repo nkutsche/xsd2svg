@@ -106,6 +106,21 @@
                 </executions>
             </plugin>
             
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+                <executions>
+                    <execution>
+                        <id>default-site</id>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

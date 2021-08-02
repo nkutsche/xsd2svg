@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 https://maven.apache.org/xsd/decoration-1.8.0.xsd"
+    name="${project.name}">
+    
+    <bannerRight>
+        <name>${project.name}</name>
+        <src>logo/xsd2svg50.png</src>
+        <href>index.html</href>
+        <title>${project.name}</title>
+        
+    </bannerRight>
+    
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.9</version>
+    </skin>
+    
+    <publishDate position="right"/>
+    <version position="right"/>
+    
+    <custom>
+        <fluidoSkin>
+            <copyrightClass>pull-right</copyrightClass>
+        </fluidoSkin>
+    </custom>
+    
+    <body>
+        
+        <breadcrumbs>
+            <item name="${project.name}" href="index.html"/>
+        </breadcrumbs>
+        
+        <menu name="${project.name}" ref="reports"/>
+        
+        <menu name="User Guide">
+            <item name="Setup" href="Setup.html"/>
+            <item name="Download" href="Download.html"/>
+            <item name="Usage" href="Usage.html"/>
+        </menu>
+        
+    </body>
+</project>
