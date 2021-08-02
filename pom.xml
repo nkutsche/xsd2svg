@@ -10,6 +10,12 @@
     <name>XSD2SVG Content Model Graphic API</name>
     <description>This project provides an XSLT API to generate SVG Content Model Graphics for XSD components.</description>
     
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>LICENSE</url>
+        </license>
+    </licenses>
     
     <developers>
         <developer>
