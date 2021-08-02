@@ -193,7 +193,7 @@
                 <xsl:variable name="schema" select="root($node)/xs:schema"/>
                 <xsl:variable name="isTopLevel" select="exists($node/parent::xs:schema)"/>
 
-                <xsl:variable name="trg_namespace" select="$schema/@targetNamespace"/>
+                <xsl:variable name="trg_namespace" select="($schema/@targetNamespace, '')[1]"/>
                 <xsl:variable name="defaultForm" select="
                         if ($node/self::xs:element) then
                             ($schema/@elementFormDefault)

@@ -249,4 +249,21 @@
                     }"/>
         </x:scenario>
     </x:scenario>
+
+    <x:scenario label="Scneario for testing function nk:getName">
+        <x:call function="nk:getName"/>
+
+        <x:scenario label="with no target namespace" catch="true">
+            <x:call>
+                <x:param select="/xs:schema/xs:element">
+                    <xs:schema elementFormDefault="qualified">
+                        <xs:element name="foo">
+                                <xs:complexType/>
+                        </xs:element>
+                    </xs:schema>
+                </x:param>
+            </x:call>
+            <x:expect label="returning QName" select="QName('', 'foo')"/>
+        </x:scenario>
+    </x:scenario>
 </x:description>
