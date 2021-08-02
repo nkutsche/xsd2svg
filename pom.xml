@@ -61,6 +61,11 @@
             <name>d2t public repo</name>
             <url>https://repo.data2type.de/repository/maven-snapshots/</url>
         </snapshotRepository>
+        
+        <site>
+            <id>com.nkutsche</id>
+            <url>ftp://schematron-quickfix.net/com/nkutsche/xsd2svg</url>
+        </site>
     </distributionManagement>
     
     <build>
@@ -188,6 +193,36 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <executions>
+                    <execution>
+                        <id>upload-site</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <configuration>
+                            <serverId>com.nkutsche</serverId>
+                            <fromDir>${project.build.directory}/site/</fromDir>
+                            <url>ftp://schematron-quickfix.net/nkutsche/com/xsd2svg</url>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            
+            
         </plugins>
+        
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+            </extension>
+        </extensions>
     </build>
 </project>
