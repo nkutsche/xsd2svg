@@ -1,0 +1,4 @@
+target/
+sample/minimal-models/html/
+src/test/xspec/*-result.html
+etc/
