@@ -220,7 +220,18 @@
                 </executions>
             </plugin>
             
-            
+            <!--          
+            [release]:
+			-->
+            <plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<tagNameFormat>releases/v@{project.version}</tagNameFormat>
+					<scmReleaseCommitComment>@{prefix} Release as @{releaseLabel}.</scmReleaseCommitComment>
+				</configuration>
+			</plugin>
             
         </plugins>
         
