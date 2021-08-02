@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>com.nkutsche</groupId>
+    <artifactId>xsd2svg-sample</artifactId>
+    <version>${project.version}</version>
+    
+<!--    
+    TODO: this can removed, when this project is published on Maven Central.
+    -->
+    <repositories>
+        <repository>
+            <id>d2t-nexus</id>
+            <url>https://repo.data2type.de/repository/maven-public/</url>
+        </repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.nkutsche</groupId>
+            <artifactId>xsd2svg</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>top.marchand.xml</groupId>
+            <artifactId>cp-protocol</artifactId>
+            <version>2.2</version>
+        </dependency>
+    </dependencies>
+</project>

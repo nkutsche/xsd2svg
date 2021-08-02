@@ -140,6 +140,7 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>src/assembly/assembly.lib-package.xml</descriptor>
+                                <descriptor>src/assembly/assembly.sample.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>

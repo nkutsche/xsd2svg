@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <!--
+    <styles>
+        <css href="custom.css"/>
+        <fonts>
+            <emphasis href="path/to/font.ttf" name="My Emphasized Font" type="truetype"/>
+            <main href="path/to/font.ttf" name="My Regular Font" type="truetype"/>
+        </fonts>
+    </styles>
+    -->
+    <!--<namespaces>
+        <namespace prefix="foo" uri="foo.com"/>
+        <namespace prefix="bar" uri="bar.com"/>
+    </namespaces>-->
+</config>

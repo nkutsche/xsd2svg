@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="config">
+    <xs:annotation>
+      <xs:documentation>Root element of the configuration document</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="styles"/>
+        <xs:element minOccurs="0" ref="namespaces"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="namespaces">
+    <xs:annotation>
+      <xs:documentation>List of namespaces to provide specific configurations</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="namespace"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="namespace">
+    <xs:annotation>
+      <xs:documentation>Configures a namespace</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="prefix" use="required" type="xs:string"/>
+      <xs:attribute name="uri" use="required" type="xs:anyURI"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="styles">
+    <xs:annotation>
+      <xs:documentation>Configures the styling part of the SVG generation</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="css"/>
+        <xs:element minOccurs="0" ref="fonts"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="css">
+    <xs:annotation>
+      <xs:documentation>Provides by the href attribute a CSS document which will be embedded for standalone SVG graphics</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="href"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="fonts">
+    <xs:annotation>
+      <xs:documentation>Configures the used fonts for SVG graphics. </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="emphasis"/>
+        <xs:element ref="main"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="emphasis">
+    <xs:annotation>
+      <xs:documentation>Configures the font of emphasized text in the SVG graphics</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="fontAttr"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="main">
+    <xs:annotation>
+      <xs:documentation>Configures the font of regular text in the SVG graphics</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="fontAttr"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="fontAttr">
+    <xs:attribute name="name" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Name of the used font. For installed font this needs to match to an installed font. For a font file reference the name is used for references in CSS.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="regular"/>
+          <xs:enumeration value="italic"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="href" type="xs:anyURI"/>
+    <xs:attribute name="type">
+      <xs:annotation>
+        <xs:documentation>Specifies the format of the font file referenced by href attribute.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="truetype"/>
+          <xs:enumeration value="woff"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="installedFont">
+    <xs:attribute name="name" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Name of the used font. For installed font this needs to match to an installed font. For a font file reference the name is used for references in CSS.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="style" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="bold"/>
+          <xs:enumeration value="regular"/>
+          <xs:enumeration value="italic"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="fileFont">
+    <xs:attributeGroup ref="href"/>
+    <xs:attribute name="name" use="required" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>Name of the used font. For installed font this needs to match to an installed font. For a font file reference the name is used for references in CSS.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="type" use="required">
+      <xs:annotation>
+        <xs:documentation>Specifies the format of the font file referenced by href attribute.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="truetype"/>
+          <xs:enumeration value="woff"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="href">
+    <xs:attribute name="href" use="required" type="xs:anyURI"/>
+  </xs:attributeGroup>
+</xs:schema>
