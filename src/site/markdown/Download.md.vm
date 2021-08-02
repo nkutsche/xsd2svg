@@ -1,0 +1,11 @@
+# Download page
+
+On this page you can finde the xsd2svg library package with all dependencies:
+
+#${esc.h} Version ${project.version} 
+
+* [Zip-Package for manual installation](download/${project.build.finalName}-lib-package.zip)
+* [Jar file as classpath-only resource](download/${project.build.finalName}.jar)
+
+#${esc.h}${esc.h} Samples
+* [Using xsd2svg with Maven](download/${project.build.finalName}-sample.zip)
