@@ -123,11 +123,13 @@ The ComponentInfo Object Map extends the ComponentCoreInfo Object Map by the fol
 
 ### `config`
 
-The document root node of the configuration document.
+The document root node of the configuration XML file.
 
 ### `link-provider-function`
 
-TODO
+A function matching to the signature `function(map(xs:string, item()*)) as xs:string?`. This function will receive a ComponentCoreInfo Object Map and returns a string or an empty sequence.
+
+This function is called every time when the XSD2SVG library should create a link for a referenced Component. The ComponentCoreInfo Object Map describes the target Component. If the function returns a string it will create an SVG link by this string. If the function returns an empty sequence it will not create a link.
 
 ## Configuration
 
