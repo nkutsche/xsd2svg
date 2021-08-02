@@ -7,6 +7,26 @@
     <artifactId>xsd2svg</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     
+    <name>XSD2SVG Content Model Graphic API</name>
+    <description>This project provides an XSLT API to generate SVG Content Model Graphics for XSD components.</description>
+    
+    
+    <developers>
+        <developer>
+            <id>nkutsche</id>
+            <name>Nico Kutscherauer</name>
+            <email>nico@nkutsche.com</email>
+        </developer>
+    </developers>
+    
+    <url>http://xsd2svg.nkutsche.com</url>
+    
+    <scm>
+        <url>https://github.com/nkutsche/xsd2svg</url>
+        <developerConnection>scm:git:https://github.com/nkutsche/xsd2svg</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
     <properties>
         <saxon.version>10.5</saxon.version>
     </properties>
