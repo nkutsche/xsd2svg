@@ -3,3 +3,8 @@
 This project provides an XSLT API to generate SVG Content Model Graphics for XSD components.
 
 Find more information at [http://xsd2svg.nkutsche.com](http://xsd2svg.nkutsche.com).
+
+
+## Release Notes
+
+See [ReleaseNotes.md](src/site/markdown/ReleaseNotes.md)
