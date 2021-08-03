@@ -1265,7 +1265,7 @@
         
         <xsl:variable name="width" select="nk:renderedTextLength($label, $fontInfo)"/>
         <xsl:variable name="width" select="$width + (2 * $paddingLR) + $symbolWidth"/>
-        <svg width="{$width}" height="30" nk:cY="15">
+        <svg width="{$width + 1}" height="30" nk:cY="15">
             <g alignment-baseline="baseline" id="{$hoverId}" transform="translate( 0, 2.5)">
                 <!-- TODO               <a xlink:href="#{nk:convertId($parentName)}" target="_top">-->
 

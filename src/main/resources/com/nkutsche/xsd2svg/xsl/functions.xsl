@@ -876,7 +876,7 @@
     </xsl:template>
 
     <xsl:template name="groupSymbol">
-        <xsl:param name="title" select="'group'" as="xs:string"/>
+        <xsl:param name="title" select="'xs:group'" as="xs:string"/>
         <xsl:param name="color-scheme" select="'attribute'" as="xs:string"/>
         <xsl:param name="bold" select="false()" as="xs:boolean"/>
         <xsl:variable name="class" select="nk:addBoldClass('symbol group cs_' || $color-scheme, $bold)"/>
@@ -947,7 +947,7 @@
         <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
         <xsl:param name="bold" select="false()" tunnel="yes" as="xs:boolean"/>
         <xsl:param name="backgrounded" select="false()" tunnel="yes" as="xs:boolean"/>
-        <xsl:param name="symbol-title" as="xs:string" select="local-name()"/>
+        <xsl:param name="symbol-title" as="xs:string" select="'xs:' || local-name()"/>
 
         <xsl:call-template name="boxTitle">
             <xsl:with-param name="title" select="$title"/>
