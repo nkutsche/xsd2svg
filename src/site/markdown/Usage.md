@@ -218,7 +218,7 @@ For the following components this libary is able to create SVG Model graphics:
 
 In addition the following restrictions applies:
 
-* All components needs to be named (by a `name` attribute). Except of `xs:element` and `xs:attribute`, this means that they have to be declared on top level.
+* All components needs to be named (by a `name` attribute).
 
 ### Content Support
 
