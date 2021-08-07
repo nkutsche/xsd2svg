@@ -8,7 +8,6 @@
         <src>logo/xsd2svg50.png</src>
         <href>index.html</href>
         <title>${project.name}</title>
-        
     </bannerRight>
     
     <skin>
@@ -26,8 +25,17 @@
         </fluidoSkin>
     </custom>
     
-    <body>
+    <poweredBy>
         
+        <logo href="https://github.com/nkutsche/xsd2svg" 
+            img="logo/github-mark.png" 
+            name="xsd2svg on GitHub" 
+            title="xsd2svg on GitHub" 
+            position="left"
+        />
+    </poweredBy>
+    
+    <body>
         <breadcrumbs>
             <item name="${project.name}" href="index.html"/>
         </breadcrumbs>
@@ -40,6 +48,7 @@
             <item name="Usage" href="Usage.html"/>
             <item name="Release Notes" href="ReleaseNotes.html"/>
         </menu>
+        
         
     </body>
 </project>
