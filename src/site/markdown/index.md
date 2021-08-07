@@ -24,6 +24,14 @@ In the following you will find some simple and a more complex example.
 
 ![sample-graphics/book.svg](sample-graphics/book.svg "Example from DocBook with Complex Structure")
 
+## Features
+
+* Annotations can be shown as dynamic tooltips (if CSS is rendered directly)
+* SVG Graphics can be generated standalone (with included CSS) or to be embedded in a website with an existing CSS. For the second option, the needed CSS can be generated separately.
+* Configuration features
+    * Customize the CSS.
+    * Use a custom font to be embedded.
+    * Provide a function to create links inside of the SVG graphics.
 
 ## Links
 
