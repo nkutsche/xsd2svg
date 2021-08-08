@@ -8,16 +8,6 @@
     <artifactId>xsd2svg-sample</artifactId>
     <version>${project.version}</version>
     
-<!--    
-    TODO: this can removed, when this project is published on Maven Central.
-    -->
-    <repositories>
-        <repository>
-            <id>d2t-nexus</id>
-            <url>https://repo.data2type.de/repository/maven-public/</url>
-        </repository>
-    </repositories>
-    
     <dependencies>
         <dependency>
             <groupId>com.github.nkutsche</groupId>
