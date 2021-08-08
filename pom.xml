@@ -1,8 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.nkutsche</groupId>
     <artifactId>xsd2svg</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     
     <name>XSD2SVG Content Model Graphic API</name>
     <description>This project provides an XSLT API to generate SVG Content Model Graphics for XSD components.</description>
@@ -27,7 +27,7 @@
     <scm>
         <url>https://github.com/nkutsche/xsd2svg</url>
         <developerConnection>scm:git:https://github.com/nkutsche/xsd2svg</developerConnection>
-        <tag>releases/v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     
     <properties>
