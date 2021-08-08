@@ -221,6 +221,7 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<tagNameFormat>releases/v@{project.version}</tagNameFormat>
 					<scmReleaseCommitComment>@{prefix} Release as @{releaseLabel}.</scmReleaseCommitComment>
+				    <arguments>-P release</arguments>
 				</configuration>
 			</plugin>
             
