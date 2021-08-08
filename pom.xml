@@ -50,24 +50,15 @@
         </dependency>
     </dependencies>
     
-<!--    
-    Just for testing cases deploy on data2type server...
-    TODO: Publish on Maven Central
-    -->
     <distributionManagement>
-        <repository>
-            <id>data2type-nexus</id>
-            <layout>default</layout>
-            <name>d2t public repo</name>
-            <url>https://repo.data2type.de/repository/maven-releases/</url>
-        </repository>
         <snapshotRepository>
-            <id>data2type-nexus</id>
-            <layout>default</layout>
-            <name>d2t public repo</name>
-            <url>https://repo.data2type.de/repository/maven-snapshots/</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
-        
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
         <site>
             <id>com.nkutsche</id>
             <url>ftp://schematron-quickfix.net/com/nkutsche/xsd2svg</url>
