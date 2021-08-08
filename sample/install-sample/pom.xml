@@ -4,7 +4,7 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>com.nkutsche</groupId>
+    <groupId>com.github.nkutsche</groupId>
     <artifactId>xsd2svg-sample</artifactId>
     <version>${project.version}</version>
     
@@ -20,7 +20,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.nkutsche</groupId>
+            <groupId>com.github.nkutsche</groupId>
             <artifactId>xsd2svg</artifactId>
             <version>${project.version}</version>
         </dependency>
