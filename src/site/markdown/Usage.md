@@ -236,6 +236,7 @@ The following list shows all XSD elements which are supported by this library:
 * `xs:restriction`
 * `xs:sequence`
 * `xs:choice`
+* `xs:all`
 * `xs:union`
 * `xs:list`
 * `xs:any`
