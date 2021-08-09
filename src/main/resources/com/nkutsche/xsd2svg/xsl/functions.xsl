@@ -581,6 +581,60 @@
             </g>
         </svg>
     </xsl:template>
+    
+    <xsl:template name="allSymbol">
+        <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
+        <xsl:param name="title" as="element(svg:title)">
+            <title>xs:all</title>
+        </xsl:param>
+        <xsl:param name="color-scheme" select="'default'" as="xs:string"/>
+        
+        <xsl:variable name="class" select="'symbol all cs_' || $color-scheme"/>
+        
+        <svg width="20" height="20" nk:cY="10">
+            <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                <xsl:attribute name="height" select="23.5"/>
+            </xsl:if>
+            <xsl:sequence select="$title"/>
+            <g>
+                <xsl:variable name="circle">
+                    <circle r="9.5" stroke-width="1" cx="10" cy="10" class="{$class} bordered opaque">
+                        <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
+                            <xsl:attribute name="stroke-dashoffset" select="2"/>
+                            <xsl:attribute name="stroke-dasharray" select="2"/>
+                        </xsl:if>
+                    </circle>
+                </xsl:variable>
+                <xsl:if test="$multiValue = ($MultiValues[3], $MultiValues[4])">
+                    <circle>
+                        <xsl:copy-of select="$circle/svg:circle/@*"/>
+                        <xsl:attribute name="cy" select="13.5"/>
+                        <xsl:attribute name="stroke-width" select="0.33"/>
+                    </circle>
+                    <circle>
+                        <xsl:copy-of select="$circle/svg:circle/@*"/>
+                        <xsl:attribute name="cy" select="12"/>
+                        <xsl:attribute name="stroke-width" select="0.66"/>
+                    </circle>
+                </xsl:if>
+                <xsl:copy-of select="$circle"/>
+                <g>
+                    <g transform="translate(7, 3.5)">
+                        <rect width="6" height="3" stroke-width="1" class="{$class} filled"/>
+                        <rect width="6" height="3" stroke-width="1" class="{$class} bordered"/>
+                    </g>
+                    <g transform="translate(10, 8.4)">
+                        <rect width="6" height="3" stroke-width="1" class="{$class} filled"/>
+                        <rect width="6" height="3" stroke-width="1" class="{$class} bordered"/>
+                    </g>
+                    <g transform="translate(5.5, 13.5)">
+                        <rect width="6" height="3" stroke-width="1" class="{$class} filled"/>
+                        <rect width="6" height="3" stroke-width="1" class="{$class} bordered"/>
+                    </g>
+                </g>
+            </g>
+        </svg>
+    </xsl:template>
 
     <xsl:template name="choiceSymbol">
         <xsl:param name="multiValue" select="$MultiValues[2]" as="xs:string"/>
@@ -923,6 +977,9 @@
             </xsl:when>
             <xsl:when test="$type = 'sequence'">
                 <xsl:call-template name="sequenceSymbol"/>
+            </xsl:when>
+            <xsl:when test="$type = 'all'">
+                <xsl:call-template name="allSymbol"/>
             </xsl:when>
             <xsl:when test="$type = 'list'">
                 <xsl:call-template name="st_listSymbol"/>
