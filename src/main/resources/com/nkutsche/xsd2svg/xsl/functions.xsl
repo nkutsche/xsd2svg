@@ -899,7 +899,6 @@
 
     <xsl:function name="nk:getSymbol" as="element(svg:svg)?">
         <xsl:param name="type"/>
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)"/>
         <xsl:choose>
             <xsl:when test="$type = 'attribute'">
                 <xsl:call-template name="attributeSymbol"/>

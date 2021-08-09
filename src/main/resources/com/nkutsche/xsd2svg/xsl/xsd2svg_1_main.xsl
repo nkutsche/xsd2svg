@@ -606,7 +606,7 @@
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="paddingLR" select="5"/>
 
-        <xsl:variable name="symbol" select="$refType ! nk:getSymbol(., $schemaSetConfig)"/>
+        <xsl:variable name="symbol" select="$refType ! nk:getSymbol(.)"/>
 
         <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
 
@@ -793,7 +793,6 @@
     </xsl:template>
 
     <xsl:template match="xs:sequence" mode="nk:xsd2svg-content">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
 
         <xsl:variable name="multiValue" select="nk:getMultiValue(.)"/>
 
@@ -843,7 +842,6 @@
     </xsl:template>
 
     <xsl:template match="xs:choice" mode="nk:xsd2svg-content" priority="10">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'default'"/>
 
         <xsl:variable name="content">
@@ -1249,7 +1247,7 @@
         <xsl:variable name="class" select="'object parent cs_' || $color-scheme"/>
 
 
-        <xsl:variable name="symbol" select="nk:getSymbol(local-name(.), $schemaSetConfig)"/>
+        <xsl:variable name="symbol" select="nk:getSymbol(local-name(.))"/>
 
         <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
 
