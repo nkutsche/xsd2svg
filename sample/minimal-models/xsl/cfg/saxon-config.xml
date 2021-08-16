@@ -13,7 +13,7 @@
 -->
 <configuration edition="HE" xmlns="http://saxon.sf.net/ns/configuration">
     <xsltPackages>
-        <package name="http://www.nkutsche.com/xsd2svg" version="1.0.0-SNAPSHOT" sourceLocation="../../../../src/main/resources/com/nkutsche/xsd2svg/xsl/xsd2svg.xsl"/>
+        <package name="http://www.nkutsche.com/xsd2svg" version="1.0.1-SNAPSHOT" sourceLocation="../../../../src/main/resources/com/nkutsche/xsd2svg/xsl/xsd2svg.xsl"/>
     </xsltPackages>
     <resources>
         <extensionFunction>com.nkutsche.xsd2svg.textdimensions.TextDimensionExtensionFunction</extensionFunction>
