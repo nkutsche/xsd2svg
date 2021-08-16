@@ -10,6 +10,11 @@
     <fileSets>
         <fileSet>
             <outputDirectory>src</outputDirectory>
+            <directory>${project.basedir}/src/main/resources.rpl/</directory>
+            <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>src</outputDirectory>
             <directory>${project.basedir}/src/main/resources/</directory>
         </fileSet>
     </fileSets>
