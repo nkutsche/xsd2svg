@@ -14,4 +14,5 @@
     <xs:import schemaLocation="case12_1.xsd" namespace="foo_12.com"/>
     <xs:import schemaLocation="case13.xsd" namespace="foo_13.com"/>
     <xs:import schemaLocation="case14.xsd" namespace="foo_14.com"/>
+    <xs:import schemaLocation="case15.xsd" namespace="foo_15.com"/>
 </xs:schema>

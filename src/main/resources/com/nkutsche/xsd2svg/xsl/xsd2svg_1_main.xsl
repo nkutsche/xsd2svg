@@ -606,7 +606,7 @@
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="paddingLR" select="5"/>
 
-        <xsl:variable name="symbol" select="$refType ! nk:getSymbol(., $schemaSetConfig)"/>
+        <xsl:variable name="symbol" select="$refType ! nk:getSymbol(.)"/>
 
         <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
 
@@ -792,8 +792,7 @@
 
     </xsl:template>
 
-    <xsl:template match="xs:sequence" mode="nk:xsd2svg-content">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
+    <xsl:template match="xs:sequence | xs:all" mode="nk:xsd2svg-content">
 
         <xsl:variable name="multiValue" select="nk:getMultiValue(.)"/>
 
@@ -807,20 +806,16 @@
                 <xsl:with-param name="x2" select="30"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="elementSymbol">
-            <xsl:call-template name="sequenceSymbol">
-                <xsl:with-param name="multiValue" select="$multiValue"/>
-            </xsl:call-template>
-        </xsl:variable>
+        <xsl:variable name="elementSymbol" select="nk:getSymbol(local-name())"/>
+        
 
         <xsl:variable name="contentSVGs" select="$contentNet/svg:svg"/>
         <xsl:variable name="contentHeight" select="sum($contentSVGs/@height)"/>
-        <xsl:variable name="elementSVG" select="$elementSymbol/svg:svg"/>
-        <xsl:variable name="elementHeight" select="sum($elementSVG/@height)"/>
-        <xsl:variable name="elementWidth" select="max($elementSVG/@width)"/>
+        <xsl:variable name="elementHeight" select="sum($elementSymbol/@height)"/>
+        <xsl:variable name="elementWidth" select="max($elementSymbol/@width)"/>
 
 
-        <xsl:variable name="posY" select="max(($contentSVGs/@nk:cY - nk:number($elementSVG/@nk:cY, xs:decimal($elementHeight div 2)), 0))"/>
+        <xsl:variable name="posY" select="max(($contentSVGs/@nk:cY - nk:number($elementSymbol/@nk:cY, xs:decimal($elementHeight div 2)), 0))"/>
         <xsl:variable name="svgHeight" select="max(($contentHeight, $elementHeight))"/>
         <xsl:variable name="svgWidth" select="
                 (if ($contentSVGs/@width) then
@@ -828,13 +823,13 @@
                 else
                     (0)) + $elementWidth"/>
 
-        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" nk:cY="{max(($contentSVGs/@nk:cY, nk:number($elementSVG/@nk:cY, xs:decimal($elementHeight div 2))))}" nk:multiValue="{$multiValue}">
+        <svg width="{$svgWidth}" height="{$svgHeight}" class="{local-name()}" nk:cY="{max(($contentSVGs/@nk:cY, nk:number($elementSymbol/@nk:cY, xs:decimal($elementHeight div 2))))}" nk:multiValue="{$multiValue}">
             <xsl:attribute name="nk:minOccurs" select="1"/>
             <xsl:attribute name="nk:maxOccurs" select="1"/>
             <xsl:apply-templates select="@minOccurs | @maxOccurs" mode="#current"/>
 
             <g transform="translate(0,{$posY})">
-                <xsl:copy-of select="$elementSVG"/>
+                <xsl:copy-of select="$elementSymbol"/>
             </g>
             <g transform="translate({$elementWidth},0)">
                 <xsl:copy-of select="$contentSVGs"/>
@@ -843,7 +838,6 @@
     </xsl:template>
 
     <xsl:template match="xs:choice" mode="nk:xsd2svg-content" priority="10">
-        <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         <xsl:param name="color-scheme" select="'default'"/>
 
         <xsl:variable name="content">
@@ -1249,7 +1243,7 @@
         <xsl:variable name="class" select="'object parent cs_' || $color-scheme"/>
 
 
-        <xsl:variable name="symbol" select="nk:getSymbol(local-name(.), $schemaSetConfig)"/>
+        <xsl:variable name="symbol" select="nk:getSymbol(local-name(.))"/>
 
         <xsl:variable name="symbolWidth" select="nk:number($symbol/@width)"/>
 
