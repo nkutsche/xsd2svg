@@ -602,7 +602,7 @@
                     $refTarget/local-name()
                 "/>
 
-        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
+        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id(), '_', $refTarget/generate-id())"/>
         <xsl:variable name="cY" select="15"/>
         <xsl:variable name="paddingLR" select="5"/>
 
@@ -1561,7 +1561,7 @@
 
         <xsl:variable name="class" select="'object content cs_' || $color-scheme"/>
 
-        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id())"/>
+        <xsl:variable name="hoverId" select="concat($model-id, '_elementRef_', generate-id(), '_', local-name-from-QName($typeName))"/>
         <xsl:variable name="cY" select="15"/>
 
         <xsl:variable name="fontSize" select="11"/>
