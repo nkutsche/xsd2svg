@@ -92,7 +92,14 @@
     </xsl:template>
 
     <xsl:template match="@nk:*" mode="nk:xsd2svg-cleanup"/>
-
+    
+    <xsl:template match="*" mode="nk:xsd2svg-cleanup">
+        <xsl:copy copy-namespaces="no">
+            <xsl:apply-templates select="@*" mode="#current"/>
+            <xsl:apply-templates select="node()" mode="#current"/>
+        </xsl:copy>
+    </xsl:template>
+    
     <xsl:function name="nk:create-css" as="xs:string?">
         <xsl:param name="styles" as="map(*)"/>
         <xsl:variable name="embeddedCss" select="resolve-uri('../cfg/colors.css', static-base-uri())"/>
