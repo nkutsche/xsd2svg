@@ -2,7 +2,9 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:math="http://www.w3.org/2005/xpath-functions/math" xmlns:nk="http://www.nkutsche.com/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:map="http://www.w3.org/2005/xpath-functions/map" xmlns:array="http://www.w3.org/2005/xpath-functions/array" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" exclude-result-prefixes="#all" version="3.0">
     
     <xsl:mode name="nk:create-docs-tooltips"/>
-
+    
+    <xsl:template match="svg:foreignObject[not(*)]" mode="nk:xsd2svg-docs"/>
+    
     <xsl:template match="svg:svg[svg:foreignObject/xs:annotation]" mode="nk:xsd2svg-docs">
         <xsl:param name="schemaSetConfig" as="map(xs:string, item()*)" tunnel="yes"/>
         
