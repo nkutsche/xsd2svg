@@ -160,8 +160,8 @@
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
                     <g transform="translate(0.5, 0.5)">
-                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stoke-width="1"/>
-                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stoke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stroke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stroke-width="1"/>
                     </g>
                     <g transform="translate({$paddingLR}, {$paddingLR div 2})">
                         <xsl:sequence select="$symbol"/>
@@ -250,8 +250,8 @@
             <g alignment-baseline="baseline" transform="translate({$parentWidth}, {$elementPosY + 2.5})" id="{$hoverId}">
                 <svg width="{$width + 1}" height="26">
                     <g transform="translate(0.5, 0.5)">
-                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stoke-width="1"/>
-                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stoke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} filled" stroke-width="1"/>
+                        <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered" stroke-width="1"/>
                     </g>
                     <g transform="translate({$paddingLR}, {$paddingLR div 2})">
                         <xsl:sequence select="$symbol"/>
@@ -520,7 +520,7 @@
                 
                 <svg width="{$width + 1}" height="{$elementHeight + 1}">
                     <g transform="translate(0.5, 0.5)">
-                        <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" class="{$class} bordered" stoke-width="1" fill="none">
+                        <rect height="{$elementHeight}" width="{$width}" rx="10" ry="10" class="{$class} bordered" stroke-width="1" fill="none">
                             <xsl:if test="$multiValue = $MultiValues[1]">
                                 <xsl:attribute name="stroke-dasharray" select="5, 5" separator=","/>
                             </xsl:if>
@@ -629,7 +629,7 @@
                 <svg width="{$width + 1}" height="29">
                     <g id="{$hoverId}" transform="translate(0.5, 0.5)">
                         <xsl:variable name="rect">
-                            <rect height="25" width="{$width}" rx="10" ry="10" class="{$class} bordered opaque link-background" stoke-width="1">
+                            <rect height="25" width="{$width}" rx="10" ry="10" class="{$class} bordered opaque link-background" stroke-width="1">
                                 <xsl:if test="$multiValue = ($MultiValues[1], $MultiValues[3])">
                                     <xsl:attribute name="stroke-dashoffset" select="2"/>
                                     <xsl:attribute name="stroke-dasharray" select="2"/>
@@ -1138,7 +1138,7 @@
         <svg width="{$tableWidth + 1}" height="{$tableHeight}" nk:cY="{$tableHeight div 2}" nk:displayW="{$tableWidth}" nk:displayH="{$tableHeight}">
             <xsl:sequence select="$title-svg"/>
             <g>
-                <rect width="{$tableWidth}" height="{$tableHeight}" rx="7.5" ry="7.5" class="{$class} bordered" stoke-width="1" fill="none"/>
+                <rect width="{$tableWidth}" height="{$tableHeight}" rx="7.5" ry="7.5" class="{$class} bordered" stroke-width="1" fill="none"/>
             </g>
             <xsl:for-each select="$cells?*">
                 <xsl:variable name="rownr" select="position()"/>
@@ -1268,7 +1268,7 @@
                         <svg width="{$width + 1}" height="26">
                             <g transform="translate(0.5, 0.5)">
                                 <g>
-                                    <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered opaque link-background" stoke-width="1"/>
+                                    <rect width="{$width}" height="25" rx="10" ry="10" class="{$class} bordered opaque link-background" stroke-width="1"/>
                                 </g>
 
                                 <g transform="translate({$paddingLR div 2}, {$paddingLR div 2})">
@@ -1315,7 +1315,7 @@
                 <!--    TODO            <a xlink:href="#{nk:convertId($groupName)}" target="_top">-->
                 <xsl:call-template name="createLink">
                     <xsl:with-param name="content">
-                        <path stoke-width="1" class="{$class} bordered opaque link-background">
+                        <path stroke-width="1" class="{$class} bordered opaque link-background">
                             <xsl:attribute name="d" select="
                                     'M', 0, $height + 3,
                                     'L', 0, 10,
@@ -1394,7 +1394,7 @@
                         </xsl:call-template>
                     </xsl:if>
 
-                    <rect height="{$contentHeight + 5}" width="{$svgWidth}" rx="10" ry="10" class="{$class} bordered" stoke-width="1" fill="none"/>
+                    <rect height="{$contentHeight + 5}" width="{$svgWidth}" rx="10" ry="10" class="{$class} bordered" stroke-width="1" fill="none"/>
                     <g transform="translate(0, {2.5 + $titleHeight})">
                         <xsl:copy-of select="$content"/>
                     </g>
@@ -1589,7 +1589,7 @@
                                 -->
                     <svg width="{$width + 1}" height="26">
                         <xsl:variable name="rect">
-                            <rect height="25" width="{$width}" rx="10" ry="10" class="{$class} bordered opaque" stoke-width="1"/>
+                            <rect height="25" width="{$width}" rx="10" ry="10" class="{$class} bordered opaque" stroke-width="1"/>
                         </xsl:variable>
                         <g transform="translate(0.5, 0.5)">
                             <xsl:copy-of select="$rect"/>
