@@ -11,4 +11,4 @@ set SAXON_ARGS=-config:%SAXONCFG% ^
 set JARGS=%DEBUG_ATTACH% ^
 -classpath %%%%classpath net.sf.saxon.Transform %SAXON_ARGS%
 
-call mvn -e -f %POM% compile exec:exec -Dexec.executable="java" -Dexec.args="%JARGS%"
+call mvn -e -f %POM% clean compile exec:exec -Dexec.executable="java" -Dexec.args="%JARGS%"
