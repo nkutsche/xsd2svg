@@ -44,9 +44,15 @@
         <xsl:param name="z-index" select="0"/>
         <xsl:variable name="thisLevels" select="nk:getZLevels(.)"/>
         
+        <xsl:variable name="copyId" select="min($thisLevels) = $z-index"/>
+        
         <xsl:if test="$z-index = $thisLevels">
             <xsl:copy>
-                <xsl:apply-templates select="@*" mode="#current"/>
+                <xsl:apply-templates select="
+                      if ($copyId) 
+                    then (@*) 
+                    else (@* except @id)
+                    " mode="#current"/>
                 <xsl:attribute name="nk:z-index" select="nk:getInhertZ(.)"/>
                 <xsl:attribute name="nk:z-levels" select="$thisLevels"/>
                 <xsl:attribute name="nk:z-filter" select="$z-index"/>
