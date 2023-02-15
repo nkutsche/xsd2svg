@@ -25,6 +25,77 @@
                 </svg>
             </x:expect>
         </x:scenario>
+        <x:scenario label="with a nested object">
+            <x:context mode="nk:xsd2svg-zindex">
+                <svg width="10" height="10">
+                    <g nk:z-index="10">
+                        <text>up</text>
+                        <g nk:z-index="5">
+                            <text>down</text>
+                        </g>
+                    </g>
+                </svg>
+            </x:context>
+            <x:expect label="sorted result">
+                <svg width="10" height="10">
+                    <g nk:z-index="10"
+                       nk:z-levels="10 5"
+                       nk:z-filter="5">
+                        <g nk:z-index="5"
+                           nk:z-levels="5"
+                           nk:z-filter="5">
+                           <text nk:z-index="5"
+                                 nk:z-levels="5"
+                                 nk:z-filter="5">down</text>
+                        </g>
+                     </g>
+                     <g nk:z-index="10"
+                        nk:z-levels="10 5"
+                        nk:z-filter="10">
+                        <text nk:z-index="10"
+                              nk:z-levels="10"
+                              nk:z-filter="10">up</text>
+                     </g>
+                </svg>
+            </x:expect>
+        </x:scenario>
+        <x:scenario label="with a nested object and IDs">
+            <x:context mode="nk:xsd2svg-zindex">
+                <svg width="10" height="10" id="svg1">
+                    <g nk:z-index="10" id="g1">
+                        <text id="text1">up</text>
+                        <g nk:z-index="5" id="g2">
+                            <text id="text2">down</text>
+                        </g>
+                    </g>
+                </svg>
+            </x:context>
+            <x:expect label="sorted result">
+                <svg width="10" height="10" id="svg1">
+                    <g nk:z-index="10"
+                       nk:z-levels="10 5"
+                       nk:z-filter="5" id="g1">
+                        <g nk:z-index="5"
+                           nk:z-levels="5"
+                           nk:z-filter="5" id="g2">
+                           <text nk:z-index="5"
+                                 nk:z-levels="5"
+                                 nk:z-filter="5" id="text2">down</text>
+                        </g>
+                     </g>
+                     <g nk:z-index="10"
+                        nk:z-levels="10 5"
+                        nk:z-filter="10">
+                        <text nk:z-index="10"
+                              nk:z-levels="10"
+                              nk:z-filter="10" id="text1">up</text>
+                     </g>
+                </svg>
+            </x:expect>
+            <x:expect label="all IDs are unique" 
+                test="$x:result//@id/string()" select="$x:result//@id/string() => distinct-values()"
+            />
+        </x:scenario>
     </x:scenario>
     
     
