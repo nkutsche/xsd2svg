@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.nkutsche</groupId>
     <artifactId>xsd2svg</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     
     <name>XSD2SVG Content Model Graphic API</name>
     <description>This project provides an XSLT API to generate SVG Content Model Graphics for XSD components.</description>
@@ -27,7 +27,7 @@
     <scm>
         <url>https://github.com/nkutsche/xsd2svg</url>
         <developerConnection>scm:git:https://github.com/nkutsche/xsd2svg</developerConnection>
-        <tag>releases/v1.1.1</tag>
+        <tag>HEAD</tag>
     </scm>
     
     <properties>
