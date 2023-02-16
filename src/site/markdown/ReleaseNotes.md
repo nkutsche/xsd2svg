@@ -1,6 +1,6 @@
 # Release Notes
 
-## CURRENT-SNAPSHOT
+## Version 1.1.1
 
 * Several bug fixes to avoid validation issues of created SVG structure.
 
